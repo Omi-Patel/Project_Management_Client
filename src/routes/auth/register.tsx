@@ -1,28 +1,35 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
-import { User, Lock, Eye, EyeOff } from 'lucide-react';
-import { toast } from 'sonner';
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { User, Lock, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
-import { UserInputSchema, type UserInput } from '@/schemas/user-schema';
-import { createUser } from '@/lib/actions';
-import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { UserInputSchema, type UserInput } from "@/schemas/user-schema";
+import { createUser } from "@/lib/actions";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-export const Route = createFileRoute('/auth/register')({
+export const Route = createFileRoute("/auth/register")({
   component: RouteComponent,
   loader: async () => {
-      const email = localStorage.getItem("email");
-  
-      if (email) {
-        // If email exists in localStorage, redirect to dashboard
-        return redirect({ to: "/" });
-      }
-    },
+    const email = localStorage.getItem("email");
+
+    if (email) {
+      // If email exists in localStorage, redirect to dashboard
+      return redirect({ to: "/" });
+    }
+  },
 });
 
 function RouteComponent() {
@@ -32,11 +39,11 @@ function RouteComponent() {
   const form = useForm<UserInput>({
     resolver: zodResolver(UserInputSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      phoneNumber: '',
-      status: 'ACTIVE',
+      name: "",
+      email: "",
+      password: "",
+      phoneNumber: "",
+      status: "ACTIVE",
     },
   });
 
@@ -44,15 +51,15 @@ function RouteComponent() {
   const registerMutation = useMutation({
     mutationFn: createUser,
     onSuccess: () => {
-      toast.success('Registration Successful', {
-        description: 'You can now log in with your credentials.',
+      toast.success("Registration Successful", {
+        description: "You can now log in with your credentials.",
       });
-      navigate({ to: '/auth/login' });
+      navigate({ to: "/auth/login" });
     },
     onError: (error) => {
-      console.error('Registration error:', error);
-      toast.error('Registration Failed', {
-        description: 'Please check your input and try again.',
+      console.error("Registration error:", error);
+      toast.error("Registration Failed", {
+        description: "Please check your input and try again.",
       });
     },
   });
@@ -69,7 +76,9 @@ function RouteComponent() {
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg border border-border">
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold text-card-foreground">Create an Account</h1>
+          <h1 className="text-3xl font-bold text-card-foreground">
+            Create an Account
+          </h1>
           <p className="text-muted-foreground">Sign up to get started</p>
         </div>
 
@@ -84,7 +93,12 @@ function RouteComponent() {
                   <FormLabel className="text-card-foreground">Name</FormLabel>
                   <div className="relative">
                     <FormControl>
-                      <Input placeholder="Enter your name" {...field} disabled={registerMutation.isPending} className="bg-input pl-10" />
+                      <Input
+                        placeholder="Enter your name"
+                        {...field}
+                        disabled={registerMutation.isPending}
+                        className="bg-input pl-10"
+                      />
                     </FormControl>
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
@@ -102,7 +116,12 @@ function RouteComponent() {
                   <FormLabel className="text-card-foreground">Email</FormLabel>
                   <div className="relative">
                     <FormControl>
-                      <Input placeholder="Enter your email" {...field} disabled={registerMutation.isPending} className="bg-input pl-10" />
+                      <Input
+                        placeholder="Enter your email"
+                        {...field}
+                        disabled={registerMutation.isPending}
+                        className="bg-input pl-10"
+                      />
                     </FormControl>
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
@@ -117,11 +136,13 @@ function RouteComponent() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-card-foreground">Password</FormLabel>
+                  <FormLabel className="text-card-foreground">
+                    Password
+                  </FormLabel>
                   <div className="relative">
                     <FormControl>
                       <Input
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
                         {...field}
                         disabled={registerMutation.isPending}
@@ -136,8 +157,14 @@ function RouteComponent() {
                       className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
                       onClick={togglePasswordVisibility}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
-                      <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      <span className="sr-only">
+                        {showPassword ? "Hide password" : "Show password"}
+                      </span>
                     </Button>
                   </div>
                   <FormMessage />
@@ -151,9 +178,16 @@ function RouteComponent() {
               name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-card-foreground">Phone Number</FormLabel>
+                  <FormLabel className="text-card-foreground">
+                    Phone Number
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter your phone number (optional)" {...field} disabled={registerMutation.isPending} className="bg-input" />
+                    <Input
+                      placeholder="Enter your phone number (optional)"
+                      {...field}
+                      disabled={registerMutation.isPending}
+                      className="bg-input"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -161,11 +195,27 @@ function RouteComponent() {
             />
 
             {/* Submit Button */}
-            <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={registerMutation.isPending}
+            >
               {registerMutation.isPending ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
                     <path
                       className="opacity-75"
                       fill="currentColor"
@@ -175,11 +225,24 @@ function RouteComponent() {
                   Registering...
                 </>
               ) : (
-                'Register'
+                "Register"
               )}
             </Button>
           </form>
         </Form>
+
+        {/* Already have an account */}
+        <div className="text-center mt-4">
+          <p className="text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link
+              to="/auth/login"
+              className="text-primary hover:underline font-semibold"
+            >
+              Log in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

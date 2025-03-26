@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -48,7 +48,6 @@ function RouteComponent() {
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data) => {
-      
       // Function to extract email from a message
       const extractEmail = (message: any): string | null => {
         if (typeof message !== "string") {
@@ -172,14 +171,14 @@ function RouteComponent() {
               )}
             />
 
-            <div className="flex items-center justify-end">
+            {/* <div className="flex items-center justify-end">
               <a
                 href="/auth/forgot-password"
                 className="text-sm text-primary hover:underline"
               >
                 Forgot password?
               </a>
-            </div>
+            </div> */}
 
             {/* Submit Button */}
             <Button
@@ -217,6 +216,19 @@ function RouteComponent() {
             </Button>
           </form>
         </Form>
+
+        {/* Don't have an account */}
+        <div className="text-center mt-4">
+          <p className="text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <Link
+              to="/auth/register"
+              className="text-primary hover:underline font-semibold"
+            >
+              Sign Up
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
