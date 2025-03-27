@@ -68,7 +68,6 @@ export const Route = createFileRoute("/app/projects/")({
 
 function RouteComponent() {
   const projects = Route.useLoaderData();
-  
 
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -206,9 +205,7 @@ function RouteComponent() {
           <Card
             key={project.id}
             className="flex flex-col justify-between border  shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-            onClick={() =>
-              navigate({ to: `/app/projects/${project.id}` })
-            }
+            onClick={() => navigate({ to: `/app/projects/${project.id}` })}
           >
             <CardHeader>
               <CardTitle className="text-xl font-bold">

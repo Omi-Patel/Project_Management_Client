@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getTaskById, getUserById } from "@/lib/actions";
-import type { TaskResponse } from "@/schemas/task_schema";
+import { type TaskResponse } from "@/schemas/task_schema";
 import {
   Sheet,
   SheetContent,
@@ -9,12 +9,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Badge } from "@/components/ui/badge"; // Import Badge component
 import {
   Table,
@@ -25,6 +20,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { PencilIcon, TrashIcon } from "lucide-react";
 
 interface TaskListProps {
   taskIds: string[];
@@ -146,9 +142,26 @@ function TaskList({ taskIds }: TaskListProps) {
                   : "Unassigned"}
               </TableCell>
               <TableCell>
-                <button className="text-blue-500 hover:underline">
-                  View Details
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-300 p-1 rounded-sm"
+                    title="View Details"
+                  >
+                    <PencilIcon className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-300 p-1 rounded-sm"
+                    title="Delete Task"
+                  >
+                    <TrashIcon className="h-5 w-5" />
+                  </button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -180,7 +193,7 @@ function TaskList({ taskIds }: TaskListProps) {
                 {selectedTask?.priority || "None"}
               </Badge>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500">Created At</p>
               <p className="text-sm font-medium">
