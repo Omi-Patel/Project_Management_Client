@@ -48,7 +48,6 @@ function RouteComponent() {
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data) => {
-      console.log(data);
       
       // Function to extract email from a message
       const extractUserId = (message: any): string | null => {

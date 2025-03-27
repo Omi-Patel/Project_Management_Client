@@ -180,11 +180,7 @@ function TaskList({ taskIds }: TaskListProps) {
                 {selectedTask?.priority || "None"}
               </Badge>
             </div>
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">Created By</p>
-              <p className="text-sm font-medium">John Doe</p>{" "}
-              {/* Replace with actual creator */}
-            </div>
+            
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500">Created At</p>
               <p className="text-sm font-medium">

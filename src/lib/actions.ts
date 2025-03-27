@@ -337,10 +337,10 @@ export async function deleteTask(id: string): Promise<void> {
  */
 export async function getTasksByUserId(
   userId: string
-): Promise<TaskResponse[]> {
+): Promise<string[]> {
   try {
-    const response = await axios.get<TaskResponse[]>(
-      `${API_BASE_URL}/tasks/user/${userId}`
+    const response = await axios.get<string[]>(
+      `${API_BASE_URL}/tasks/${userId}`
     );
     return response.data;
   } catch (error) {

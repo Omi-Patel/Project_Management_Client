@@ -50,7 +50,7 @@ const data = {
       iconColor: "text-amber-500",
     },
     {
-      title: "Tasks",
+      title: "My Tasks",
       url: "/app/tasks",
       icon: Archive,
       iconColor: "text-emerald-500",
