@@ -6,7 +6,7 @@ export const Route = createFileRoute("/")({
 
 function App() {
   const isLoggedIn = () => {
-    if (localStorage.getItem("email")) {
+    if (localStorage.getItem("userId")) {
       return true;
     }
     return false;

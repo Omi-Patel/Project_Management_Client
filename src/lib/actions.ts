@@ -1,8 +1,13 @@
-import axios from 'axios';
-import type { LoginInput, UserInput, UserResponse } from '@/schemas/user-schema';
+import axios from "axios";
+import type {
+  LoginInput,
+  UserInput,
+  UserResponse,
+} from "@/schemas/user-schema";
+import type { ProjectSchema } from "@/schemas/project-schema";
 
 export function getBackendUrl() {
-  const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
   return backendUrl;
 }
 
@@ -16,14 +21,18 @@ const API_BASE_URL = `${getBackendUrl()}/api/v1`;
  */
 export async function createUser(userInput: UserInput): Promise<UserResponse> {
   try {
-    const response = await axios.post<UserResponse>(`${API_BASE_URL}/users/create`, userInput, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.post<UserResponse>(
+      `${API_BASE_URL}/users/create`,
+      userInput,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
-    throw new Error('Failed to create user');
+    throw new Error("Failed to create user");
   }
 }
 
@@ -32,16 +41,22 @@ export async function createUser(userInput: UserInput): Promise<UserResponse> {
  * @param loginInput - The login input data.
  * @returns The login response containing tokens or user info.
  */
-export async function loginUser(loginInput: LoginInput): Promise<{ token: string }> {
+export async function loginUser(
+  loginInput: LoginInput
+): Promise<{ token: string }> {
   try {
-    const response = await axios.post<{ token: string }>(`${API_BASE_URL}/users/login`, loginInput, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.post<{ token: string }>(
+      `${API_BASE_URL}/users/login`,
+      loginInput,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
-    throw new Error('Failed to login user');
+    throw new Error("Failed to login user");
   }
 }
 
@@ -51,10 +66,12 @@ export async function loginUser(loginInput: LoginInput): Promise<{ token: string
  */
 export async function getAllUsers(): Promise<UserResponse[]> {
   try {
-    const response = await axios.get<UserResponse[]>(`${API_BASE_URL}/users/list`);
+    const response = await axios.get<UserResponse[]>(
+      `${API_BASE_URL}/users/list`
+    );
     return response.data;
   } catch (error) {
-    throw new Error('Failed to fetch users');
+    throw new Error("Failed to fetch users");
   }
 }
 
@@ -65,13 +82,15 @@ export async function getAllUsers(): Promise<UserResponse[]> {
  */
 export async function getUserById(id: string): Promise<UserResponse | null> {
   try {
-    const response = await axios.get<UserResponse>(`${API_BASE_URL}/users/get/${id}`);
+    const response = await axios.get<UserResponse>(
+      `${API_BASE_URL}/users/get/${id}`
+    );
     return response.data;
   } catch (error: any) {
     if (error.response?.status === 404) {
       return null;
     }
-    throw new Error('Failed to fetch user');
+    throw new Error("Failed to fetch user");
   }
 }
 
@@ -80,19 +99,25 @@ export async function getUserById(id: string): Promise<UserResponse | null> {
  * @param user - The user data to update.
  * @returns The updated user response.
  */
-export async function updateUser(user: UserResponse): Promise<UserResponse | null> {
+export async function updateUser(
+  user: UserResponse
+): Promise<UserResponse | null> {
   try {
-    const response = await axios.post<UserResponse>(`${API_BASE_URL}/users/update`, user, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await axios.post<UserResponse>(
+      `${API_BASE_URL}/users/update`,
+      user,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error: any) {
     if (error.response?.status === 404) {
       return null;
     }
-    throw new Error('Failed to update user');
+    throw new Error("Failed to update user");
   }
 }
 
@@ -104,6 +129,105 @@ export async function deleteUser(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/users/delete/${id}`);
   } catch (error) {
-    throw new Error('Failed to delete user');
+    throw new Error("Failed to delete user");
+  }
+}
+
+/**
+ * Create a new project.
+ * @param projectInput - The project input data.
+ * @returns The created project response.
+ */
+export async function createProject(
+  projectInput: ProjectSchema
+): Promise<ProjectSchema> {
+  try {
+    const response = await axios.post<ProjectSchema>(
+      `${API_BASE_URL}/projects/create`,
+      projectInput,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to create project");
+  }
+}
+
+/**
+ * Get all projects.
+ * @returns A list of project responses.
+ */
+export async function getAllProjects(): Promise<ProjectSchema[]> {
+  try {
+    const response = await axios.get<ProjectSchema[]>(
+      `${API_BASE_URL}/projects/list`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch projects");
+  }
+}
+
+/**
+ * Get a project by ID.
+ * @param id - The ID of the project.
+ * @returns The project response.
+ */
+export async function getProjectById(
+  id: string
+): Promise<ProjectSchema | null> {
+  try {
+    const response = await axios.get<ProjectSchema>(
+      `${API_BASE_URL}/projects/get/${id}`
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return null;
+    }
+    throw new Error("Failed to fetch project");
+  }
+}
+
+/**
+ * Update an existing project.
+ * @param project - The project data to update.
+ * @returns The updated project response.
+ */
+export async function updateProject(
+  project: ProjectSchema
+): Promise<ProjectSchema | null> {
+  try {
+    const response = await axios.post<ProjectSchema>(
+      `${API_BASE_URL}/projects/update`,
+      project,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return null;
+    }
+    throw new Error("Failed to update project");
+  }
+}
+
+/**
+ * Delete a project by ID.
+ * @param id - The ID of the project to delete.
+ */
+export async function deleteProject(id: string): Promise<void> {
+  try {
+    await axios.delete(`${API_BASE_URL}/projects/delete/${id}`);
+  } catch (error) {
+    throw new Error("Failed to delete project");
   }
 }

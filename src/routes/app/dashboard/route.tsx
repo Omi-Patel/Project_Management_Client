@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"; // Assuming you have a ShadCN Sidebar component
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +13,15 @@ import {
 
 export const Route = createFileRoute("/app/dashboard")({
   component: RouteComponent,
+
+  loader: async () => {
+      const userId = localStorage.getItem("userId");
+  
+      if (!userId) {
+        // If email exists in localStorage, redirect to dashboard
+        return redirect({ to: "/auth/login" });
+      }
+    },
 });
 
 function RouteComponent() {

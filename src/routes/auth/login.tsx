@@ -23,9 +23,9 @@ import { Input } from "@/components/ui/input";
 export const Route = createFileRoute("/auth/login")({
   component: RouteComponent,
   loader: async () => {
-    const email = localStorage.getItem("email");
+    const userId = localStorage.getItem("userId");
 
-    if (email) {
+    if (userId) {
       // If email exists in localStorage, redirect to dashboard
       return redirect({ to: "/" });
     }
@@ -48,23 +48,25 @@ function RouteComponent() {
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data) => {
+      console.log(data);
+      
       // Function to extract email from a message
-      const extractEmail = (message: any): string | null => {
+      const extractUserId = (message: any): string | null => {
         if (typeof message !== "string") {
           console.error("Invalid data type:", message);
           return null;
         }
-        const regex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+        const regex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
         const match = message.match(regex);
         return match ? match[0] : null;
       };
 
       // Extract email from the response message
-      const email = extractEmail(data);
+      const userId = extractUserId(data);
 
-      if (email) {
+      if (userId) {
         // Store the extracted email in localStorage
-        localStorage.setItem("email", email);
+        localStorage.setItem("userId", userId);
       }
 
       // Show success toast

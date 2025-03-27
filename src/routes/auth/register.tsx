@@ -23,9 +23,9 @@ import { Input } from "@/components/ui/input";
 export const Route = createFileRoute("/auth/register")({
   component: RouteComponent,
   loader: async () => {
-    const email = localStorage.getItem("email");
+    const userId = localStorage.getItem("userId");
 
-    if (email) {
+    if (userId) {
       // If email exists in localStorage, redirect to dashboard
       return redirect({ to: "/" });
     }
