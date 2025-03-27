@@ -11,7 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-export const Route = createFileRoute("/app/dashboard")({
+export const Route = createFileRoute("/app/dashboard/")({
   component: RouteComponent,
 
   loader: async () => {

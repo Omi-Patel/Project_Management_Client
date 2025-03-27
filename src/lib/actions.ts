@@ -5,6 +5,7 @@ import type {
   UserResponse,
 } from "@/schemas/user-schema";
 import type { ProjectSchema } from "@/schemas/project-schema";
+import type { TaskRequest, TaskResponse } from "@/schemas/task_schema";
 
 export function getBackendUrl() {
   const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -178,11 +179,11 @@ export async function getAllProjects(): Promise<ProjectSchema[]> {
  * @returns The project response.
  */
 export async function getProjectById(
-  id: string
+  projectId: string
 ): Promise<ProjectSchema | null> {
   try {
     const response = await axios.get<ProjectSchema>(
-      `${API_BASE_URL}/projects/get/${id}`
+      `${API_BASE_URL}/projects/get/${projectId}`
     );
     return response.data;
   } catch (error: any) {
@@ -229,5 +230,144 @@ export async function deleteProject(id: string): Promise<void> {
     await axios.delete(`${API_BASE_URL}/projects/delete/${id}`);
   } catch (error) {
     throw new Error("Failed to delete project");
+  }
+}
+
+/**
+ * Create a new task.
+ * @param taskInput - The task input data.
+ * @returns The created task response.
+ */
+export async function createTask(
+  taskInput: TaskRequest
+): Promise<TaskResponse> {
+  try {
+    const response = await axios.post<TaskResponse>(
+      `${API_BASE_URL}/tasks/create`,
+      taskInput,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to create task");
+  }
+}
+
+/**
+ * Get all tasks.
+ * @returns A list of task responses.
+ */
+export async function getAllTasks(): Promise<TaskResponse[]> {
+  try {
+    const response = await axios.get<TaskResponse[]>(
+      `${API_BASE_URL}/tasks/list`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch tasks");
+  }
+}
+
+/**
+ * Get a task by ID.
+ * @param id - The ID of the task.
+ * @returns The task response.
+ */
+export async function getTaskById(id: string): Promise<TaskResponse | null> {
+  try {
+    const response = await axios.get<TaskResponse>(
+      `${API_BASE_URL}/tasks/get/${id}`
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return null;
+    }
+    throw new Error("Failed to fetch task");
+  }
+}
+
+/**
+ * Update an existing task.
+ * @param task - The task data to update.
+ * @returns The updated task response.
+ */
+export async function updateTask(
+  task: TaskResponse
+): Promise<TaskResponse | null> {
+  try {
+    const response = await axios.post<TaskResponse>(
+      `${API_BASE_URL}/tasks/update`,
+      task,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return null;
+    }
+    throw new Error("Failed to update task");
+  }
+}
+
+/**
+ * Delete a task by ID.
+ * @param id - The ID of the task to delete.
+ */
+export async function deleteTask(id: string): Promise<void> {
+  try {
+    await axios.delete(`${API_BASE_URL}/tasks/delete/${id}`);
+  } catch (error) {
+    throw new Error("Failed to delete task");
+  }
+}
+
+/**
+ * Get tasks assigned to a specific user.
+ * @param userId - The ID of the user.
+ * @returns A list of task responses assigned to the user.
+ */
+export async function getTasksByUserId(
+  userId: string
+): Promise<TaskResponse[]> {
+  try {
+    const response = await axios.get<TaskResponse[]>(
+      `${API_BASE_URL}/tasks/user/${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch tasks for user");
+  }
+}
+
+/**
+ * Assign users to a task.
+ * @param taskId - The ID of the task.
+ * @param userIds - The list of user IDs to assign to the task.
+ */
+export async function assignUsersToTask(
+  taskId: string,
+  userIds: string[]
+): Promise<void> {
+  try {
+    await axios.post(
+      `${API_BASE_URL}/tasks/assign`,
+      { taskId, userIds },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    throw new Error("Failed to assign users to task");
   }
 }

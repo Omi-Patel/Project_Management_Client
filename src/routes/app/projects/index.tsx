@@ -68,6 +68,7 @@ export const Route = createFileRoute("/app/projects/")({
 
 function RouteComponent() {
   const projects = Route.useLoaderData();
+  
 
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -201,24 +202,54 @@ function RouteComponent() {
       </header>
       <Separator className="mb-4" />
       <div className="p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {projects.map((project, index) => (
-          <Card key={project.id} className="flex flex-col justify-between">
+        {projects.map((project) => (
+          <Card
+            key={project.id}
+            className="flex flex-col justify-between border  shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+            onClick={() =>
+              navigate({ to: `/app/projects/${project.id}` })
+            }
+          >
             <CardHeader>
-              <CardTitle className="text-xl font-bold">{project.name}</CardTitle>
+              <CardTitle className="text-xl font-bold">
+                {project.name}
+              </CardTitle>
               <CardDescription className="text-[16px] py-2 my-2">
                 {project.description || "No description available"}
               </CardDescription>
+              {/* <div className="text-sm text-gray-600 mt-2">
+                <p>
+                  <strong>Start Date:</strong>{" "}
+                  {project.startDate
+                    ? new Date(project.startDate).toLocaleDateString()
+                    : "N/A"}
+                </p>
+                <p>
+                  <strong>End Date:</strong>{" "}
+                  {project.endDate
+                    ? new Date(project.endDate).toLocaleDateString()
+                    : "N/A"}
+                </p>
+              </div> */}
             </CardHeader>
-            <div className="flex-grow"></div>{" "}
-            {/* Pushes the footer to the bottom */}
+            <div className="flex-grow"></div>
             <CardFooter className="flex justify-end gap-2">
-              <Button size="sm" onClick={() => handleEditClick(project)}>
+              <Button
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent card click from triggering
+                  handleEditClick(project);
+                }}
+              >
                 <PencilIcon className="size-4" /> Edit
               </Button>
               <Button
                 size="sm"
                 variant="destructive"
-                onClick={() => handleDeleteClick(project)}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent card click from triggering
+                  handleDeleteClick(project);
+                }}
               >
                 <Trash2Icon className="size-4" /> Delete
               </Button>

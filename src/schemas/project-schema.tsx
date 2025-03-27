@@ -5,6 +5,7 @@ import * as z from 'zod';
 export const ProjectSchema = z.object({
   id: z.string().optional().nullable(), // ID is required
   name: z.string().min(1, "Project name is required"), // Name is required with a validation message
+  taskIds: z.array(z.string()).optional(), // List of task IDs is optional
   description: z.string().nullable(), // Description can be null
   startDate: z.number().nullable(), // Start date can be null
   endDate: z.number().nullable(), // End date can be null

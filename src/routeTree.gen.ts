@@ -16,9 +16,10 @@ import { Route as AppRouteImport } from './routes/app/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthRegisterImport } from './routes/auth/register'
 import { Route as AuthLoginImport } from './routes/auth/login'
-import { Route as AppDashboardRouteImport } from './routes/app/dashboard/route'
 import { Route as AppTasksIndexImport } from './routes/app/tasks/index'
 import { Route as AppProjectsIndexImport } from './routes/app/projects/index'
+import { Route as AppDashboardIndexImport } from './routes/app/dashboard/index'
+import { Route as AppProjectsProjectIdImport } from './routes/app/projects/$projectId'
 
 // Create/Update Routes
 
@@ -52,12 +53,6 @@ const AuthLoginRoute = AuthLoginImport.update({
   getParentRoute: () => AuthRouteRoute,
 } as any)
 
-const AppDashboardRouteRoute = AppDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-
 const AppTasksIndexRoute = AppTasksIndexImport.update({
   id: '/tasks/',
   path: '/tasks/',
@@ -67,6 +62,18 @@ const AppTasksIndexRoute = AppTasksIndexImport.update({
 const AppProjectsIndexRoute = AppProjectsIndexImport.update({
   id: '/projects/',
   path: '/projects/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppDashboardIndexRoute = AppDashboardIndexImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppProjectsProjectIdRoute = AppProjectsProjectIdImport.update({
+  id: '/projects/$projectId',
+  path: '/projects/$projectId',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
@@ -95,13 +102,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRoute
     }
-    '/app/dashboard': {
-      id: '/app/dashboard'
-      path: '/dashboard'
-      fullPath: '/app/dashboard'
-      preLoaderRoute: typeof AppDashboardRouteImport
-      parentRoute: typeof AppRouteImport
-    }
     '/auth/login': {
       id: '/auth/login'
       path: '/login'
@@ -115,6 +115,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/register'
       preLoaderRoute: typeof AuthRegisterImport
       parentRoute: typeof AuthRouteImport
+    }
+    '/app/projects/$projectId': {
+      id: '/app/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/app/projects/$projectId'
+      preLoaderRoute: typeof AppProjectsProjectIdImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/app/dashboard/': {
+      id: '/app/dashboard/'
+      path: '/dashboard'
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardIndexImport
+      parentRoute: typeof AppRouteImport
     }
     '/app/projects/': {
       id: '/app/projects/'
@@ -136,13 +150,15 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AppRouteRouteChildren {
-  AppDashboardRouteRoute: typeof AppDashboardRouteRoute
+  AppProjectsProjectIdRoute: typeof AppProjectsProjectIdRoute
+  AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppProjectsIndexRoute: typeof AppProjectsIndexRoute
   AppTasksIndexRoute: typeof AppTasksIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
-  AppDashboardRouteRoute: AppDashboardRouteRoute,
+  AppProjectsProjectIdRoute: AppProjectsProjectIdRoute,
+  AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppProjectsIndexRoute: AppProjectsIndexRoute,
   AppTasksIndexRoute: AppTasksIndexRoute,
 }
@@ -169,9 +185,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/app/dashboard': typeof AppDashboardRouteRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/app/projects/$projectId': typeof AppProjectsProjectIdRoute
+  '/app/dashboard': typeof AppDashboardIndexRoute
   '/app/projects': typeof AppProjectsIndexRoute
   '/app/tasks': typeof AppTasksIndexRoute
 }
@@ -180,9 +197,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/app/dashboard': typeof AppDashboardRouteRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/app/projects/$projectId': typeof AppProjectsProjectIdRoute
+  '/app/dashboard': typeof AppDashboardIndexRoute
   '/app/projects': typeof AppProjectsIndexRoute
   '/app/tasks': typeof AppTasksIndexRoute
 }
@@ -192,9 +210,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/app/dashboard': typeof AppDashboardRouteRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/app/projects/$projectId': typeof AppProjectsProjectIdRoute
+  '/app/dashboard/': typeof AppDashboardIndexRoute
   '/app/projects/': typeof AppProjectsIndexRoute
   '/app/tasks/': typeof AppTasksIndexRoute
 }
@@ -205,9 +224,10 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
-    | '/app/dashboard'
     | '/auth/login'
     | '/auth/register'
+    | '/app/projects/$projectId'
+    | '/app/dashboard'
     | '/app/projects'
     | '/app/tasks'
   fileRoutesByTo: FileRoutesByTo
@@ -215,9 +235,10 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
-    | '/app/dashboard'
     | '/auth/login'
     | '/auth/register'
+    | '/app/projects/$projectId'
+    | '/app/dashboard'
     | '/app/projects'
     | '/app/tasks'
   id:
@@ -225,9 +246,10 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
-    | '/app/dashboard'
     | '/auth/login'
     | '/auth/register'
+    | '/app/projects/$projectId'
+    | '/app/dashboard/'
     | '/app/projects/'
     | '/app/tasks/'
   fileRoutesById: FileRoutesById
@@ -266,7 +288,8 @@ export const routeTree = rootRoute
     "/app": {
       "filePath": "app/route.tsx",
       "children": [
-        "/app/dashboard",
+        "/app/projects/$projectId",
+        "/app/dashboard/",
         "/app/projects/",
         "/app/tasks/"
       ]
@@ -278,10 +301,6 @@ export const routeTree = rootRoute
         "/auth/register"
       ]
     },
-    "/app/dashboard": {
-      "filePath": "app/dashboard/route.tsx",
-      "parent": "/app"
-    },
     "/auth/login": {
       "filePath": "auth/login.tsx",
       "parent": "/auth"
@@ -289,6 +308,14 @@ export const routeTree = rootRoute
     "/auth/register": {
       "filePath": "auth/register.tsx",
       "parent": "/auth"
+    },
+    "/app/projects/$projectId": {
+      "filePath": "app/projects/$projectId.tsx",
+      "parent": "/app"
+    },
+    "/app/dashboard/": {
+      "filePath": "app/dashboard/index.tsx",
+      "parent": "/app"
     },
     "/app/projects/": {
       "filePath": "app/projects/index.tsx",

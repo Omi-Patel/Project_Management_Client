@@ -4,10 +4,8 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
   Moon,
-  Sparkles,
   Sun,
 } from "lucide-react";
 
@@ -29,10 +27,12 @@ import {
 } from "@/components/ui/sidebar";
 import type { UserResponse } from "@/schemas/user-schema";
 import { useTheme } from "./theme-provider";
+import { useNavigate } from "@tanstack/react-router";
 
 export function NavUser({ user }: { user: UserResponse }) {
   const { isMobile } = useSidebar();
   const { setTheme, theme } = useTheme();
+  const navigate = useNavigate();
 
   return (
     <SidebarMenu>
@@ -115,7 +115,12 @@ export function NavUser({ user }: { user: UserResponse }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                localStorage.removeItem("userId");
+                navigate({ to: "/" });
+              }}
+            >
               <LogOut />
               Log out
             </DropdownMenuItem>

@@ -3,19 +3,10 @@
 import * as React from "react";
 import {
   Archive,
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
   Folder,
-  Frame,
   GalleryVerticalEnd,
   Home,
   Layers,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
 } from "lucide-react";
 
 import {
@@ -27,7 +18,6 @@ import {
 } from "@/components/ui/sidebar";
 import { TeamSwitcher } from "./TeamSwitcher";
 import { NavMain } from "./NavMain";
-import { NavProjects } from "./NavProjects";
 import { NavUser } from "./NavUser";
 import type { UserResponse } from "@/schemas/user-schema";
 
