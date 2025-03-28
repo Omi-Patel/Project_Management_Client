@@ -15,11 +15,6 @@ export function getBackendUrl() {
 // Base API URL
 const API_BASE_URL = `${getBackendUrl()}/api/v1`;
 
-/**
- * Create a new user.
- * @param userInput - The user input data.
- * @returns The created user response.
- */
 export async function createUser(userInput: UserInput): Promise<UserResponse> {
   try {
     const response = await axios.post<UserResponse>(
@@ -37,11 +32,6 @@ export async function createUser(userInput: UserInput): Promise<UserResponse> {
   }
 }
 
-/**
- * Login a user.
- * @param loginInput - The login input data.
- * @returns The login response containing tokens or user info.
- */
 export async function loginUser(
   loginInput: LoginInput
 ): Promise<{ token: string }> {
@@ -61,10 +51,6 @@ export async function loginUser(
   }
 }
 
-/**
- * Get a list of all users.
- * @returns A list of user responses.
- */
 export async function getAllUsers(): Promise<UserResponse[]> {
   try {
     const response = await axios.get<UserResponse[]>(
@@ -76,11 +62,6 @@ export async function getAllUsers(): Promise<UserResponse[]> {
   }
 }
 
-/**
- * Get a user by ID.
- * @param id - The ID of the user.
- * @returns The user response.
- */
 export async function getUserById(id: string): Promise<UserResponse | null> {
   try {
     const response = await axios.get<UserResponse>(
@@ -95,11 +76,6 @@ export async function getUserById(id: string): Promise<UserResponse | null> {
   }
 }
 
-/**
- * Update an existing user.
- * @param user - The user data to update.
- * @returns The updated user response.
- */
 export async function updateUser(
   user: UserResponse
 ): Promise<UserResponse | null> {
@@ -122,10 +98,6 @@ export async function updateUser(
   }
 }
 
-/**
- * Delete a user by ID.
- * @param id - The ID of the user to delete.
- */
 export async function deleteUser(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/users/delete/${id}`);
@@ -134,11 +106,6 @@ export async function deleteUser(id: string): Promise<void> {
   }
 }
 
-/**
- * Create a new project.
- * @param projectInput - The project input data.
- * @returns The created project response.
- */
 export async function createProject(
   projectInput: ProjectSchema
 ): Promise<ProjectSchema> {
@@ -158,14 +125,10 @@ export async function createProject(
   }
 }
 
-/**
- * Get all projects.
- * @returns A list of project responses.
- */
-export async function getAllProjects(): Promise<ProjectSchema[]> {
+export async function getAllProjects(userId: string): Promise<ProjectSchema[]> {
   try {
     const response = await axios.get<ProjectSchema[]>(
-      `${API_BASE_URL}/projects/list`
+      `${API_BASE_URL}/projects/list/${userId}`
     );
     return response.data;
   } catch (error) {
@@ -173,11 +136,6 @@ export async function getAllProjects(): Promise<ProjectSchema[]> {
   }
 }
 
-/**
- * Get a project by ID.
- * @param id - The ID of the project.
- * @returns The project response.
- */
 export async function getProjectById(
   projectId: string
 ): Promise<ProjectSchema | null> {
@@ -194,11 +152,6 @@ export async function getProjectById(
   }
 }
 
-/**
- * Update an existing project.
- * @param project - The project data to update.
- * @returns The updated project response.
- */
 export async function updateProject(
   project: ProjectSchema
 ): Promise<ProjectSchema | null> {
@@ -221,10 +174,6 @@ export async function updateProject(
   }
 }
 
-/**
- * Delete a project by ID.
- * @param id - The ID of the project to delete.
- */
 export async function deleteProject(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/projects/delete/${id}`);
@@ -233,11 +182,6 @@ export async function deleteProject(id: string): Promise<void> {
   }
 }
 
-/**
- * Create a new task.
- * @param taskInput - The task input data.
- * @returns The created task response.
- */
 export async function createTask(
   taskInput: TaskRequest
 ): Promise<TaskResponse> {
@@ -257,10 +201,6 @@ export async function createTask(
   }
 }
 
-/**
- * Get all tasks.
- * @returns A list of task responses.
- */
 export async function getAllTasks(): Promise<TaskResponse[]> {
   try {
     const response = await axios.get<TaskResponse[]>(
@@ -272,11 +212,6 @@ export async function getAllTasks(): Promise<TaskResponse[]> {
   }
 }
 
-/**
- * Get a task by ID.
- * @param id - The ID of the task.
- * @returns The task response.
- */
 export async function getTaskById(id: string): Promise<TaskResponse | null> {
   try {
     const response = await axios.get<TaskResponse>(
@@ -291,13 +226,8 @@ export async function getTaskById(id: string): Promise<TaskResponse | null> {
   }
 }
 
-/**
- * Update an existing task.
- * @param task - The task data to update.
- * @returns The updated task response.
- */
 export async function updateTask(
-  task: TaskResponse
+  task: TaskRequest
 ): Promise<TaskResponse | null> {
   try {
     const response = await axios.post<TaskResponse>(
@@ -318,10 +248,6 @@ export async function updateTask(
   }
 }
 
-/**
- * Delete a task by ID.
- * @param id - The ID of the task to delete.
- */
 export async function deleteTask(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/tasks/delete/${id}`);
@@ -330,14 +256,7 @@ export async function deleteTask(id: string): Promise<void> {
   }
 }
 
-/**
- * Get tasks assigned to a specific user.
- * @param userId - The ID of the user.
- * @returns A list of task responses assigned to the user.
- */
-export async function getTasksByUserId(
-  userId: string
-): Promise<string[]> {
+export async function getTasksByUserId(userId: string): Promise<string[]> {
   try {
     const response = await axios.get<string[]>(
       `${API_BASE_URL}/tasks/${userId}`
@@ -348,11 +267,6 @@ export async function getTasksByUserId(
   }
 }
 
-/**
- * Assign users to a task.
- * @param taskId - The ID of the task.
- * @param userIds - The list of user IDs to assign to the task.
- */
 export async function assignUsersToTask(
   taskId: string,
   userIds: string[]

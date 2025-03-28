@@ -15,9 +15,7 @@ function RouteComponent() {
   // Mutation to fetch user by ID
   const fetchUserMutation = useMutation({
     mutationFn: (id: string) => getUserById(id),
-    onSuccess: (data) => {
-      localStorage.setItem("userName", data?.name || "")
-    },
+
     onError: (error) => {
       console.error("Failed to fetch user:", error);
     },

@@ -60,6 +60,16 @@ export function NavUser({ user }: { user: UserResponse }) {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
+                <span
+                  className={`truncate text-xs ${
+                    user.status?.toLowerCase() === "active"
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                >
+                  {(user.status?.charAt(0).toUpperCase() ?? "") +
+                    user.status?.slice(1).toLowerCase()}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>

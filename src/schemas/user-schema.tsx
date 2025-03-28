@@ -1,12 +1,22 @@
-import * as z from 'zod';
+import * as z from "zod";
 
 // Schema for UserInput
 export const UserInputSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
-  phoneNumber: z.string().optional(),
-  status: z.enum(["ACTIVE", "INACTIVE", "PENDING"]).optional().default("ACTIVE"),
+  phoneNumber: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      (value) => !value || /^\d{10}$/.test(value),
+      "Phone Number must be exactly 10 digits!"
+    ),
+  status: z
+    .enum(["ACTIVE", "INACTIVE", "PENDING"])
+    .optional()
+    .default("ACTIVE"),
 });
 
 // Schema for UserResponse
@@ -22,9 +32,9 @@ export const UserResponseSchema = z.object({
 
 // Schema for LoginInput
 export const LoginInputSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
-  });
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+});
 
 // TypeScript types inferred from schemas
 export type UserInput = z.infer<typeof UserInputSchema>;

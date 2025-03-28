@@ -1,4 +1,4 @@
-import TaskList from "@/components/TaskList";
+import TaskList from "@/components/Project_Task/task-list";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -94,6 +94,7 @@ function RouteComponent() {
           taskIds={tasks
             .filter((task) => task !== null)
             .map((task) => task!.id)}
+          projectId={""}
         />{" "}
         {/* Pass taskIds to TaskList */}
       </div>

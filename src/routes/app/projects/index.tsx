@@ -58,7 +58,11 @@ import { Textarea } from "@/components/ui/textarea";
 export const Route = createFileRoute("/app/projects/")({
   component: RouteComponent,
   loader: async () => {
-    const projects = await getAllProjects();
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      throw new Error("User ID is not available in localStorage");
+    }
+    const projects = await getAllProjects(userId);
     return projects as ProjectSchema[];
   },
   pendingComponent: () => {
@@ -81,12 +85,15 @@ function RouteComponent() {
   const navigate = useNavigate();
   const router = useRouter();
 
+  const userId = localStorage.getItem("userId");
+
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectSchema),
     defaultValues: {
       id: selectedProject?.id,
       name: selectedProject?.name || "",
       description: selectedProject?.description || "",
+      userId: selectedProject?.userId || userId || "",
       startDate: selectedProject?.startDate || null,
       endDate: selectedProject?.endDate || null,
     },
@@ -138,10 +145,20 @@ function RouteComponent() {
   });
 
   const onSubmit = (data: ProjectSchema) => {
+    if (!userId) {
+      toast.error("User ID is missing. Please log in again.");
+      return;
+    }
+
+    const projectData = {
+      ...data,
+      userId, // Ensure userId is included
+    };
+
     if (data.id) {
-      updateMutation.mutate(data);
+      updateMutation.mutate(projectData);
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(projectData);
     }
   };
 
@@ -151,6 +168,7 @@ function RouteComponent() {
       id: null,
       name: "",
       description: "",
+      userId: userId ?? undefined,
       startDate: null,
       endDate: null,
     });
