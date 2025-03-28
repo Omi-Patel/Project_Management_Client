@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { SidebarInset } from "@/components/ui/sidebar";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { Separator } from "@/components/ui/separator";
 import { getProjectById, createTask, getAllUsers } from "@/lib/actions"; // Import necessary actions
 import { ProjectSchema } from "@/schemas/project-schema";
@@ -57,6 +57,8 @@ export const Route = createFileRoute("/app/projects/$projectId")({
 
 function RouteComponent() {
   const project = Route.useLoaderData();
+  const { projectId } = useParams({ from: "/app/projects/$projectId" });
+  
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -296,7 +298,7 @@ function RouteComponent() {
             </DialogContent>
           </Dialog>
         </div>
-        <TaskList taskIds={tasks} /> {/* Pass updated taskIds to TaskList */}
+        <TaskList taskIds={tasks} projectId={projectId} /> {/* Pass updated taskIds to TaskList */}
       </div>
     </SidebarInset>
   );

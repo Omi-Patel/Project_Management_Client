@@ -8,8 +8,8 @@ export const TaskSchema = z.object({
   description: z.string().nullable().optional(), // Description is optional and can be null
   status: z.enum(["TO_DO", "IN_PROGRESS", "DONE"]).default("TO_DO"), // Status with default value
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"), // Priority with default value
-  createdAt: z.number(), // Created timestamp is required
-  updatedAt: z.number(), // Updated timestamp is required
+  createdAt: z.number().nullable().optional(), // Created timestamp is required
+  updatedAt: z.number().nullable().optional(), // Updated timestamp is required
 });
 
 // Schema for a Task Request (used for creating/updating tasks)
@@ -31,8 +31,8 @@ export const TaskResponseSchema = z.object({
   assigneeIds: z.array(z.string()), // List of assignee IDs is required
   status: z.enum(["TO_DO", "IN_PROGRESS", "DONE"]), // Status is required
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]), // Priority is required
-  createdAt: z.number(), // Created timestamp is required
-  updatedAt: z.number(), // Updated timestamp is required
+  createdAt: z.number().nullable().optional(), // Created timestamp is required
+  updatedAt: z.number().nullable().optional(), // Updated timestamp is required
 });
 
 // Schema for User Task Request (assigning a task to a user)
