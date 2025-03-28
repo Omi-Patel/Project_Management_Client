@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"; // Assuming you have a ShadCN Sidebar component
 import { Separator } from "@/components/ui/separator";

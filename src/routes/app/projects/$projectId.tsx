@@ -21,14 +21,9 @@ import { getProjectById } from "@/lib/actions";
 import type { ProjectSchema } from "@/schemas/project-schema";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import TaskList from "@/components/Project_Task/task-list";
 import { TaskFormDialog } from "@/components/Project_Task/task-form-dialog";
-import { useQueryClient } from "@tanstack/react-query";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart2, Table } from "lucide-react";
-import TaskBoard from "@/components/TaskBoard";
-import type { TaskResponse } from "@/schemas/task_schema";
 
 export const Route = createFileRoute("/app/projects/$projectId")({
   component: RouteComponent,
