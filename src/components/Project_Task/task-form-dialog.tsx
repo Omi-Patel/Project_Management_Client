@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,21 +8,39 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createTask, updateTask, getAllUsers } from "@/lib/actions"
-import { toast } from "sonner"
-import type { TaskResponse } from "@/schemas/task_schema"
-import { useEffect, useState } from "react"
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createTask, updateTask, getAllUsers } from "@/lib/actions";
+import { toast } from "sonner";
+import type { TaskResponse } from "@/schemas/task_schema";
+import { useEffect, useState } from "react";
+import { Badge } from "../ui/badge";
 
 // Task schema for form validation
 const TaskFormSchema = z.object({
@@ -33,28 +51,35 @@ const TaskFormSchema = z.object({
   status: z.enum(["TO_DO", "IN_PROGRESS", "DONE"]).default("TO_DO"),
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"),
   assigneeIds: z.array(z.string()).optional().default([]), // Made optional
-})
+});
 
-type TaskFormValues = z.infer<typeof TaskFormSchema>
+type TaskFormValues = z.infer<typeof TaskFormSchema>;
 
 interface User {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface TaskFormDialogProps {
-  isOpen: boolean
-  onOpenChange: (open: boolean) => void
-  task: TaskResponse | null
-  projectId: string
-  mode: "add" | "edit"
-  onSuccess: () => void
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  task: TaskResponse | null;
+  projectId: string;
+  mode: "add" | "edit";
+  onSuccess: () => void;
 }
 
-export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, onSuccess }: TaskFormDialogProps) {
-  const queryClient = useQueryClient()
-  const [users, setUsers] = useState<User[]>([])
-  const [assigneeIds, setAssigneeIds] = useState<string[]>([])
+export function TaskFormDialog({
+  isOpen,
+  onOpenChange,
+  task,
+  projectId,
+  mode,
+  onSuccess,
+}: TaskFormDialogProps) {
+  const queryClient = useQueryClient();
+  const [users, setUsers] = useState<User[]>([]);
+  const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
 
   // Form setup
   const form = useForm<TaskFormValues>({
@@ -68,28 +93,28 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
       priority: "MEDIUM",
       assigneeIds: [],
     },
-  })
+  });
 
   // Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const allUsers = await getAllUsers()
-        setUsers(allUsers)
+        const allUsers = await getAllUsers();
+        setUsers(allUsers);
       } catch (error) {
-        console.error("Failed to fetch users:", error)
-        toast.error("Failed to load users")
+        console.error("Failed to fetch users:", error);
+        toast.error("Failed to load users");
       }
-    }
+    };
 
     if (isOpen) {
-      fetchUsers()
+      fetchUsers();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   // Reset form when task changes or dialog opens
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
 
     if (mode === "edit" && task) {
       form.reset({
@@ -100,8 +125,8 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
         status: task.status,
         priority: task.priority,
         assigneeIds: task.assigneeIds || [],
-      })
-      setAssigneeIds(task.assigneeIds || [])
+      });
+      setAssigneeIds(task.assigneeIds || []);
     } else if (mode === "add") {
       form.reset({
         id: null,
@@ -111,43 +136,43 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
         status: "TO_DO",
         priority: "MEDIUM",
         assigneeIds: [],
-      })
-      setAssigneeIds([])
+      });
+      setAssigneeIds([]);
     }
-  }, [form, task, mode, projectId, isOpen])
+  }, [form, task, mode, projectId, isOpen]);
 
   // Update form when assigneeIds change
   useEffect(() => {
-    form.setValue("assigneeIds", assigneeIds)
-  }, [assigneeIds, form])
+    form.setValue("assigneeIds", assigneeIds);
+  }, [assigneeIds, form]);
 
   // Create task mutation
   const createMutation = useMutation({
     mutationFn: createTask,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["tasks", projectId] })
-      toast.success("Task created successfully")
-      onSuccess()
+      await queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
+      toast.success("Task created successfully");
+      onSuccess();
     },
     onError: (error) => {
-      console.error(error)
-      toast.error("Failed to create task. Please try again.")
+      console.error(error);
+      toast.error("Failed to create task. Please try again.");
     },
-  })
+  });
 
   // Update task mutation
   const updateMutation = useMutation({
     mutationFn: updateTask,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["tasks", projectId] })
-      toast.success("Task updated successfully")
-      onSuccess()
+      await queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
+      toast.success("Task updated successfully");
+      onSuccess();
     },
     onError: (error) => {
-      console.error(error)
-      toast.error("Failed to update task. Please try again.")
+      console.error(error);
+      toast.error("Failed to update task. Please try again.");
     },
-  })
+  });
 
   // Handle form submission
   const onSubmit = (data: TaskFormValues) => {
@@ -155,23 +180,31 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
     const formData = {
       ...data,
       assigneeIds: data.assigneeIds || [],
-    }
+    };
 
     if (formData.id) {
       // Update existing task
-      updateMutation.mutate(formData)
+      updateMutation.mutate(formData);
     } else {
       // Create new task
-      createMutation.mutate(formData)
+      createMutation.mutate(formData);
     }
-  }
+  };
 
-  const isPending = createMutation.isPending || updateMutation.isPending
-  const title = mode === "edit" ? "Edit Task" : "Add New Task"
+  const isPending = createMutation.isPending || updateMutation.isPending;
+  const title = mode === "edit" ? "Edit Task" : "Add New Task";
   const description =
-    mode === "edit" ? "Update the task details below." : "Fill in the details below to create a new task."
+    mode === "edit"
+      ? "Update the task details below."
+      : "Fill in the details below to create a new task.";
   const submitText =
-    mode === "edit" ? (isPending ? "Saving..." : "Save Changes") : isPending ? "Creating..." : "Create Task"
+    mode === "edit"
+      ? isPending
+        ? "Saving..."
+        : "Save Changes"
+      : isPending
+        ? "Creating..."
+        : "Create Task";
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -202,7 +235,11 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Enter task description" {...field} value={field.value || ""} />
+                    <Textarea
+                      placeholder="Enter task description"
+                      {...field}
+                      value={field.value || ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -215,16 +252,26 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="TO_DO">To Do</SelectItem>
-                        <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                        <SelectItem value="DONE">Done</SelectItem>
+                        <SelectItem value="TO_DO">
+                          <Badge className="bg-blue-400">TODO</Badge>
+                        </SelectItem>
+                        <SelectItem value="IN_PROGRESS">
+                          <Badge className="bg-yellow-400">IN PROGRESS</Badge>
+                        </SelectItem>
+                        <SelectItem value="DONE">
+                          <Badge className="bg-green-400">DONE</Badge>
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -237,16 +284,26 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Priority</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select priority" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="LOW">Low</SelectItem>
-                        <SelectItem value="MEDIUM">Medium</SelectItem>
-                        <SelectItem value="HIGH">High</SelectItem>
+                        <SelectItem value="LOW">
+                          <Badge className="bg-green-400">LOW</Badge>
+                        </SelectItem>
+                        <SelectItem value="MEDIUM">
+                          <Badge className="bg-yellow-400">MEDIUM</Badge>
+                        </SelectItem>
+                        <SelectItem value="HIGH">
+                          <Badge className="bg-red-400">HIGH</Badge>
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -262,10 +319,10 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
               render={() => (
                 <FormItem>
                   <FormLabel>Assign Users (Optional)</FormLabel>
-                  <div className="border rounded-md p-2">
+                  <div>
                     <Popover>
                       <PopoverTrigger asChild>
-                        <Button type="button" variant="outline" className="w-full justify-start">
+                        <Button type="button" className=" justify-start">
                           {assigneeIds.length > 0
                             ? `Assigned to ${assigneeIds.length} user(s)`
                             : "Select Users (Optional)"}
@@ -285,17 +342,27 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
                         </div>
                         <div className="max-h-40 overflow-y-auto">
                           {users.length === 0 ? (
-                            <p className="text-sm text-muted-foreground p-2">Loading users...</p>
+                            <p className="text-sm text-muted-foreground p-2">
+                              Loading users...
+                            </p>
                           ) : (
                             users.map((user) => (
-                              <div key={user.id} className="flex items-center gap-2 mb-2">
+                              <div
+                                key={user.id}
+                                className="flex items-center gap-2 mb-2"
+                              >
                                 <Checkbox
                                   checked={assigneeIds.includes(user.id)}
                                   onCheckedChange={(checked) => {
                                     if (checked) {
-                                      setAssigneeIds((prev) => [...prev, user.id])
+                                      setAssigneeIds((prev) => [
+                                        ...prev,
+                                        user.id,
+                                      ]);
                                     } else {
-                                      setAssigneeIds((prev) => prev.filter((id) => id !== user.id))
+                                      setAssigneeIds((prev) =>
+                                        prev.filter((id) => id !== user.id)
+                                      );
                                     }
                                   }}
                                 />
@@ -313,10 +380,18 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
             />
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isPending}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending || !form.getValues().title}>
+              <Button
+                type="submit"
+                disabled={isPending || !form.getValues().title}
+              >
                 {submitText}
               </Button>
             </DialogFooter>
@@ -324,6 +399,5 @@ export function TaskFormDialog({ isOpen, onOpenChange, task, projectId, mode, on
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

@@ -248,6 +248,20 @@ export async function updateTask(
   }
 }
 
+export async function updateTaskStatus(
+  taskId: string,
+  newStatus: string
+): Promise<string> {
+  try {
+    const response = await axios.post<string>(
+      `${API_BASE_URL}/tasks/update-status/${taskId}/${newStatus}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to update task's status");
+  }
+}
+
 export async function deleteTask(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/tasks/delete/${id}`);

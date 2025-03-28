@@ -1,4 +1,5 @@
 import TaskList from "@/components/Project_Task/task-list";
+import TaskBoard from "@/components/TaskBoard";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,9 +10,12 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTaskById, getTasksByUserId } from "@/lib/actions";
+import type { TaskResponse } from "@/schemas/task_schema";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { BarChart2, Table } from "lucide-react";
 
 export const Route = createFileRoute("/app/tasks/")({
   component: RouteComponent,
@@ -87,16 +91,34 @@ function RouteComponent() {
       </header>
       <Separator className="mb-4" />
 
-      {/* Task List */}
+      {/* Tabs for TaskList and TaskBoard */}
       <div className="p-4">
         <h2 className="text-xl font-bold text-primary mb-4">My Tasks</h2>
-        <TaskList
-          taskIds={tasks
-            .filter((task) => task !== null)
-            .map((task) => task!.id)}
-          projectId={""}
-        />{" "}
-        {/* Pass taskIds to TaskList */}
+        <Tabs defaultValue="taskList">
+          <TabsList className="mb-4 ml-auto flex justify-end w-auto">
+            <TabsTrigger value="taskList">
+              <Table />
+            </TabsTrigger>
+            <TabsTrigger value="taskBoard">
+              <BarChart2 />
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="taskList">
+            <TaskList
+              taskIds={tasks
+                .filter((task) => task !== null)
+                .map((task) => task!.id)}
+              projectId={""}
+            />
+          </TabsContent>
+          <TabsContent value="taskBoard">
+            <TaskBoard
+              initialTasks={tasks.filter(
+                (task): task is TaskResponse => task !== null
+              )}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </SidebarInset>
   );

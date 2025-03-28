@@ -14,6 +14,7 @@ import {
   createFileRoute,
   useNavigate,
   useParams,
+  useRouter,
 } from "@tanstack/react-router";
 import { Separator } from "@/components/ui/separator";
 import { getProjectById } from "@/lib/actions";
@@ -24,6 +25,10 @@ import { useState, useEffect } from "react";
 import TaskList from "@/components/Project_Task/task-list";
 import { TaskFormDialog } from "@/components/Project_Task/task-form-dialog";
 import { useQueryClient } from "@tanstack/react-query";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart2, Table } from "lucide-react";
+import TaskBoard from "@/components/TaskBoard";
+import type { TaskResponse } from "@/schemas/task_schema";
 
 export const Route = createFileRoute("/app/projects/$projectId")({
   component: RouteComponent,
@@ -39,32 +44,13 @@ export const Route = createFileRoute("/app/projects/$projectId")({
 
 function RouteComponent() {
   const project = Route.useLoaderData();
-  const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { projectId } = useParams({ from: "/app/projects/$projectId" });
   const navigate = useNavigate();
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [tasks, setTasks] = useState(project.taskIds || []);
-
-  // Re-fetch project data when tasks change
-  useEffect(() => {
-    const fetchProject = async () => {
-      const updatedProject = await getProjectById(projectId);
-      if (updatedProject && updatedProject.taskIds) {
-        setTasks(updatedProject.taskIds);
-      }
-    };
-
-    // Listen for task-related query invalidations
-    const unsubscribe = queryClient.getQueryCache().subscribe(() => {
-      fetchProject();
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [projectId, queryClient]);
 
   const handleTaskAdded = async () => {
     setIsAddDialogOpen(false);
@@ -73,6 +59,8 @@ function RouteComponent() {
     if (updatedProject && updatedProject.taskIds) {
       setTasks(updatedProject.taskIds);
     }
+
+    router.invalidate();
   };
 
   return (
