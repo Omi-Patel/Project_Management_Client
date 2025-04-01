@@ -1,25 +1,38 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { PencilIcon, TrashIcon } from "lucide-react"
-import type { TaskResponse } from "@/schemas/task_schema"
-import { getBadgeColor } from "@/lib/task-utils"
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { PencilIcon, TrashIcon } from "lucide-react";
+import type { TaskResponse } from "@/schemas/task_schema";
+import { getBadgeColor } from "@/lib/task-utils";
 
 interface TaskTableProps {
-  tasks: TaskResponse[]
-  onTaskClick: (task: TaskResponse) => void
-  onEditClick: (e: React.MouseEvent, task: TaskResponse) => void
-  onDeleteClick: (e: React.MouseEvent, task: TaskResponse) => void
+  tasks: TaskResponse[];
+  onTaskClick: (task: TaskResponse) => void;
+  onEditClick: (e: React.MouseEvent, task: TaskResponse) => void;
+  onDeleteClick: (e: React.MouseEvent, task: TaskResponse) => void;
 }
 
-export function TaskTable({ tasks, onTaskClick, onEditClick, onDeleteClick }: TaskTableProps) {
+export function TaskTable({
+  tasks,
+  onTaskClick,
+  onEditClick,
+  onDeleteClick,
+}: TaskTableProps) {
   return (
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>Sr. No.</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Priority</TableHead>
@@ -35,21 +48,32 @@ export function TaskTable({ tasks, onTaskClick, onEditClick, onDeleteClick }: Ta
             </TableCell>
           </TableRow>
         ) : (
-          tasks.map((task) => (
+          tasks.map((task, index) => (
             <TableRow
               key={task.id}
               className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
               onClick={() => onTaskClick(task)}
             >
+              <TableCell>{index + 1}.</TableCell>
               <TableCell>{task.title}</TableCell>
               <TableCell>
-                <Badge className={`${getBadgeColor(task.status)} text-[11px] font-bold text-black`}>{task.status}</Badge>
+                <Badge
+                  className={`${getBadgeColor(task.status)} text-[11px] font-bold text-black`}
+                >
+                  {task.status}
+                </Badge>
               </TableCell>
               <TableCell>
-                <Badge className={`${getBadgeColor(task.priority)} text-[11px] font-bold text-black`}>{task.priority}</Badge>
+                <Badge
+                  className={`${getBadgeColor(task.priority)} text-[11px] font-bold text-black`}
+                >
+                  {task.priority}
+                </Badge>
               </TableCell>
               <TableCell>
-                {task.assigneeIds?.length > 0 ? `${task.assigneeIds.length} user(s)` : "Unassigned"}
+                {task.assigneeIds?.length > 0
+                  ? `${task.assigneeIds.length} user(s)`
+                  : "Unassigned"}
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">
@@ -74,6 +98,5 @@ export function TaskTable({ tasks, onTaskClick, onEditClick, onDeleteClick }: Ta
         )}
       </TableBody>
     </Table>
-  )
+  );
 }
-
