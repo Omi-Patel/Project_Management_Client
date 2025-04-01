@@ -201,10 +201,33 @@ export async function createTask(
   }
 }
 
-export async function getAllTasks(): Promise<TaskResponse[]> {
+export async function getAllTasks(params: {
+  userId: string;
+  page: number;
+  size: number;
+  search?: string | null;
+}): Promise<TaskResponse[]> {
   try {
-    const response = await axios.get<TaskResponse[]>(
-      `${API_BASE_URL}/tasks/list`
+    const response = await axios.post<TaskResponse[]>(
+      `${API_BASE_URL}/tasks/list`,
+      params
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch tasks");
+  }
+}
+
+export async function getAllTasksByProjectId(params: {
+  projectId: string;
+  page: number;
+  size: number;
+  search?: string | null;
+}): Promise<TaskResponse[]> {
+  try {
+    const response = await axios.post<TaskResponse[]>(
+      `${API_BASE_URL}/tasks/project/list`,
+      params
     );
     return response.data;
   } catch (error) {

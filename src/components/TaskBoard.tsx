@@ -5,10 +5,8 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { toast } from "sonner";
 import { updateTaskStatus, getTaskById } from "@/lib/actions"; // Import the update function
 import { Badge } from "./ui/badge";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TaskResponse } from "@/schemas/task_schema";
-
-
 
 interface TaskBoardProps {
   taskIds: string[];
@@ -30,6 +28,8 @@ const TaskBoard = ({ taskIds }: TaskBoardProps) => {
   });
 
   const [localTasks, setLocalTasks] = useState<TaskResponse[]>([]);
+
+  const queryClient = useQueryClient();
 
   // Sync state when tasks are fetched
   useEffect(() => {
@@ -78,6 +78,7 @@ const TaskBoard = ({ taskIds }: TaskBoardProps) => {
     try {
       await updateTaskStatus(updatedTask.id, newStatus);
       toast.success(`Task moved to ${newStatus}`);
+      await queryClient.invalidateQueries({ queryKey: ["tasks"] });
     } catch (error) {
       setLocalTasks((prevTasks) =>
         prevTasks.map((task) =>

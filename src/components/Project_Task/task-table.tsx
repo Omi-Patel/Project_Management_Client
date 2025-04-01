@@ -43,10 +43,10 @@ export function TaskTable({ tasks, onTaskClick, onEditClick, onDeleteClick }: Ta
             >
               <TableCell>{task.title}</TableCell>
               <TableCell>
-                <Badge className={`${getBadgeColor(task.status)} text-[11px] font-bold`}>{task.status}</Badge>
+                <Badge className={`${getBadgeColor(task.status)} text-[11px] font-bold text-black`}>{task.status}</Badge>
               </TableCell>
               <TableCell>
-                <Badge className={`${getBadgeColor(task.priority)} text-[11px] font-bold`}>{task.priority}</Badge>
+                <Badge className={`${getBadgeColor(task.priority)} text-[11px] font-bold text-black`}>{task.priority}</Badge>
               </TableCell>
               <TableCell>
                 {task.assigneeIds?.length > 0 ? `${task.assigneeIds.length} user(s)` : "Unassigned"}

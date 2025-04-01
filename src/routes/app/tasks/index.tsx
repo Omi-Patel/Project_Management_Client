@@ -8,13 +8,17 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getTasksByUserId } from "@/lib/actions";
+import { getAllTasks, getTasksByUserId } from "@/lib/actions";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { createFileRoute } from "@tanstack/react-router";
 import { BarChart2, Table } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/app/tasks/")({
   component: RouteComponent,
@@ -31,6 +35,33 @@ export const Route = createFileRoute("/app/tasks/")({
 
 function RouteComponent() {
   const taskIds = Route.useLoaderData();
+
+  const [page, setPage] = useState(1); // Current page
+  const [size] = useState(10); // Number of tasks per page
+  const [search, setSearch] = useState<string | null>(null); // Search query
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["tasks", page, size, search, taskIds],
+    queryFn: async () => {
+      const userId = localStorage.getItem("userId");
+
+      if (!userId) {
+        throw new Error("User ID is not available in localStorage");
+      }
+
+      return await getAllTasks({ userId, search, page, size });
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  const handleSearch = (newSearch: string) => {
+    setSearch(newSearch);
+    setPage(1); // Reset to the first page when a new search is performed
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   return (
     <SidebarInset>
@@ -55,25 +86,63 @@ function RouteComponent() {
       </header>
       <Separator className="mb-4" />
 
-      {/* Tabs for TaskList and TaskBoard */}
+      {/* Search and Pagination */}
       <div className="p-4">
+        <div className="flex items-center gap-4 mb-4">
+          {/* Search Input */}
+          <Input
+            type="text"
+            placeholder="Search tasks..."
+            value={search || ""}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full"
+          />
+        </div>
+
         <h2 className="text-xl font-bold text-primary mb-4">My Tasks</h2>
-        <Tabs defaultValue="taskList">
-          <TabsList className="mb-4 ml-auto flex justify-end w-auto">
-            <TabsTrigger value="taskList">
-              <Table />
-            </TabsTrigger>
-            <TabsTrigger value="taskBoard">
-              <BarChart2 />
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="taskList">
-            <TaskList taskIds={taskIds} projectId={""} />
-          </TabsContent>
-          <TabsContent value="taskBoard">
-            <TaskBoard taskIds={taskIds} />
-          </TabsContent>
-        </Tabs>
+        {isLoading ? (
+          <p>Loading tasks...</p>
+        ) : error ? (
+          <p className="text-red-500">Failed to load tasks.</p>
+        ) : (
+          <Tabs defaultValue="taskList">
+            <TabsList className="mb-4 ml-auto flex justify-end w-auto">
+              <TabsTrigger value="taskList">
+                <Table />
+              </TabsTrigger>
+              <TabsTrigger value="taskBoard">
+                <BarChart2 />
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="taskList">
+              <TaskList tasks={data ?? []} projectId={""} />
+            </TabsContent>
+            <TabsContent value="taskBoard">
+              <TaskBoard taskIds={taskIds} />
+            </TabsContent>
+          </Tabs>
+        )}
+
+        {/* Pagination Controls */}
+        <div className="flex justify-end gap-4 items-center mt-4">
+          <Button
+            onClick={() => handlePageChange(page - 1)}
+            disabled={page <= 1}
+            variant="outline"
+          >
+            Previous
+          </Button>
+          {/* <span>
+            Page {page} of {Math.ceil((data?.length ?? 0) / size)}
+          </span> */}
+          <Button
+            onClick={() => handlePageChange(page + 1)}
+            disabled={page > Math.ceil((data?.length ?? 0) / size)}
+            variant="outline"
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </SidebarInset>
   );

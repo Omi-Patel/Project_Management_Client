@@ -23,6 +23,14 @@ export const TaskResponseSchema = z.object({
   updatedAt: z.number().nullable().optional(), // Updated timestamp is required
 });
 
+export const listTaskSchema = z.object({
+  page: z.number().min(1, "Page must be at least 1"), // Page number, must be at least 1
+  size: z.number().min(1, "Size must be at least 1"), // Page size, must be at least 1
+  search: z.string().nullable().optional(), // Optional search string
+  userId: z.string().nullable().optional(), // Optional user ID
+});
+
 // Types for TypeScript
 export type TaskRequest = z.infer<typeof TaskRequestSchema>;
 export type TaskResponse = z.infer<typeof TaskResponseSchema>;
+export type ListTaskRequest = z.infer<typeof listTaskSchema>;

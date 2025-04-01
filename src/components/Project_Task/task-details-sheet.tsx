@@ -47,11 +47,11 @@ export function TaskDetailsSheet({
         <div className="mt-6 space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">State</p>
-            <Badge className={getBadgeColor(task.status)}>{task.status}</Badge>
+            <Badge className={`${getBadgeColor(task.status)} text-black`}>{task.status}</Badge>
           </div>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">Priority</p>
-            <Badge className={getBadgeColor(task.priority)}>{task.priority}</Badge>
+            <Badge className={`${getBadgeColor(task.priority)} text-black`}>{task.priority}</Badge>
           </div>
 
           <div className="flex items-center justify-between">
