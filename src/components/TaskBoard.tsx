@@ -1,41 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { toast } from "sonner";
-import { updateTaskStatus } from "@/lib/actions"; // Import the update function
+import { updateTaskStatus, getTaskById } from "@/lib/actions"; // Import the update function
 import { Badge } from "./ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import type { TaskResponse } from "@/schemas/task_schema";
 
-// Task type
-interface Task {
-  id: string;
-  title: string;
-  status: "TO_DO" | "IN_PROGRESS" | "DONE";
-  priority: string;
-}
+
 
 interface TaskBoardProps {
-  initialTasks: Task[];
+  taskIds: string[];
 }
 
-const TaskBoard = ({ initialTasks }: TaskBoardProps) => {
-  const [tasks, setTasks] = useState(initialTasks);
+const TaskBoard = ({ taskIds }: TaskBoardProps) => {
+  const {
+    data: tasks,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["tasks", taskIds],
+    queryFn: async () => {
+      const fetchedTasks = await Promise.all(
+        taskIds.map((id) => getTaskById(id))
+      );
+      return fetchedTasks;
+    },
+  });
+
+  const [localTasks, setLocalTasks] = useState<TaskResponse[]>([]);
+
+  // Sync state when tasks are fetched
+  useEffect(() => {
+    if (tasks) {
+      setLocalTasks(
+        tasks.filter((task): task is TaskResponse => task !== null)
+      );
+    }
+  }, [tasks]);
+
+  if (isLoading) return <p>Loading tasks...</p>;
+  if (error) return <p className="text-red-500">Failed to load tasks.</p>;
 
   // Group tasks by status
   const taskColumns = {
-    TO_DO: tasks.filter((task) => task.status === "TO_DO"),
-    IN_PROGRESS: tasks.filter((task) => task.status === "IN_PROGRESS"),
-    DONE: tasks.filter((task) => task.status === "DONE"),
+    TO_DO: localTasks.filter((task) => task.status === "TO_DO"),
+    IN_PROGRESS: localTasks.filter((task) => task.status === "IN_PROGRESS"),
+    DONE: localTasks.filter((task) => task.status === "DONE"),
   };
 
   // Handle Drag End
   const onDragEnd = async (result: any) => {
     const { source, destination, draggableId } = result;
 
-    // If dropped outside valid destination, return
     if (!destination) return;
-
-    // If the position didn't change, do nothing
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
@@ -43,32 +62,30 @@ const TaskBoard = ({ initialTasks }: TaskBoardProps) => {
       return;
     }
 
-    // Find the dragged task
-    const updatedTask = tasks.find((task) => task.id === draggableId);
+    const updatedTask = localTasks.find((task) => task.id === draggableId);
     if (!updatedTask) return;
 
-    // Update the task status
     const newStatus = destination.droppableId as
       | "TO_DO"
       | "IN_PROGRESS"
       | "DONE";
     updatedTask.status = newStatus;
 
-    // Update state optimistically
-    setTasks((prevTasks) =>
+    setLocalTasks((prevTasks) =>
       prevTasks.map((task) => (task.id === draggableId ? updatedTask : task))
     );
 
-    // Call API to persist the update
     try {
-      await updateTaskStatus(updatedTask.id, newStatus); // Call the update function
+      await updateTaskStatus(updatedTask.id, newStatus);
       toast.success(`Task moved to ${newStatus}`);
     } catch (error) {
-      // Revert state if API call fails
-      setTasks((prevTasks) =>
+      setLocalTasks((prevTasks) =>
         prevTasks.map((task) =>
           task.id === draggableId
-            ? { ...task, status: source.droppableId }
+            ? {
+                ...task,
+                status: source.droppableId as "TO_DO" | "IN_PROGRESS" | "DONE",
+              }
             : task
         )
       );
@@ -99,10 +116,10 @@ const TaskBoard = ({ initialTasks }: TaskBoardProps) => {
                         {...provided.dragHandleProps}
                         className={`p-4 rounded-lg shadow-md mb-2 ${
                           task.status === "TO_DO"
-                            ? "bg-blue-200" // Light blue for TO_DO
+                            ? "bg-blue-200"
                             : task.status === "IN_PROGRESS"
-                              ? "bg-yellow-200" // Light yellow for IN_PROGRESS
-                              : "bg-green-200" // Light green for DONE
+                              ? "bg-yellow-200"
+                              : "bg-green-200"
                         }`}
                       >
                         <div className="flex justify-between items-center">
@@ -112,10 +129,10 @@ const TaskBoard = ({ initialTasks }: TaskBoardProps) => {
                           <Badge
                             className={`text-[10px] font-bold ${
                               task.priority === "LOW"
-                                ? "bg-green-400" // Light blue for TO_DO
+                                ? "bg-green-400"
                                 : task.priority === "MEDIUM"
-                                  ? "bg-yellow-400" // Light yellow for IN_PROGRESS
-                                  : "bg-red-400" // Light green for DONE
+                                  ? "bg-yellow-400"
+                                  : "bg-red-400"
                             }`}
                           >
                             {task.priority}

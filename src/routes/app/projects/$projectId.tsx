@@ -24,6 +24,9 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import TaskList from "@/components/Project_Task/task-list";
 import { TaskFormDialog } from "@/components/Project_Task/task-form-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart2, Table } from "lucide-react";
+import TaskBoard from "@/components/TaskBoard";
 
 export const Route = createFileRoute("/app/projects/$projectId")({
   component: RouteComponent,
@@ -45,14 +48,14 @@ function RouteComponent() {
   const navigate = useNavigate();
 
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [tasks, setTasks] = useState(project.taskIds || []);
+  const [taskIds, setTaskIds] = useState(project.taskIds || []);
 
   const handleTaskAdded = async () => {
     setIsAddDialogOpen(false);
     // Manually refresh the project data to get updated taskIds
     const updatedProject = await getProjectById(projectId);
     if (updatedProject && updatedProject.taskIds) {
-      setTasks(updatedProject.taskIds);
+      setTaskIds(updatedProject.taskIds);
     }
 
     router.invalidate();
@@ -116,7 +119,22 @@ function RouteComponent() {
           <Button onClick={() => setIsAddDialogOpen(true)}>+ Add Task</Button>
         </div>
 
-        <TaskList taskIds={tasks} projectId={projectId} />
+        <Tabs defaultValue="taskList">
+          <TabsList className="mb-4 ml-auto flex justify-end w-auto">
+            <TabsTrigger value="taskList">
+              <Table />
+            </TabsTrigger>
+            <TabsTrigger value="taskBoard">
+              <BarChart2 />
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="taskList">
+            <TaskList taskIds={taskIds} projectId={""} />
+          </TabsContent>
+          <TabsContent value="taskBoard">
+            <TaskBoard taskIds={taskIds} />
+          </TabsContent>
+        </Tabs>
 
         {/* Add Task Dialog */}
         <TaskFormDialog
