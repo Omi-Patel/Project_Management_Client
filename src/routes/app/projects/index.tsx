@@ -19,7 +19,19 @@ import {
   updateProject,
   deleteProject,
 } from "@/lib/actions";
-import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import {
+  CalendarDaysIcon,
+  CalendarIcon,
+  ChevronRightIcon,
+  ClockIcon,
+  FolderKanbanIcon,
+  ListChecksIcon,
+  MoreVertical,
+  PencilIcon,
+  PlusIcon,
+  TagIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useState } from "react";
 import {
   Dialog,
@@ -54,6 +66,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Route = createFileRoute("/app/projects/")({
   component: RouteComponent,
@@ -94,8 +120,12 @@ function RouteComponent() {
       name: selectedProject?.name || "",
       description: selectedProject?.description || "",
       userId: selectedProject?.userId || userId || "",
-      startDate: selectedProject?.startDate || null,
-      endDate: selectedProject?.endDate || null,
+      startDate: selectedProject?.startDate
+        ? new Date(selectedProject.startDate).getTime().toString()
+        : null,
+      endDate: selectedProject?.endDate
+        ? new Date(selectedProject.endDate).getTime().toString()
+        : null,
     },
   });
 
@@ -169,6 +199,7 @@ function RouteComponent() {
       name: "",
       description: "",
       userId: userId ?? undefined,
+      color: "#000000",
       startDate: null,
       endDate: null,
     });
@@ -177,7 +208,19 @@ function RouteComponent() {
 
   const handleEditClick = (project: ProjectSchema) => {
     setSelectedProject(project);
-    form.reset(project);
+    form.reset({
+      id: project.id,
+      name: project.name || "",
+      description: project.description || "",
+      userId: project.userId || userId || "",
+      startDate: project.startDate
+        ? new Date(project.startDate).getTime().toString()
+        : null,
+      endDate: project.endDate
+        ? new Date(project.endDate).getTime().toString()
+        : null,
+      color: project.color || "#000000",
+    });
     setOpen(true);
   };
 
@@ -190,6 +233,11 @@ function RouteComponent() {
     if (projectToDelete?.id) {
       deleteMutation.mutate(projectToDelete.id);
     }
+  };
+
+  const formatDate = (timestamp: any) => {
+    if (!timestamp) return "N/A";
+    return format(new Date(timestamp), "MMM dd, yyyy");
   };
 
   return (
@@ -218,56 +266,162 @@ function RouteComponent() {
         </div>
       </header>
       <Separator className="mb-4" />
-      <div className="p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {projects.map((project) => (
           <Card
             key={project.id}
-            className="flex flex-col justify-between border  shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-            onClick={() => navigate({ to: `/app/projects/${project.id}` })}
+            className={`flex flex-col justify-between border shadow-lg rounded-xl overflow-hidden h-full bg-secondary hover:shadow-2xl transition-shadow duration-300 cursor-pointer group`}
+            style={{ backgroundColor: `${project.color}50` }} // Ensures proper color application
+            onClick={() => navigate({ to: `/app/projects/${project.id}` })} // Simplified navigation
           >
-            <CardHeader>
-              <CardTitle className="text-xl font-bold">
-                {project.name}
-              </CardTitle>
-              <CardDescription className="text-[16px] py-2 my-2">
-                {project.description || "No description available"}
-              </CardDescription>
-              {/* <div className="text-sm text-gray-600 mt-2">
-                <p>
-                  <strong>Start Date:</strong>{" "}
-                  {project.startDate
-                    ? new Date(project.startDate).toLocaleDateString()
-                    : "N/A"}
-                </p>
-                <p>
-                  <strong>End Date:</strong>{" "}
-                  {project.endDate
-                    ? new Date(project.endDate).toLocaleDateString()
-                    : "N/A"}
-                </p>
-              </div> */}
-            </CardHeader>
-            <div className="flex-grow"></div>
-            <CardFooter className="flex justify-end gap-2">
-              <Button
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent card click from triggering
-                  handleEditClick(project);
-                }}
-              >
-                <PencilIcon className="size-4" /> Edit
-              </Button>
-              <Button
-                size="sm"
-                variant="destructive"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent card click from triggering
-                  handleDeleteClick(project);
-                }}
-              >
-                <Trash2Icon className="size-4" /> Delete
-              </Button>
+            <div className="">
+              {" "}
+              {/* Top Section: Status Badge and Actions Dropdown */}
+              <div className="flex justify-between items-center px-4 py-1 ">
+                <div>
+                  {/* Left side - Badge */}
+                  {project.startDate && project.endDate && (
+                    <div>
+                      <span
+                        className={`inline-flex justify-center items-center px-2.5 py-1 rounded-full text-xs font-medium ${(() => {
+                          const endDate = new Date(project.endDate);
+                          endDate.setHours(0, 0, 0, 0);
+
+                          const startDate = new Date(project.startDate);
+                          startDate.setHours(0, 0, 0, 0);
+
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+
+                          const daysRemaining = Math.ceil(
+                            (endDate.getTime() - today.getTime()) /
+                              (1000 * 60 * 60 * 24)
+                          );
+
+                          return daysRemaining < 0
+                            ? "bg-red-100 text-red-800 border border-red-200"
+                            : daysRemaining <= 3
+                              ? "bg-red-100 text-red-800 border border-red-200"
+                              : daysRemaining <= 7
+                                ? "bg-amber-100 text-amber-800 border border-amber-200"
+                                : "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                        })()}`}
+                      >
+                        {(() => {
+                          const endDate = new Date(project.endDate);
+                          endDate.setHours(0, 0, 0, 0);
+
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+
+                          const daysRemaining = Math.ceil(
+                            (endDate.getTime() - today.getTime()) /
+                              (1000 * 60 * 60 * 24)
+                          );
+
+                          return daysRemaining < 0
+                            ? `${Math.abs(daysRemaining)} days overdue`
+                            : daysRemaining === 0
+                              ? "Due today!"
+                              : daysRemaining === 1
+                                ? "Due tomorrow"
+                                : `${daysRemaining} days remaining`;
+                        })()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  {" "}
+                  {/* Right side - Actions */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      className=" "
+                      asChild
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className=" rounded-full w-8 h-8 hover:bg-gray-200 dark:hover:bg-gray-600" // Show on card hover
+                      >
+                        <MoreVertical className="h-4 w-4 text-primary " />
+                        <span className="sr-only">Project Actions</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <DropdownMenuItem
+                        onSelect={() => handleEditClick(project)}
+                      >
+                        <PencilIcon className="mr-2 h-4 w-4" />
+                        <span>Edit Project</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-red-600 focus:text-red-600 "
+                        onSelect={() => handleDeleteClick(project)}
+                      >
+                        <Trash2Icon className="mr-2 h-4 w-4" />
+                        <span>Delete Project</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+              {/* Project Details */}
+              <CardHeader className="pt-2 pb-6 px-6">
+                <div className="flex items-center mb-3">
+                  <div className="flex items-center justify-center size-9 rounded-lg mr-3 shrink-0">
+                    <FolderKanbanIcon
+                      className="size-5"
+                      style={{ color: project.color }}
+                    />
+                  </div>
+                  <CardTitle className="text-xl font-semibold text-primary leading-tight">
+                    {project.name}
+                  </CardTitle>
+                </div>
+                <CardDescription className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-2 min-h-[2.5rem]">
+                  {project.description || "No description available."}
+                </CardDescription>
+                {/* Metadata Section */}
+                <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-gray-600">
+                  <div className="flex items-center">
+                    <CalendarDaysIcon className="size-4 mr-2 text-gray-500 shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="text-xs text-primary">Start</span>
+                      <span className="font-medium text-primary">
+                        {formatDate(project.startDate)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <ClockIcon className="size-4 mr-2 text-gray-500 shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="text-xs text-primary">End</span>
+                      <span className="font-medium text-primary">
+                        {formatDate(project.endDate)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </CardHeader>
+            </div>
+
+            {/* Card Footer - Meta Info */}
+            <CardFooter
+              className="flex justify-start items-center p-4 bg-gray-50"
+              style={{
+                backgroundColor: `${project.color}`,
+              }}
+            >
+              <span className="text-xs text-black font-semibold">
+                Created On : {formatDate(project.createdAt)}
+              </span>
             </CardFooter>
           </Card>
         ))}
@@ -323,6 +477,124 @@ function RouteComponent() {
                   </FormItem>
                 )}
               />
+
+              {/* Start and End Date Fields in a Single Row */}
+              <div className="flex gap-4">
+                {/* Start Date Field */}
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Start Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left"
+                            >
+                              {field.value
+                                ? format(
+                                    new Date(Number(field.value)),
+                                    "yyyy-MM-dd"
+                                  )
+                                : "Select date"}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="p-0">
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value
+                                ? new Date(Number(field.value))
+                                : undefined
+                            }
+                            onSelect={(date) => {
+                              if (date) {
+                                // Convert selected date to epoch time (milliseconds)
+                                const epochTime = date.getTime();
+                                field.onChange(epochTime.toString());
+                              }
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* End Date Field */}
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>End Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left"
+                            >
+                              {field.value
+                                ? format(
+                                    new Date(Number(field.value)),
+                                    "yyyy-MM-dd"
+                                  )
+                                : "Select date"}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="p-0">
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value
+                                ? new Date(Number(field.value))
+                                : undefined
+                            }
+                            onSelect={(date) => {
+                              if (date) {
+                                // Convert selected date to epoch time (milliseconds)
+                                const epochTime = date.getTime();
+                                field.onChange(epochTime.toString());
+                              }
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Color Field */}
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Set Color</FormLabel>
+                    <FormControl>
+                      <Input
+                        className="w-18"
+                        type="color"
+                        {...field}
+                        value={field.value || "#000000"} // Default color
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button
                 type="submit"
                 className="w-full"
