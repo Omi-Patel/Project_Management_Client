@@ -184,7 +184,6 @@ function RouteComponent() {
       </header>
       <Separator className="mb-4" />
 
-
       <div className="container max-w-7xl mx-auto pb-12">
         {/* Project Overview Card */}
         <div className="mt-6 mb-6">
@@ -214,7 +213,7 @@ function RouteComponent() {
                   </div>
                 </div>
 
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 space-y-4 ">
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-400">
@@ -225,8 +224,8 @@ function RouteComponent() {
                     <Progress value={progress} className="h-2" />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50">
+                  <div className="grid grid-cols-2 gap-3 ">
+                    <div className="bg-blue-50 dark:bg-blue-500/5 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50">
                       <div className="flex items-center mb-1">
                         <CalendarIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" />
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -238,7 +237,7 @@ function RouteComponent() {
                       </div>
                     </div>
 
-                    <div className="bg-purple-50 dark:bg-purple-900/30 p-3 rounded-lg border border-purple-100 dark:border-purple-800/50">
+                    <div className="bg-purple-50 dark:bg-purple-500/5 p-3 rounded-lg border border-purple-100 dark:border-purple-800/50">
                       <div className="flex items-center mb-1">
                         <ClockIcon className="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2" />
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -250,7 +249,7 @@ function RouteComponent() {
                       </div>
                     </div>
 
-                    <div className="bg-green-50 dark:bg-green-900/30 p-3 rounded-lg border border-green-100 dark:border-green-800/50">
+                    <div className="bg-green-50 dark:bg-green-500/5 p-3 rounded-lg border border-green-100 dark:border-green-800/50">
                       <div className="flex items-center mb-1">
                         <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400 mr-2" />
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -262,7 +261,7 @@ function RouteComponent() {
                       </div>
                     </div>
 
-                    <div className="bg-amber-50 dark:bg-amber-900/30 p-3 rounded-lg border border-amber-100 dark:border-amber-800/50">
+                    <div className="bg-amber-50 dark:bg-amber-500/5 p-3 rounded-lg border border-amber-100 dark:border-amber-800/50">
                       <div className="flex items-center mb-1">
                         <ListTodo className="h-4 w-4 text-amber-600 dark:text-amber-400 mr-2" />
                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -285,7 +284,7 @@ function RouteComponent() {
         </div>
 
         {/* Tasks Section */}
-        <div className="bg-white shadow-md dark:bg-gray-800">
+        <div className="bg-secondary ">
           <div className="border-b px-6 py-4 flex justify-between items-center">
             <h2 className="text-xl font-semibold text-gray-800 dark:text-white flex items-center">
               <ListTodo className="h-5 w-5 mr-2 text-blue-600" />
