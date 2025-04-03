@@ -21,15 +21,11 @@ import {
 } from "@/lib/actions";
 import {
   CalendarDaysIcon,
-  CalendarIcon,
-  ChevronRightIcon,
   ClockIcon,
   FolderKanbanIcon,
-  ListChecksIcon,
   MoreVertical,
   PencilIcon,
   PlusIcon,
-  TagIcon,
   Trash2Icon,
 } from "lucide-react";
 import { useState } from "react";
