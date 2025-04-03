@@ -352,7 +352,7 @@ function RouteComponent() {
             )}
 
             {/* Pagination */}
-            {data && data.length > 0 && (
+            {data &&  (
               <div className="flex justify-between items-center mt-6 border-t pt-4">
                 <div className="text-sm text-gray-500">
                   Showing {Math.min((page - 1) * size + 1, data.length)} to{" "}
@@ -370,7 +370,7 @@ function RouteComponent() {
                   </Button>
                   <Button
                     onClick={() => handlePageChange(page + 1)}
-                    disabled={page >= Math.ceil((data?.length ?? 0) / size)}
+                    disabled={page > Math.ceil((data?.length ?? 0) / size)}
                     variant="outline"
                     size="sm"
                     className="flex items-center"
