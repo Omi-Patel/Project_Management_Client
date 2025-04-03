@@ -271,7 +271,7 @@ function RouteComponent() {
           <Card
             key={project.id}
             className={`flex flex-col justify-between border shadow-lg rounded-xl overflow-hidden h-full bg-secondary hover:shadow-2xl transition-shadow duration-300 cursor-pointer group`}
-            style={{ backgroundColor: `${project.color}50` }} // Ensures proper color application
+            // style={{ backgroundColor: `${project.color}50` }} // Ensures proper color application
             onClick={() => navigate({ to: `/app/projects/${project.id}` })} // Simplified navigation
           >
             <div className="">
@@ -373,7 +373,10 @@ function RouteComponent() {
                 </div>
               </div>
               {/* Project Details */}
-              <CardHeader className="pt-2 pb-6 px-6">
+              <CardHeader
+                className="pt-2 pb-6 px-6"
+                style={{ borderLeft: `3px solid ${project.color}` }}
+              >
                 <div className="flex items-center mb-3">
                   <div className="flex items-center justify-center size-9 rounded-lg mr-3 shrink-0">
                     <FolderKanbanIcon
