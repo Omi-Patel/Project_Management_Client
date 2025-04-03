@@ -257,173 +257,185 @@ function RouteComponent() {
           </div>
           <Button onClick={handleAddClick} className="cursor-pointer">
             <PlusIcon className="size-3 mr-1" />
-            Add
+            Add Project
           </Button>
         </div>
       </header>
       <Separator className="mb-4" />
       <div className="p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {projects.map((project) => (
-          <Card
-            key={project.id}
-            className={`flex flex-col justify-between border shadow-lg rounded-xl overflow-hidden h-full bg-secondary hover:shadow-2xl transition-shadow duration-300 cursor-pointer group`}
-            // style={{ backgroundColor: `${project.color}50` }} // Ensures proper color application
-            onClick={() => navigate({ to: `/app/projects/${project.id}` })} // Simplified navigation
-          >
-            <div className="">
-              {" "}
-              {/* Top Section: Status Badge and Actions Dropdown */}
-              <div className="flex justify-between items-center px-4 py-1 ">
-                <div>
-                  {/* Left side - Badge */}
-                  {project.startDate && project.endDate && (
-                    <div>
-                      <span
-                        className={`inline-flex justify-center items-center px-2.5 py-1 rounded-full text-xs font-medium ${(() => {
-                          const endDate = new Date(project.endDate);
-                          endDate.setHours(0, 0, 0, 0);
-
-                          const startDate = new Date(project.startDate);
-                          startDate.setHours(0, 0, 0, 0);
-
-                          const today = new Date();
-                          today.setHours(0, 0, 0, 0);
-
-                          const daysRemaining = Math.ceil(
-                            (endDate.getTime() - today.getTime()) /
-                              (1000 * 60 * 60 * 24)
-                          );
-
-                          return daysRemaining < 0
-                            ? "bg-red-100 text-red-800 border border-red-200"
-                            : daysRemaining <= 3
-                              ? "bg-red-100 text-red-800 border border-red-200"
-                              : daysRemaining <= 7
-                                ? "bg-amber-100 text-amber-800 border border-amber-200"
-                                : "bg-emerald-100 text-emerald-800 border border-emerald-200";
-                        })()}`}
-                      >
-                        {(() => {
-                          const endDate = new Date(project.endDate);
-                          endDate.setHours(0, 0, 0, 0);
-
-                          const today = new Date();
-                          today.setHours(0, 0, 0, 0);
-
-                          const daysRemaining = Math.ceil(
-                            (endDate.getTime() - today.getTime()) /
-                              (1000 * 60 * 60 * 24)
-                          );
-
-                          return daysRemaining < 0
-                            ? `${Math.abs(daysRemaining)} days overdue`
-                            : daysRemaining === 0
-                              ? "Due today!"
-                              : daysRemaining === 1
-                                ? "Due tomorrow"
-                                : `${daysRemaining} days remaining`;
-                        })()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  {" "}
-                  {/* Right side - Actions */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      className=" "
-                      asChild
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className=" rounded-full w-8 h-8 hover:bg-gray-200 dark:hover:bg-gray-600" // Show on card hover
-                      >
-                        <MoreVertical className="h-4 w-4 text-primary " />
-                        <span className="sr-only">Project Actions</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <DropdownMenuItem
-                        onSelect={() => handleEditClick(project)}
-                      >
-                        <PencilIcon className="mr-2 h-4 w-4" />
-                        <span>Edit Project</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600 "
-                        onSelect={() => handleDeleteClick(project)}
-                      >
-                        <Trash2Icon className="mr-2 h-4 w-4" />
-                        <span>Delete Project</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-              {/* Project Details */}
-              <CardHeader
-                className="pt-2 pb-6 px-6"
-                style={{ borderLeft: `3px solid ${project.color}` }}
-              >
-                <div className="flex items-center mb-3">
-                  <div className="flex items-center justify-center size-9 rounded-lg mr-3 shrink-0">
-                    <FolderKanbanIcon
-                      className="size-5"
-                      style={{ color: project.color }}
-                    />
-                  </div>
-                  <CardTitle className="text-xl font-semibold text-primary leading-tight">
-                    {project.name}
-                  </CardTitle>
-                </div>
-                <CardDescription className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-2 min-h-[2.5rem]">
-                  {project.description || "No description available."}
-                </CardDescription>
-                {/* Metadata Section */}
-                <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-gray-600">
-                  <div className="flex items-center">
-                    <CalendarDaysIcon className="size-4 mr-2 text-gray-500 shrink-0" />
-                    <div className="flex flex-col">
-                      <span className="text-xs text-primary">Start</span>
-                      <span className="font-medium text-primary">
-                        {formatDate(project.startDate)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center">
-                    <ClockIcon className="size-4 mr-2 text-gray-500 shrink-0" />
-                    <div className="flex flex-col">
-                      <span className="text-xs text-primary">End</span>
-                      <span className="font-medium text-primary">
-                        {formatDate(project.endDate)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-            </div>
-
-            {/* Card Footer - Meta Info */}
-            <CardFooter
-              className="flex justify-start items-center p-4 bg-gray-50"
-              style={{
-                backgroundColor: `${project.color}`,
-              }}
+        {projects.length > 0 ? (
+          projects.map((project) => (
+            <Card
+              key={project.id}
+              className={`flex flex-col justify-between border shadow-lg rounded-xl overflow-hidden h-full bg-secondary hover:shadow-2xl transition-shadow duration-300 cursor-pointer group`}
+              onClick={() => navigate({ to: `/app/projects/${project.id}` })}
             >
-              <span className="text-xs text-black font-semibold">
-                Created On : {formatDate(project.createdAt)}
-              </span>
-            </CardFooter>
-          </Card>
-        ))}
+              <div className="">
+                {/* Top Section: Status Badge and Actions Dropdown */}
+                <div className="flex justify-between items-center px-4 py-1 ">
+                  <div>
+                    {/* Left side - Badge */}
+                    {project.startDate && project.endDate && (
+                      <div>
+                        <span
+                          className={`inline-flex justify-center items-center px-2.5 py-1 rounded-full text-xs font-medium ${(() => {
+                            const endDate = new Date(project.endDate);
+                            endDate.setHours(0, 0, 0, 0);
+
+                            const startDate = new Date(project.startDate);
+                            startDate.setHours(0, 0, 0, 0);
+
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+
+                            const daysRemaining = Math.ceil(
+                              (endDate.getTime() - today.getTime()) /
+                                (1000 * 60 * 60 * 24)
+                            );
+
+                            return daysRemaining < 0
+                              ? "bg-red-100 text-red-800 border border-red-200"
+                              : daysRemaining <= 3
+                                ? "bg-red-100 text-red-800 border border-red-200"
+                                : daysRemaining <= 7
+                                  ? "bg-amber-100 text-amber-800 border border-amber-200"
+                                  : "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                          })()}`}
+                        >
+                          {(() => {
+                            const endDate = new Date(project.endDate);
+                            endDate.setHours(0, 0, 0, 0);
+
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+
+                            const daysRemaining = Math.ceil(
+                              (endDate.getTime() - today.getTime()) /
+                                (1000 * 60 * 60 * 24)
+                            );
+
+                            return daysRemaining < 0
+                              ? `${Math.abs(daysRemaining)} days overdue`
+                              : daysRemaining === 0
+                                ? "Due today!"
+                                : daysRemaining === 1
+                                  ? "Due tomorrow"
+                                  : `${daysRemaining} days remaining`;
+                          })()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    {/* Right side - Actions */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        className=" "
+                        asChild
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className=" rounded-full w-8 h-8 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        >
+                          <MoreVertical className="h-4 w-4 text-primary " />
+                          <span className="sr-only">Project Actions</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="end"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <DropdownMenuItem
+                          onSelect={() => handleEditClick(project)}
+                        >
+                          <PencilIcon className="mr-2 h-4 w-4" />
+                          <span>Edit Project</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600 "
+                          onSelect={() => handleDeleteClick(project)}
+                        >
+                          <Trash2Icon className="mr-2 h-4 w-4" />
+                          <span>Delete Project</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
+                {/* Project Details */}
+                <CardHeader
+                  className="pt-2 pb-6 px-6"
+                  style={{ borderLeft: `3px solid ${project.color}` }}
+                >
+                  <div className="flex items-center mb-3">
+                    <div className="flex items-center justify-center size-9 rounded-lg mr-3 shrink-0">
+                      <FolderKanbanIcon
+                        className="size-5"
+                        style={{ color: project.color }}
+                      />
+                    </div>
+                    <CardTitle className="text-xl font-semibold text-primary leading-tight">
+                      {project.name}
+                    </CardTitle>
+                  </div>
+                  <CardDescription className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-2 min-h-[2.5rem]">
+                    {project.description || "No description available."}
+                  </CardDescription>
+                  {/* Metadata Section */}
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <CalendarDaysIcon className="size-4 mr-2 text-gray-500 shrink-0" />
+                      <div className="flex flex-col">
+                        <span className="text-xs text-primary">Start</span>
+                        <span className="font-medium text-primary">
+                          {formatDate(project.startDate)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <ClockIcon className="size-4 mr-2 text-gray-500 shrink-0" />
+                      <div className="flex flex-col">
+                        <span className="text-xs text-primary">End</span>
+                        <span className="font-medium text-primary">
+                          {formatDate(project.endDate)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+              </div>
+
+              {/* Card Footer - Meta Info */}
+              <CardFooter
+                className="flex justify-start items-center p-4 bg-gray-50"
+                style={{
+                  backgroundColor: `${project.color}`,
+                }}
+              >
+                <span className="text-xs text-black font-semibold">
+                  Created On : {formatDate(project.createdAt)}
+                </span>
+              </CardFooter>
+            </Card>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-8">
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+              No projects available
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Start by creating a new project.
+            </p>
+            <Button onClick={handleAddClick} className="mt-4">
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Add Project
+            </Button>
+          </div>
+        )}
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>

@@ -137,7 +137,7 @@ function RouteComponent() {
           </span> */}
           <Button
             onClick={() => handlePageChange(page + 1)}
-            disabled={page > Math.ceil((data?.length ?? 0) / size)}
+            disabled={size > Math.ceil(data?.length ?? 0)}
             variant="outline"
           >
             Next

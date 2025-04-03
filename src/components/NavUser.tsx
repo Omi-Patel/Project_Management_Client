@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/sidebar";
 import type { UserResponse } from "@/schemas/user-schema";
 import { useTheme } from "./theme-provider";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 export function NavUser({ user }: { user: UserResponse }) {
   const { isMobile } = useSidebar();
@@ -106,10 +106,12 @@ export function NavUser({ user }: { user: UserResponse }) {
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
+              <Link to="/app/profile">
+                <DropdownMenuItem>
+                  <BadgeCheck />
+                  Account
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem
                 onClick={() => {
                   setTheme(theme === "light" ? "dark" : "light");

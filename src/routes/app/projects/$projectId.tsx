@@ -184,7 +184,7 @@ function RouteComponent() {
       </header>
       <Separator className="mb-4" />
 
-      <div className="container max-w-7xl mx-auto pb-12">
+      <div className="container  mx-auto pb-12">
         {/* Project Overview Card */}
         <div className="mt-6 mb-6">
           <div className="">
@@ -352,7 +352,7 @@ function RouteComponent() {
             )}
 
             {/* Pagination */}
-            {data &&  (
+            {data && (
               <div className="flex justify-between items-center mt-6 border-t pt-4">
                 <div className="text-sm text-gray-500">
                   Showing {Math.min((page - 1) * size + 1, data.length)} to{" "}
@@ -370,7 +370,7 @@ function RouteComponent() {
                   </Button>
                   <Button
                     onClick={() => handlePageChange(page + 1)}
-                    disabled={page > Math.ceil((data?.length ?? 0) / size)}
+                    disabled={size > Math.ceil(data?.length ?? 0)}
                     variant="outline"
                     size="sm"
                     className="flex items-center"

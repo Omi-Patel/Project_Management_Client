@@ -18,6 +18,7 @@ import { Route as AuthRegisterImport } from './routes/auth/register'
 import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as AppTasksIndexImport } from './routes/app/tasks/index'
 import { Route as AppProjectsIndexImport } from './routes/app/projects/index'
+import { Route as AppProfileIndexImport } from './routes/app/profile/index'
 import { Route as AppDashboardIndexImport } from './routes/app/dashboard/index'
 import { Route as AppProjectsProjectIdImport } from './routes/app/projects/$projectId'
 
@@ -62,6 +63,12 @@ const AppTasksIndexRoute = AppTasksIndexImport.update({
 const AppProjectsIndexRoute = AppProjectsIndexImport.update({
   id: '/projects/',
   path: '/projects/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppProfileIndexRoute = AppProfileIndexImport.update({
+  id: '/profile/',
+  path: '/profile/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
@@ -130,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardIndexImport
       parentRoute: typeof AppRouteImport
     }
+    '/app/profile/': {
+      id: '/app/profile/'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileIndexImport
+      parentRoute: typeof AppRouteImport
+    }
     '/app/projects/': {
       id: '/app/projects/'
       path: '/projects'
@@ -152,6 +166,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteRouteChildren {
   AppProjectsProjectIdRoute: typeof AppProjectsProjectIdRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
+  AppProfileIndexRoute: typeof AppProfileIndexRoute
   AppProjectsIndexRoute: typeof AppProjectsIndexRoute
   AppTasksIndexRoute: typeof AppTasksIndexRoute
 }
@@ -159,6 +174,7 @@ interface AppRouteRouteChildren {
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppProjectsProjectIdRoute: AppProjectsProjectIdRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
+  AppProfileIndexRoute: AppProfileIndexRoute,
   AppProjectsIndexRoute: AppProjectsIndexRoute,
   AppTasksIndexRoute: AppTasksIndexRoute,
 }
@@ -189,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterRoute
   '/app/projects/$projectId': typeof AppProjectsProjectIdRoute
   '/app/dashboard': typeof AppDashboardIndexRoute
+  '/app/profile': typeof AppProfileIndexRoute
   '/app/projects': typeof AppProjectsIndexRoute
   '/app/tasks': typeof AppTasksIndexRoute
 }
@@ -201,6 +218,7 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/app/projects/$projectId': typeof AppProjectsProjectIdRoute
   '/app/dashboard': typeof AppDashboardIndexRoute
+  '/app/profile': typeof AppProfileIndexRoute
   '/app/projects': typeof AppProjectsIndexRoute
   '/app/tasks': typeof AppTasksIndexRoute
 }
@@ -214,6 +232,7 @@ export interface FileRoutesById {
   '/auth/register': typeof AuthRegisterRoute
   '/app/projects/$projectId': typeof AppProjectsProjectIdRoute
   '/app/dashboard/': typeof AppDashboardIndexRoute
+  '/app/profile/': typeof AppProfileIndexRoute
   '/app/projects/': typeof AppProjectsIndexRoute
   '/app/tasks/': typeof AppTasksIndexRoute
 }
@@ -228,6 +247,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/app/projects/$projectId'
     | '/app/dashboard'
+    | '/app/profile'
     | '/app/projects'
     | '/app/tasks'
   fileRoutesByTo: FileRoutesByTo
@@ -239,6 +259,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/app/projects/$projectId'
     | '/app/dashboard'
+    | '/app/profile'
     | '/app/projects'
     | '/app/tasks'
   id:
@@ -250,6 +271,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/app/projects/$projectId'
     | '/app/dashboard/'
+    | '/app/profile/'
     | '/app/projects/'
     | '/app/tasks/'
   fileRoutesById: FileRoutesById
@@ -290,6 +312,7 @@ export const routeTree = rootRoute
       "children": [
         "/app/projects/$projectId",
         "/app/dashboard/",
+        "/app/profile/",
         "/app/projects/",
         "/app/tasks/"
       ]
@@ -315,6 +338,10 @@ export const routeTree = rootRoute
     },
     "/app/dashboard/": {
       "filePath": "app/dashboard/index.tsx",
+      "parent": "/app"
+    },
+    "/app/profile/": {
+      "filePath": "app/profile/index.tsx",
       "parent": "/app"
     },
     "/app/projects/": {

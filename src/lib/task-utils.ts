@@ -20,3 +20,16 @@ export function getBadgeColor(value: string): string {
       return "bg-gray-200 ";
   }
 }
+
+export const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "active":
+      return "bg-green-500";
+    case "busy":
+      return "bg-yellow-500";
+    case "inactive":
+      return "bg-gray-500";
+    default:
+      return "bg-blue-500";
+  }
+};
