@@ -100,7 +100,7 @@ export function TaskFormDialog({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const allUsers = await getAllUsers();
+        const allUsers = await getAllUsers({ page: 1, size: 5, search: null });
         setUsers(allUsers);
       } catch (error) {
         console.error("Failed to fetch users:", error);

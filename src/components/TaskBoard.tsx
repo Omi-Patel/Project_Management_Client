@@ -271,11 +271,11 @@ const TaskBoard = ({ taskIds }: TaskBoardProps) => {
                                 </Badge>
                               </div>
 
-                              {task.description && (
+                              {/* {task.description && (
                                 <p className="text-xs text-muted-foreground line-clamp-2">
                                   {task.description}
                                 </p>
-                              )}
+                              )} */}
 
                               <div className="flex justify-between items-center mt-1">
                                 {task.assigneeIds.length > 0 && (
