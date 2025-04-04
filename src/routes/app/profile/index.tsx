@@ -170,7 +170,10 @@ function RouteComponent() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <CardTitle className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1">
-                  {user?.name}
+                  <div className=" ">
+                    <span>{user?.name} | </span>
+                    <span className="text-xl text-gray-500 ">{user?.role}</span>
+                  </div>
                 </CardTitle>
                 <CardDescription className="text-gray-600 dark:text-gray-400 text-lg">
                   Task Management Dashboard

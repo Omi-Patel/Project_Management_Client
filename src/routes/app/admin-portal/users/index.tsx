@@ -10,14 +10,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/alert";
 import { toast } from "sonner";
 import type { UserResponse } from "@/schemas/user-schema";
 import { useState } from "react";
@@ -75,7 +73,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { getBadgeColor, getStatusColor } from "@/lib/task-utils";
+import { getStatusColor } from "@/lib/task-utils";
 
 export const Route = createFileRoute("/app/admin-portal/users/")({
   component: RouteComponent,
