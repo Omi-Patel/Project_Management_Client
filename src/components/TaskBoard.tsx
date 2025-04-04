@@ -205,11 +205,11 @@ const TaskBoard = ({ taskIds }: TaskBoardProps) => {
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className={`border rounded-lg shadow-sm ${getColumnColor(status)} transition-colors ${
-                  snapshot.isDraggingOver ? "ring-2 ring-primary/20" : ""
-                }`}
+                className={`border rounded-lg shadow-sm transition-colors duration-300 ease-in-out ${getColumnColor(
+                  status
+                )} ${snapshot.isDraggingOver ? "ring-2 ring-primary/30 bg-muted/10" : ""}`}
               >
-                <div className="p-3 border-b sticky top-0 bg-inherit rounded-t-lg">
+                <div className="p-3 border-b sticky top-0 bg-inherit rounded-t-lg z-10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {getColumnIcon(status)}
@@ -229,9 +229,9 @@ const TaskBoard = ({ taskIds }: TaskBoardProps) => {
                   </div>
                 </div>
 
-                <div className="p-3 min-h-[300px]">
+                <div className="p-3 min-h-[300px] transition-all duration-300 ease-in-out">
                   {tasks.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-32 text-center border border-dashed rounded-md p-4 mt-2">
+                    <div className="flex flex-col items-center justify-center h-32 text-center border border-dashed rounded-md p-4 mt-2 transition-all duration-300 ease-in-out">
                       <p className="text-sm text-muted-foreground">
                         No tasks in this column
                       </p>
@@ -251,11 +251,13 @@ const TaskBoard = ({ taskIds }: TaskBoardProps) => {
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
-                            className={`p-3 rounded-lg border shadow-sm mb-3 ${getTaskColor(task.status)} ${
+                            className={`p-3 rounded-lg border shadow-sm mb-3 transform transition-all duration-200 ease-in-out ${getTaskColor(
+                              task.status
+                            )} ${
                               snapshot.isDragging
-                                ? "shadow-md ring-2 ring-primary/20 rotate-1"
+                                ? "shadow-lg scale-[1.02] ring-2 ring-primary/20 rotate-1"
                                 : ""
-                            } transition-all`}
+                            }`}
                           >
                             <div className="flex flex-col gap-2">
                               <div className="flex justify-between items-start">

@@ -178,6 +178,10 @@ function RouteComponent() {
                 <CardDescription className="text-gray-600 dark:text-gray-400 text-lg">
                   Task Management Dashboard
                 </CardDescription>
+                <div className="text-gray-600 flex items-center gap-2">
+                  <Calendar size={16} />
+                  <span>Member Since : {formatDate(user.createdAt)}</span>
+                </div>
               </div>
               <Button
                 className="gap-2 bg-primary px-5 py-2 h-auto rounded-lg shadow-md transition-all hover:shadow-lg"
