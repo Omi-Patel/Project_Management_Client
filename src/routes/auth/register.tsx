@@ -185,6 +185,7 @@ function RouteComponent() {
                     <Input
                       placeholder="Enter your phone number (optional)"
                       {...field}
+                      value={field.value ?? ""}
                       disabled={registerMutation.isPending}
                       className="bg-input"
                     />

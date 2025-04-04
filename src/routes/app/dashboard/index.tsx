@@ -15,7 +15,7 @@ export const Route = createFileRoute("/app/dashboard/")({
   component: RouteComponent,
 
   loader: async () => {
-      const userId = localStorage.getItem("userId");
+      const userId = localStorage.getItem("pms-userId");
   
       if (!userId) {
         // If email exists in localStorage, redirect to dashboard

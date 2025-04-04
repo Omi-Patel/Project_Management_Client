@@ -28,6 +28,7 @@ import {
 import type { UserResponse } from "@/schemas/user-schema";
 import { useTheme } from "./theme-provider";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { authService } from "@/lib/auth";
 
 export function NavUser({ user }: { user: UserResponse }) {
   const { isMobile } = useSidebar();
@@ -129,7 +130,7 @@ export function NavUser({ user }: { user: UserResponse }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
-                localStorage.removeItem("userId");
+                authService.clearTokens();
                 navigate({ to: "/" });
               }}
             >

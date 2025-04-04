@@ -23,7 +23,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/app/tasks/")({
   component: RouteComponent,
   loader: async () => {
-    const userId = localStorage.getItem("userId");
+    const userId = localStorage.getItem("pms-userId");
 
     if (!userId) {
       throw new Error("User ID is not available in localStorage");
@@ -43,7 +43,7 @@ function RouteComponent() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["tasks", page, size, search, taskIds],
     queryFn: async () => {
-      const userId = localStorage.getItem("userId");
+      const userId = localStorage.getItem("pms-userId");
 
       if (!userId) {
         throw new Error("User ID is not available in localStorage");

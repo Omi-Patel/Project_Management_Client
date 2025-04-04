@@ -6,6 +6,11 @@ import type {
 } from "@/schemas/user-schema";
 import type { ProjectSchema } from "@/schemas/project-schema";
 import type { TaskRequest, TaskResponse } from "@/schemas/task_schema";
+import type {
+  TAuthResponse,
+  TLogin,
+  TRefreshTokenRequest,
+} from "@/schemas/auth-schema";
 
 export function getBackendUrl() {
   const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -18,7 +23,7 @@ const API_BASE_URL = `${getBackendUrl()}/api/v1`;
 export async function createUser(userInput: UserInput): Promise<UserResponse> {
   try {
     const response = await axios.post<UserResponse>(
-      `${API_BASE_URL}/users/create`,
+      `${API_BASE_URL}/auth/register`,
       userInput,
       {
         headers: {
@@ -34,10 +39,10 @@ export async function createUser(userInput: UserInput): Promise<UserResponse> {
 
 export async function loginUser(
   loginInput: LoginInput
-): Promise<{ token: string }> {
+): Promise<TAuthResponse> {
   try {
-    const response = await axios.post<{ token: string }>(
-      `${API_BASE_URL}/users/login`,
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/login`,
       loginInput,
       {
         headers: {
@@ -50,6 +55,13 @@ export async function loginUser(
     throw new Error("Failed to login user");
   }
 }
+
+export const refreshTokenAction = async (
+  data: TRefreshTokenRequest
+): Promise<TAuthResponse> => {
+  const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, data);
+  return response.data;
+};
 
 export async function getAllUsers(): Promise<UserResponse[]> {
   try {
@@ -127,9 +139,11 @@ export async function createProject(
 
 export async function getAllProjects(userId: string): Promise<ProjectSchema[]> {
   try {
-    const response = await axios.get<ProjectSchema[]>(
-      `${API_BASE_URL}/projects/list/${userId}`
-    );
+    const url = userId
+      ? `${API_BASE_URL}/projects/list/${userId}`
+      : `${API_BASE_URL}/projects/list`;
+
+    const response = await axios.get<ProjectSchema[]>(url);
     return response.data;
   } catch (error) {
     throw new Error("Failed to fetch projects");

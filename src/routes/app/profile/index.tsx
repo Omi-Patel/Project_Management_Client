@@ -46,7 +46,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/app/profile/")({
   component: RouteComponent,
   loader: async () => {
-    const userId = await localStorage.getItem("userId");
+    const userId = await localStorage.getItem("pms-userId");
 
     return { userId };
   },

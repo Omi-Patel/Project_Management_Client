@@ -20,7 +20,11 @@ import { Route as AppTasksIndexImport } from './routes/app/tasks/index'
 import { Route as AppProjectsIndexImport } from './routes/app/projects/index'
 import { Route as AppProfileIndexImport } from './routes/app/profile/index'
 import { Route as AppDashboardIndexImport } from './routes/app/dashboard/index'
+import { Route as AppAdminPortalIndexImport } from './routes/app/admin-portal/index'
 import { Route as AppProjectsProjectIdImport } from './routes/app/projects/$projectId'
+import { Route as AppAdminPortalUsersIndexImport } from './routes/app/admin-portal/users/index'
+import { Route as AppAdminPortalProjectsIndexImport } from './routes/app/admin-portal/projects/index'
+import { Route as AppAdminPortalDashboardIndexImport } from './routes/app/admin-portal/dashboard/index'
 
 // Create/Update Routes
 
@@ -78,11 +82,37 @@ const AppDashboardIndexRoute = AppDashboardIndexImport.update({
   getParentRoute: () => AppRouteRoute,
 } as any)
 
+const AppAdminPortalIndexRoute = AppAdminPortalIndexImport.update({
+  id: '/admin-portal/',
+  path: '/admin-portal/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
 const AppProjectsProjectIdRoute = AppProjectsProjectIdImport.update({
   id: '/projects/$projectId',
   path: '/projects/$projectId',
   getParentRoute: () => AppRouteRoute,
 } as any)
+
+const AppAdminPortalUsersIndexRoute = AppAdminPortalUsersIndexImport.update({
+  id: '/admin-portal/users/',
+  path: '/admin-portal/users/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppAdminPortalProjectsIndexRoute =
+  AppAdminPortalProjectsIndexImport.update({
+    id: '/admin-portal/projects/',
+    path: '/admin-portal/projects/',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
+
+const AppAdminPortalDashboardIndexRoute =
+  AppAdminPortalDashboardIndexImport.update({
+    id: '/admin-portal/dashboard/',
+    path: '/admin-portal/dashboard/',
+    getParentRoute: () => AppRouteRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -130,6 +160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsProjectIdImport
       parentRoute: typeof AppRouteImport
     }
+    '/app/admin-portal/': {
+      id: '/app/admin-portal/'
+      path: '/admin-portal'
+      fullPath: '/app/admin-portal'
+      preLoaderRoute: typeof AppAdminPortalIndexImport
+      parentRoute: typeof AppRouteImport
+    }
     '/app/dashboard/': {
       id: '/app/dashboard/'
       path: '/dashboard'
@@ -158,6 +195,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTasksIndexImport
       parentRoute: typeof AppRouteImport
     }
+    '/app/admin-portal/dashboard/': {
+      id: '/app/admin-portal/dashboard/'
+      path: '/admin-portal/dashboard'
+      fullPath: '/app/admin-portal/dashboard'
+      preLoaderRoute: typeof AppAdminPortalDashboardIndexImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/app/admin-portal/projects/': {
+      id: '/app/admin-portal/projects/'
+      path: '/admin-portal/projects'
+      fullPath: '/app/admin-portal/projects'
+      preLoaderRoute: typeof AppAdminPortalProjectsIndexImport
+      parentRoute: typeof AppRouteImport
+    }
+    '/app/admin-portal/users/': {
+      id: '/app/admin-portal/users/'
+      path: '/admin-portal/users'
+      fullPath: '/app/admin-portal/users'
+      preLoaderRoute: typeof AppAdminPortalUsersIndexImport
+      parentRoute: typeof AppRouteImport
+    }
   }
 }
 
@@ -165,18 +223,26 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteRouteChildren {
   AppProjectsProjectIdRoute: typeof AppProjectsProjectIdRoute
+  AppAdminPortalIndexRoute: typeof AppAdminPortalIndexRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppProfileIndexRoute: typeof AppProfileIndexRoute
   AppProjectsIndexRoute: typeof AppProjectsIndexRoute
   AppTasksIndexRoute: typeof AppTasksIndexRoute
+  AppAdminPortalDashboardIndexRoute: typeof AppAdminPortalDashboardIndexRoute
+  AppAdminPortalProjectsIndexRoute: typeof AppAdminPortalProjectsIndexRoute
+  AppAdminPortalUsersIndexRoute: typeof AppAdminPortalUsersIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppProjectsProjectIdRoute: AppProjectsProjectIdRoute,
+  AppAdminPortalIndexRoute: AppAdminPortalIndexRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppProfileIndexRoute: AppProfileIndexRoute,
   AppProjectsIndexRoute: AppProjectsIndexRoute,
   AppTasksIndexRoute: AppTasksIndexRoute,
+  AppAdminPortalDashboardIndexRoute: AppAdminPortalDashboardIndexRoute,
+  AppAdminPortalProjectsIndexRoute: AppAdminPortalProjectsIndexRoute,
+  AppAdminPortalUsersIndexRoute: AppAdminPortalUsersIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
@@ -204,10 +270,14 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/app/projects/$projectId': typeof AppProjectsProjectIdRoute
+  '/app/admin-portal': typeof AppAdminPortalIndexRoute
   '/app/dashboard': typeof AppDashboardIndexRoute
   '/app/profile': typeof AppProfileIndexRoute
   '/app/projects': typeof AppProjectsIndexRoute
   '/app/tasks': typeof AppTasksIndexRoute
+  '/app/admin-portal/dashboard': typeof AppAdminPortalDashboardIndexRoute
+  '/app/admin-portal/projects': typeof AppAdminPortalProjectsIndexRoute
+  '/app/admin-portal/users': typeof AppAdminPortalUsersIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -217,10 +287,14 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/app/projects/$projectId': typeof AppProjectsProjectIdRoute
+  '/app/admin-portal': typeof AppAdminPortalIndexRoute
   '/app/dashboard': typeof AppDashboardIndexRoute
   '/app/profile': typeof AppProfileIndexRoute
   '/app/projects': typeof AppProjectsIndexRoute
   '/app/tasks': typeof AppTasksIndexRoute
+  '/app/admin-portal/dashboard': typeof AppAdminPortalDashboardIndexRoute
+  '/app/admin-portal/projects': typeof AppAdminPortalProjectsIndexRoute
+  '/app/admin-portal/users': typeof AppAdminPortalUsersIndexRoute
 }
 
 export interface FileRoutesById {
@@ -231,10 +305,14 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/app/projects/$projectId': typeof AppProjectsProjectIdRoute
+  '/app/admin-portal/': typeof AppAdminPortalIndexRoute
   '/app/dashboard/': typeof AppDashboardIndexRoute
   '/app/profile/': typeof AppProfileIndexRoute
   '/app/projects/': typeof AppProjectsIndexRoute
   '/app/tasks/': typeof AppTasksIndexRoute
+  '/app/admin-portal/dashboard/': typeof AppAdminPortalDashboardIndexRoute
+  '/app/admin-portal/projects/': typeof AppAdminPortalProjectsIndexRoute
+  '/app/admin-portal/users/': typeof AppAdminPortalUsersIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -246,10 +324,14 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/app/projects/$projectId'
+    | '/app/admin-portal'
     | '/app/dashboard'
     | '/app/profile'
     | '/app/projects'
     | '/app/tasks'
+    | '/app/admin-portal/dashboard'
+    | '/app/admin-portal/projects'
+    | '/app/admin-portal/users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -258,10 +340,14 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/app/projects/$projectId'
+    | '/app/admin-portal'
     | '/app/dashboard'
     | '/app/profile'
     | '/app/projects'
     | '/app/tasks'
+    | '/app/admin-portal/dashboard'
+    | '/app/admin-portal/projects'
+    | '/app/admin-portal/users'
   id:
     | '__root__'
     | '/'
@@ -270,10 +356,14 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/app/projects/$projectId'
+    | '/app/admin-portal/'
     | '/app/dashboard/'
     | '/app/profile/'
     | '/app/projects/'
     | '/app/tasks/'
+    | '/app/admin-portal/dashboard/'
+    | '/app/admin-portal/projects/'
+    | '/app/admin-portal/users/'
   fileRoutesById: FileRoutesById
 }
 
@@ -311,10 +401,14 @@ export const routeTree = rootRoute
       "filePath": "app/route.tsx",
       "children": [
         "/app/projects/$projectId",
+        "/app/admin-portal/",
         "/app/dashboard/",
         "/app/profile/",
         "/app/projects/",
-        "/app/tasks/"
+        "/app/tasks/",
+        "/app/admin-portal/dashboard/",
+        "/app/admin-portal/projects/",
+        "/app/admin-portal/users/"
       ]
     },
     "/auth": {
@@ -336,6 +430,10 @@ export const routeTree = rootRoute
       "filePath": "app/projects/$projectId.tsx",
       "parent": "/app"
     },
+    "/app/admin-portal/": {
+      "filePath": "app/admin-portal/index.tsx",
+      "parent": "/app"
+    },
     "/app/dashboard/": {
       "filePath": "app/dashboard/index.tsx",
       "parent": "/app"
@@ -350,6 +448,18 @@ export const routeTree = rootRoute
     },
     "/app/tasks/": {
       "filePath": "app/tasks/index.tsx",
+      "parent": "/app"
+    },
+    "/app/admin-portal/dashboard/": {
+      "filePath": "app/admin-portal/dashboard/index.tsx",
+      "parent": "/app"
+    },
+    "/app/admin-portal/projects/": {
+      "filePath": "app/admin-portal/projects/index.tsx",
+      "parent": "/app"
+    },
+    "/app/admin-portal/users/": {
+      "filePath": "app/admin-portal/users/index.tsx",
       "parent": "/app"
     }
   }

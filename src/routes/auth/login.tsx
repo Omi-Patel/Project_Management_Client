@@ -19,16 +19,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { authService, STORAGE_KEYS } from "@/lib/auth";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import axios from "axios";
 
 export const Route = createFileRoute("/auth/login")({
   component: RouteComponent,
   loader: async () => {
-    const userId = localStorage.getItem("userId");
-
-    if (userId) {
-      // If email exists in localStorage, redirect to dashboard
-      return redirect({ to: "/" });
+    const isLoggedIn = await authService.isLoggedIn();
+    if (isLoggedIn) {
+      return redirect({ to: "/app/dashboard" });
     }
+  },
+  pendingComponent: () => {
+    return <LoadingScreen />;
   },
 });
 
@@ -48,45 +52,54 @@ function RouteComponent() {
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: async (data) => {
-      
-      // Function to extract email from a message
-      const extractUserId = (message: any): string | null => {
-        if (typeof message !== "string") {
-          console.error("Invalid data type:", message);
-          return null;
-        }
-        const regex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/;
-        const match = message.match(regex);
-        return match ? match[0] : null;
-      };
+      // Store tokens and user info in localStorage
+      await authService.setTokens(data);
 
-      // Extract email from the response message
-      const userId = extractUserId(data);
-
-      if (userId) {
-        // Store the extracted email in localStorage
-        localStorage.setItem("userId", userId);
-      }
+      // Get roles from localStorage
+      const roles = JSON.parse(
+        localStorage.getItem(STORAGE_KEYS.ROLES) || "[]"
+      );
 
       // Show success toast
       toast.success("Login Successful", {
         description: "Welcome back! Redirecting to dashboard...",
       });
 
-      // Navigate to dashboard
-      navigate({ to: "/" });
+      // Navigate based on role
+      if (roles.includes("ADMIN")) {
+        navigate({ to: "/app/admin-portal" });
+      } else {
+        navigate({ to: "/app/dashboard" });
+      }
     },
     onError: (error) => {
       console.error("Login error:", error);
 
       toast.error("Login Failed", {
-        description: "Invalid credentials. Please try again.",
+        description: getErrorMessage(),
       });
     },
   });
 
   const onSubmit = (data: LoginInput) => {
     loginMutation.mutate(data);
+  };
+
+  // Determine error message based on the error type
+  const getErrorMessage = () => {
+    if (!loginMutation.error) return null;
+
+    if (
+      axios.isAxiosError(loginMutation.error) &&
+      loginMutation.error.response
+    ) {
+      return (
+        loginMutation.error.response.data.message ||
+        "Login failed. Please check your credentials."
+      );
+    }
+
+    return "Unable to connect to the server. Please try again later.";
   };
 
   const togglePasswordVisibility = () => {

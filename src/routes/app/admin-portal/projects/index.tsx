@@ -1,3 +1,4 @@
+import { LoadingScreen } from "@/components/LoadingScreen";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,19 +7,62 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  createProject,
+  deleteProject,
+  getAllProjects,
+  updateProject,
+} from "@/lib/actions";
+import { ProjectSchema } from "@/schemas/project-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createFileRoute,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
-import {
-  createProject,
-  updateProject,
-  deleteProject,
-  getAllProjects,
-} from "@/lib/actions";
+import { format } from "date-fns";
 import {
   CalendarDaysIcon,
   ClockIcon,
@@ -29,62 +73,13 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { LoadingScreen } from "@/components/LoadingScreen";
-import { ProjectSchema } from "@/schemas/project-schema";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-export const Route = createFileRoute("/app/projects/")({
+export const Route = createFileRoute("/app/admin-portal/projects/")({
   component: RouteComponent,
   loader: async () => {
-    const userId = localStorage.getItem("pms-userId");
-    if (!userId) {
-      throw new Error("User ID is not available in localStorage");
-    }
-    const projects = await getAllProjects(userId);
+    const projects = await getAllProjects("");
     return projects as ProjectSchema[];
   },
   pendingComponent: () => {
@@ -129,7 +124,7 @@ function RouteComponent() {
     mutationFn: createProject,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["projects"] });
-      navigate({ to: "/app/projects", replace: true });
+      navigate({ to: "/app/admin-portal/projects", replace: true });
       setOpen(false);
       toast.success("Project created successfully");
       router.invalidate();
