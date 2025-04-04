@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllTasks, getTasksByUserId } from "@/lib/actions";
+import { STORAGE_KEYS } from "@/lib/auth";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { createFileRoute } from "@tanstack/react-router";
@@ -23,7 +24,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/app/tasks/")({
   component: RouteComponent,
   loader: async () => {
-    const userId = localStorage.getItem("pms-userId");
+    const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
 
     if (!userId) {
       throw new Error("User ID is not available in localStorage");
@@ -43,7 +44,7 @@ function RouteComponent() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["tasks", page, size, search, taskIds],
     queryFn: async () => {
-      const userId = localStorage.getItem("pms-userId");
+      const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
 
       if (!userId) {
         throw new Error("User ID is not available in localStorage");

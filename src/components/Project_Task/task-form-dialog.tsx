@@ -41,6 +41,7 @@ import { toast } from "sonner";
 import type { TaskResponse } from "@/schemas/task_schema";
 import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
+import { Check, Search, User, Users } from "lucide-react";
 
 // Task schema for form validation
 const TaskFormSchema = z.object({
@@ -206,6 +207,13 @@ export function TaskFormDialog({
         ? "Creating..."
         : "Create Task";
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [userOpen, setUserOpen] = useState(false);
+
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -318,58 +326,149 @@ export function TaskFormDialog({
               name="assigneeIds"
               render={() => (
                 <FormItem>
-                  <FormLabel>Assign Users</FormLabel>
+                  <FormLabel className="font-medium">Assign Users</FormLabel>
                   <div>
-                    <Popover>
+                    <Popover open={userOpen} onOpenChange={setUserOpen}>
                       <PopoverTrigger asChild>
-                        <Button type="button" className=" justify-start">
-                          {assigneeIds.length > 0
-                            ? `Assigned to ${assigneeIds.length} user(s)`
-                            : "Select Users"}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full justify-between border-input bg-background px-3 py-2 text-sm"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <span>
+                              {assigneeIds.length > 0
+                                ? `${assigneeIds.length} user${assigneeIds.length > 1 ? "s" : ""} assigned`
+                                : "Select Users"}
+                            </span>
+                          </div>
+                          {assigneeIds.length > 0 && (
+                            <div className="bg-primary/10 text-primary rounded-full h-6 w-6 flex items-center justify-center text-xs font-medium">
+                              {assigneeIds.length}
+                            </div>
+                          )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-64">
-                        <div className="py-2 flex justify-end">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="text-red-500 text-sm hover:text-red-500"
-                            onClick={() => setAssigneeIds([])}
-                          >
-                            Clear All
-                          </Button>
+                      <PopoverContent className="w-[300px] p-0" align="start">
+                        <div className="border-b p-2 sticky top-0 bg-popover z-10">
+                          <div className="relative">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <input
+                              placeholder="Search users..."
+                              className="w-full rounded-md border border-input px-8 py-2 text-sm"
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                          </div>
                         </div>
-                        <div className="max-h-40 overflow-y-auto">
-                          {users.length === 0 ? (
-                            <p className="text-sm text-muted-foreground p-2">
-                              Loading users...
+
+                        <div className="p-2 border-b">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium">
+                              {assigneeIds.length > 0 ? (
+                                <span className="text-muted-foreground">
+                                  Selected:{" "}
+                                  <span className="text-foreground font-semibold">
+                                    {assigneeIds.length}
+                                  </span>
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground">
+                                  No users selected
+                                </span>
+                              )}
                             </p>
+                            {assigneeIds.length > 0 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive text-xs hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => setAssigneeIds([])}
+                              >
+                                Clear all
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="max-h-60 overflow-y-auto p-1">
+                          {users.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center p-4 text-center">
+                              <User className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                              <p className="text-sm text-muted-foreground">
+                                Loading users...
+                              </p>
+                            </div>
+                          ) : filteredUsers.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center p-4 text-center">
+                              <Search className="h-8 w-8 text-muted-foreground/50 mb-2" />
+                              <p className="text-sm text-muted-foreground">
+                                No users found
+                              </p>
+                            </div>
                           ) : (
-                            users.map((user) => (
+                            filteredUsers.map((user) => (
                               <div
                                 key={user.id}
-                                className="flex items-center gap-2 mb-2"
+                                className="flex items-center gap-2 p-2 rounded-md hover:bg-accent transition-colors cursor-pointer"
+                                onClick={() => {
+                                  if (assigneeIds.includes(user.id)) {
+                                    setAssigneeIds((prev) =>
+                                      prev.filter((id) => id !== user.id)
+                                    );
+                                  } else {
+                                    setAssigneeIds((prev) => [
+                                      ...prev,
+                                      user.id,
+                                    ]);
+                                  }
+                                }}
                               >
-                                <Checkbox
-                                  checked={assigneeIds.includes(user.id)}
-                                  onCheckedChange={(checked) => {
-                                    if (checked) {
-                                      setAssigneeIds((prev) => [
-                                        ...prev,
-                                        user.id,
-                                      ]);
-                                    } else {
-                                      setAssigneeIds((prev) =>
-                                        prev.filter((id) => id !== user.id)
-                                      );
-                                    }
-                                  }}
-                                />
-                                <span className="text-sm">{user.name}</span>
+                                <div className="flex items-center border rounded w-4 h-4 justify-center">
+                                  <Checkbox
+                                    checked={assigneeIds.includes(user.id)}
+                                    className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setAssigneeIds((prev) => [
+                                          ...prev,
+                                          user.id,
+                                        ]);
+                                      } else {
+                                        setAssigneeIds((prev) =>
+                                          prev.filter((id) => id !== user.id)
+                                        );
+                                      }
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                </div>
+                                <div className="flex items-center gap-2 flex-1">
+                                  <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <User className="h-3 w-3 text-primary" />
+                                  </div>
+                                  <span className="text-sm font-medium">
+                                    {user.name}
+                                  </span>
+                                </div>
+                                {assigneeIds.includes(user.id) && (
+                                  <Check className="h-4 w-4 text-primary" />
+                                )}
                               </div>
                             ))
                           )}
+                        </div>
+
+                        <div className="p-2 border-t flex justify-end">
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => setUserOpen(false)}
+                          >
+                            Done
+                          </Button>
                         </div>
                       </PopoverContent>
                     </Popover>

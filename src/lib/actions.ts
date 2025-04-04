@@ -63,10 +63,15 @@ export const refreshTokenAction = async (
   return response.data;
 };
 
-export async function getAllUsers(): Promise<UserResponse[]> {
+export async function getAllUsers(params: {
+  page: number;
+  size: number;
+  search?: string | null;
+}): Promise<UserResponse[]> {
   try {
-    const response = await axios.get<UserResponse[]>(
-      `${API_BASE_URL}/users/list`
+    const response = await axios.post<UserResponse[]>(
+      `${API_BASE_URL}/users/list`,
+      params
     );
     return response.data;
   } catch (error) {

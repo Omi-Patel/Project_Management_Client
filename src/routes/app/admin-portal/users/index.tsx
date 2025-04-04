@@ -22,10 +22,13 @@ import { toast } from "sonner";
 import type { UserResponse } from "@/schemas/user-schema";
 import { useState } from "react";
 import {
+  ChevronLeft,
+  ChevronRight,
   Edit,
   Pencil,
   RefreshCw,
   Save,
+  Search,
   Trash2,
   UserCheck,
   UserIcon,
@@ -82,6 +85,10 @@ function RouteComponent() {
   const [editingUser, setEditingUser] = useState<UserResponse | null>(null);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
+  const [page, setPage] = useState(1); // Current page
+  const [size] = useState(10); // Number of tasks per page
+  const [search, setSearch] = useState<string | null>(null); // Search query
+
   const queryClient = useQueryClient();
 
   // Query to fetch users
@@ -91,8 +98,10 @@ function RouteComponent() {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["users"],
-    queryFn: getAllUsers,
+    queryKey: ["users", page, size, search],
+    queryFn: async () => {
+      return await getAllUsers({ page, size, search });
+    },
   });
 
   // Mutation to update user
@@ -143,6 +152,15 @@ function RouteComponent() {
     }
   };
 
+  const handleSearch = (newSearch: string) => {
+    setSearch(newSearch);
+    setPage(1); // Reset to the first page when a new search is performed
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
   return (
     <SidebarInset>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -167,8 +185,8 @@ function RouteComponent() {
       <Separator className="mb-4" />
 
       <div className="container mx-auto py-8 ">
-        <div className="">
-          <CardHeader className="bg-muted/10 px-6 py-4 border-b">
+        <div className="space-y-6">
+          <CardHeader className="bg-muted/10 px-6 py-4 ">
             <div className="flex justify-between items-center">
               <div>
                 <CardTitle className="text-2xl font-bold flex items-center gap-2">
@@ -194,9 +212,25 @@ function RouteComponent() {
             </div>
           </CardHeader>
 
-          <CardContent className="p-6">
+          {/* Search Input */}
+          <div className="px-6">
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search tasks..."
+                value={search || ""}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="w-full pl-10"
+              />
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                <Search className="h-4 w-4" />
+              </div>
+            </div>
+          </div>
+
+          <CardContent className="p-0">
             {isLoading ? (
-              <div className="space-y-4">
+              <div className="p-6 space-y-4">
                 {[1, 2, 3].map((item) => (
                   <div
                     key={item}
@@ -211,7 +245,7 @@ function RouteComponent() {
                 ))}
               </div>
             ) : isError ? (
-              <div className="flex flex-col items-center justify-center border border-destructive/30 bg-destructive/10 text-destructive rounded-lg p-6 space-y-3 text-center">
+              <div className="flex flex-col items-center justify-center border border-destructive/30 bg-destructive/10 text-destructive rounded-lg mx-6 p-6 space-y-3 text-center">
                 <X className="h-8 w-8" />
                 <p className="font-medium text-lg">Failed to load users</p>
                 <p className="text-sm text-destructive/70">
@@ -227,24 +261,28 @@ function RouteComponent() {
                 </Button>
               </div>
             ) : users && users.length > 0 ? (
-              <div className="rounded-md border overflow-hidden">
+              <div className="rounded-md border mx-6 overflow-hidden">
                 <Table className="min-w-full">
                   <TableHeader>
                     <TableRow className="bg-muted/50">
+                      <TableHead className="w-16">Sr. No.</TableHead>
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Phone</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="w-24">Role</TableHead>
+                      <TableHead className="w-28">Status</TableHead>
+                      <TableHead className="text-right w-24">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {users.map((user) => (
+                    {users.map((user, index) => (
                       <TableRow
                         key={user.id}
                         className="hover:bg-muted/20 transition"
                       >
+                        <TableCell className="font-medium text-muted-foreground">
+                          {index + 1}.
+                        </TableCell>
                         <TableCell className="font-medium">
                           {user.name}
                         </TableCell>
@@ -252,7 +290,11 @@ function RouteComponent() {
                         <TableCell>{user.phoneNumber}</TableCell>
                         <TableCell>
                           <Badge
-                            className={`${user.role === "ADMIN" ? "bg-indigo-500" : "bg-primary"}`}
+                            className={`${
+                              user.role === "ADMIN"
+                                ? "bg-indigo-500"
+                                : "bg-primary"
+                            }`}
                           >
                             {user.role}
                           </Badge>
@@ -298,14 +340,14 @@ function RouteComponent() {
                 </Table>
               </div>
             ) : (
-              <div className="text-center py-16 border border-muted bg-muted/10 rounded-lg">
+              <div className="text-center py-16 border border-muted bg-muted/10 rounded-lg mx-6 space-y-4">
                 <UserIcon className="h-10 w-10 mx-auto text-muted-foreground" />
-                <p className="text-lg font-semibold mt-4 text-muted-foreground">
+                <p className="text-lg font-semibold text-muted-foreground">
                   No users found
                 </p>
                 <Button
                   variant="outline"
-                  className="mt-4 gap-1"
+                  className="gap-1"
                   onClick={() => refetch()}
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -314,6 +356,34 @@ function RouteComponent() {
               </div>
             )}
           </CardContent>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center px-6">
+            <p className="text-sm text-muted-foreground">
+              Showing page {page} of{" "}
+              {Math.ceil((users?.length || 0) / size) || 1}
+            </p>
+            <div className="flex gap-2 items-center">
+              <Button
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page <= 1}
+                variant="outline"
+                size="sm"
+                className="gap-1"
+              >
+                <ChevronLeft className="h-4 w-4" /> Previous
+              </Button>
+              <Button
+                onClick={() => handlePageChange(page + 1)}
+                disabled={size > Math.ceil(users?.length ?? 0)}
+                variant="outline"
+                size="sm"
+                className="gap-1"
+              >
+                Next <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Edit User Dialog */}
