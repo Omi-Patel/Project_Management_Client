@@ -24,6 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllTasks, getUserById } from "@/lib/actions";
+import { STORAGE_KEYS } from "@/lib/auth";
 import { getStatusColor } from "@/lib/task-utils";
 import type { ListTaskRequest } from "@/schemas/task_schema";
 import { useQuery } from "@tanstack/react-query";
@@ -46,7 +47,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/app/profile/")({
   component: RouteComponent,
   loader: async () => {
-    const userId = await localStorage.getItem("pms-userId");
+    const userId = await localStorage.getItem(STORAGE_KEYS.USER_ID);
 
     return { userId };
   },

@@ -25,6 +25,7 @@ export const UserResponseSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   phoneNumber: z.string().nullable().optional(),
+  role: z.string(),
   status: z.enum(["ACTIVE", "INACTIVE", "PENDING"]).nullable().optional(),
   createdAt: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),

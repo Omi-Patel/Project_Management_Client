@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from "@/lib/auth";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
@@ -6,7 +7,7 @@ export const Route = createFileRoute("/")({
 
 function App() {
   const isLoggedIn = () => {
-    if (localStorage.getItem("userId")) {
+    if (localStorage.getItem(STORAGE_KEYS.USER_ID)) {
       return true;
     }
     return false;

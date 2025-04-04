@@ -28,7 +28,7 @@ export const getStatusColor = (status: string) => {
     case "busy":
       return "bg-yellow-500";
     case "inactive":
-      return "bg-gray-500";
+      return "bg-red-500";
     default:
       return "bg-blue-500";
   }

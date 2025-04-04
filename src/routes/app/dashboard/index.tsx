@@ -10,12 +10,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { STORAGE_KEYS } from "@/lib/auth";
 
 export const Route = createFileRoute("/app/dashboard/")({
   component: RouteComponent,
 
   loader: async () => {
-      const userId = localStorage.getItem("pms-userId");
+      const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
   
       if (!userId) {
         // If email exists in localStorage, redirect to dashboard

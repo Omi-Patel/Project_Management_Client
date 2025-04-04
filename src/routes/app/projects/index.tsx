@@ -76,11 +76,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { STORAGE_KEYS } from "@/lib/auth";
 
 export const Route = createFileRoute("/app/projects/")({
   component: RouteComponent,
   loader: async () => {
-    const userId = localStorage.getItem("pms-userId");
+    const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
     if (!userId) {
       throw new Error("User ID is not available in localStorage");
     }
@@ -107,7 +108,7 @@ function RouteComponent() {
   const navigate = useNavigate();
   const router = useRouter();
 
-  const userId = localStorage.getItem("pms-userId");
+  const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectSchema),

@@ -318,14 +318,14 @@ export function TaskFormDialog({
               name="assigneeIds"
               render={() => (
                 <FormItem>
-                  <FormLabel>Assign Users (Optional)</FormLabel>
+                  <FormLabel>Assign Users</FormLabel>
                   <div>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button type="button" className=" justify-start">
                           {assigneeIds.length > 0
                             ? `Assigned to ${assigneeIds.length} user(s)`
-                            : "Select Users (Optional)"}
+                            : "Select Users"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-64">
