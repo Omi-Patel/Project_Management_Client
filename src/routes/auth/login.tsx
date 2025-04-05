@@ -67,7 +67,7 @@ function RouteComponent() {
 
       // Navigate based on role
       if (roles.includes("ADMIN")) {
-        navigate({ to: "/app/admin-portal" });
+        navigate({ to: "/app/admin-portal/dashboard" });
       } else {
         navigate({ to: "/app/dashboard" });
       }

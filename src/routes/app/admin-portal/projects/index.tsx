@@ -241,7 +241,7 @@ function RouteComponent() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Projects</BreadcrumbLink>
+                  <BreadcrumbLink href="#">All Projects</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
@@ -257,7 +257,7 @@ function RouteComponent() {
         </div>
       </header>
       <Separator className="mb-4" />
-      <div className="p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {projects.length > 0 ? (
           projects.map((project) => (
             <Card
