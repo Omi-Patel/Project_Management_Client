@@ -13,44 +13,25 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAllTasks, getTasksByUserId } from "@/lib/actions";
-import { STORAGE_KEYS } from "@/lib/auth";
+import { getAllTasks } from "@/lib/actions";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-
 import { createFileRoute } from "@tanstack/react-router";
 import { BarChart2, Table } from "lucide-react";
 import { useState } from "react";
 
-export const Route = createFileRoute("/app/tasks/")({
+export const Route = createFileRoute("/app/admin-portal/tasks/")({
   component: RouteComponent,
-  loader: async () => {
-    const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
-
-    if (!userId) {
-      throw new Error("User ID is not available in localStorage");
-    }
-    const taskIds = await getTasksByUserId(userId);
-    return taskIds;
-  },
 });
 
 function RouteComponent() {
-  const taskIds = Route.useLoaderData();
-
   const [page, setPage] = useState(1); // Current page
   const [size] = useState(10); // Number of tasks per page
   const [search, setSearch] = useState<string | null>(null); // Search query
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tasks", page, size, search, taskIds],
+    queryKey: ["tasks", page, size, search],
     queryFn: async () => {
-      const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
-
-      if (!userId) {
-        throw new Error("User ID is not available in localStorage");
-      }
-
-      return await getAllTasks({ userId, search, page, size });
+      return await getAllTasks({ userId: "", search, page, size });
     },
     placeholderData: keepPreviousData,
   });
@@ -64,6 +45,8 @@ function RouteComponent() {
     setPage(newPage);
   };
 
+  console.log(data);
+
   return (
     <SidebarInset>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -73,12 +56,12 @@ function RouteComponent() {
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block cursor-pointer">
-                  <BreadcrumbLink href="#">Tasks</BreadcrumbLink>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">All Tasks</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>My Tasks</BreadcrumbPage>
+                  <BreadcrumbPage>Tasks List</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -111,16 +94,16 @@ function RouteComponent() {
               <TabsTrigger value="taskList">
                 <Table />
               </TabsTrigger>
-              <TabsTrigger value="taskBoard">
+              {/* <TabsTrigger value="taskBoard">
                 <BarChart2 />
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
             <TabsContent value="taskList">
               <TaskList tasks={data ?? []} projectId={""} />
             </TabsContent>
-            <TabsContent value="taskBoard">
-              <TaskBoard taskIds={taskIds} />
-            </TabsContent>
+            {/* <TabsContent value="taskBoard">
+              <TaskBoard taskIds={data} />
+            </TabsContent> */}
           </Tabs>
         )}
 

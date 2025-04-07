@@ -23,6 +23,7 @@ import { Route as AppDashboardIndexImport } from './routes/app/dashboard/index'
 import { Route as AppAdminPortalIndexImport } from './routes/app/admin-portal/index'
 import { Route as AppProjectsProjectIdImport } from './routes/app/projects/$projectId'
 import { Route as AppAdminPortalUsersIndexImport } from './routes/app/admin-portal/users/index'
+import { Route as AppAdminPortalTasksIndexImport } from './routes/app/admin-portal/tasks/index'
 import { Route as AppAdminPortalProjectsIndexImport } from './routes/app/admin-portal/projects/index'
 import { Route as AppAdminPortalDashboardIndexImport } from './routes/app/admin-portal/dashboard/index'
 
@@ -97,6 +98,12 @@ const AppProjectsProjectIdRoute = AppProjectsProjectIdImport.update({
 const AppAdminPortalUsersIndexRoute = AppAdminPortalUsersIndexImport.update({
   id: '/admin-portal/users/',
   path: '/admin-portal/users/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
+
+const AppAdminPortalTasksIndexRoute = AppAdminPortalTasksIndexImport.update({
+  id: '/admin-portal/tasks/',
+  path: '/admin-portal/tasks/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 
@@ -209,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminPortalProjectsIndexImport
       parentRoute: typeof AppRouteImport
     }
+    '/app/admin-portal/tasks/': {
+      id: '/app/admin-portal/tasks/'
+      path: '/admin-portal/tasks'
+      fullPath: '/app/admin-portal/tasks'
+      preLoaderRoute: typeof AppAdminPortalTasksIndexImport
+      parentRoute: typeof AppRouteImport
+    }
     '/app/admin-portal/users/': {
       id: '/app/admin-portal/users/'
       path: '/admin-portal/users'
@@ -230,6 +244,7 @@ interface AppRouteRouteChildren {
   AppTasksIndexRoute: typeof AppTasksIndexRoute
   AppAdminPortalDashboardIndexRoute: typeof AppAdminPortalDashboardIndexRoute
   AppAdminPortalProjectsIndexRoute: typeof AppAdminPortalProjectsIndexRoute
+  AppAdminPortalTasksIndexRoute: typeof AppAdminPortalTasksIndexRoute
   AppAdminPortalUsersIndexRoute: typeof AppAdminPortalUsersIndexRoute
 }
 
@@ -242,6 +257,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppTasksIndexRoute: AppTasksIndexRoute,
   AppAdminPortalDashboardIndexRoute: AppAdminPortalDashboardIndexRoute,
   AppAdminPortalProjectsIndexRoute: AppAdminPortalProjectsIndexRoute,
+  AppAdminPortalTasksIndexRoute: AppAdminPortalTasksIndexRoute,
   AppAdminPortalUsersIndexRoute: AppAdminPortalUsersIndexRoute,
 }
 
@@ -277,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/app/tasks': typeof AppTasksIndexRoute
   '/app/admin-portal/dashboard': typeof AppAdminPortalDashboardIndexRoute
   '/app/admin-portal/projects': typeof AppAdminPortalProjectsIndexRoute
+  '/app/admin-portal/tasks': typeof AppAdminPortalTasksIndexRoute
   '/app/admin-portal/users': typeof AppAdminPortalUsersIndexRoute
 }
 
@@ -294,6 +311,7 @@ export interface FileRoutesByTo {
   '/app/tasks': typeof AppTasksIndexRoute
   '/app/admin-portal/dashboard': typeof AppAdminPortalDashboardIndexRoute
   '/app/admin-portal/projects': typeof AppAdminPortalProjectsIndexRoute
+  '/app/admin-portal/tasks': typeof AppAdminPortalTasksIndexRoute
   '/app/admin-portal/users': typeof AppAdminPortalUsersIndexRoute
 }
 
@@ -312,6 +330,7 @@ export interface FileRoutesById {
   '/app/tasks/': typeof AppTasksIndexRoute
   '/app/admin-portal/dashboard/': typeof AppAdminPortalDashboardIndexRoute
   '/app/admin-portal/projects/': typeof AppAdminPortalProjectsIndexRoute
+  '/app/admin-portal/tasks/': typeof AppAdminPortalTasksIndexRoute
   '/app/admin-portal/users/': typeof AppAdminPortalUsersIndexRoute
 }
 
@@ -331,6 +350,7 @@ export interface FileRouteTypes {
     | '/app/tasks'
     | '/app/admin-portal/dashboard'
     | '/app/admin-portal/projects'
+    | '/app/admin-portal/tasks'
     | '/app/admin-portal/users'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -347,6 +367,7 @@ export interface FileRouteTypes {
     | '/app/tasks'
     | '/app/admin-portal/dashboard'
     | '/app/admin-portal/projects'
+    | '/app/admin-portal/tasks'
     | '/app/admin-portal/users'
   id:
     | '__root__'
@@ -363,6 +384,7 @@ export interface FileRouteTypes {
     | '/app/tasks/'
     | '/app/admin-portal/dashboard/'
     | '/app/admin-portal/projects/'
+    | '/app/admin-portal/tasks/'
     | '/app/admin-portal/users/'
   fileRoutesById: FileRoutesById
 }
@@ -408,6 +430,7 @@ export const routeTree = rootRoute
         "/app/tasks/",
         "/app/admin-portal/dashboard/",
         "/app/admin-portal/projects/",
+        "/app/admin-portal/tasks/",
         "/app/admin-portal/users/"
       ]
     },
@@ -456,6 +479,10 @@ export const routeTree = rootRoute
     },
     "/app/admin-portal/projects/": {
       "filePath": "app/admin-portal/projects/index.tsx",
+      "parent": "/app"
+    },
+    "/app/admin-portal/tasks/": {
+      "filePath": "app/admin-portal/tasks/index.tsx",
       "parent": "/app"
     },
     "/app/admin-portal/users/": {

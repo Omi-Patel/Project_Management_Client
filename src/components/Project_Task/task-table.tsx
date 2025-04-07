@@ -14,16 +14,24 @@ import {
 import { PencilIcon, TrashIcon } from "lucide-react";
 import type { TaskResponse } from "@/schemas/task_schema";
 import { getBadgeColor } from "@/lib/task-utils";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface TaskTableProps {
   tasks: TaskResponse[];
+  taskAssignees: Record<string, User[]>;
   onTaskClick: (task: TaskResponse) => void;
   onEditClick: (e: React.MouseEvent, task: TaskResponse) => void;
   onDeleteClick: (e: React.MouseEvent, task: TaskResponse) => void;
 }
 
+interface User {
+  id: string;
+  name: string;
+}
+
 export function TaskTable({
   tasks,
+  taskAssignees,
   onTaskClick,
   onEditClick,
   onDeleteClick,
@@ -70,11 +78,29 @@ export function TaskTable({
                   {task.priority}
                 </Badge>
               </TableCell>
-              <TableCell>
-                {task.assigneeIds?.length > 0
-                  ? `${task.assigneeIds.length} user(s)`
-                  : "Unassigned"}
+              <TableCell className="flex items-center ">
+                {taskAssignees[task.id]?.length ? (
+                  taskAssignees[task.id].map((assignee) => (
+                    <div key={assignee.id} className="flex items-center gap-1">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage
+                          src={`https://api.dicebear.com/5.x/initials/svg?seed=${assignee.name}`}
+                          alt={assignee.name}
+                        />
+                        <AvatarFallback className="text-xs">
+                          {assignee.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      {/* <span className="text-sm">{assignee.name}</span> */}
+                    </div>
+                  ))
+                ) : (
+                  <span className="text-muted-foreground text-sm">
+                    Unassigned
+                  </span>
+                )}
               </TableCell>
+
               <TableCell>
                 <div className="flex gap-2">
                   <button

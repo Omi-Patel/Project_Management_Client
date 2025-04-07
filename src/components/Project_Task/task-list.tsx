@@ -1,8 +1,8 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
-import { getUserById } from "@/lib/actions"; // No need to get task by ID anymore
+import { useState, useEffect } from "react";
+import { getUserById } from "@/lib/actions";
 import type { TaskResponse } from "@/schemas/task_schema";
 
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,6 +27,9 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
   const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [assignees, setAssignees] = useState<User[]>([]);
+  const [taskAssignees, setTaskAssignees] = useState<Record<string, User[]>>(
+    {}
+  );
 
   // Dialog states
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -37,21 +40,63 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
   const queryClient = useQueryClient();
   const router = useRouter();
 
+  // Fetch all assignees for all tasks when tasks change
+  useEffect(() => {
+    const fetchAllAssignees = async () => {
+      const assigneesMap: Record<string, User[]> = {};
+
+      for (const task of tasks) {
+        if (task.assigneeIds && task.assigneeIds.length > 0) {
+          try {
+            // Deduplicate assignee IDs to prevent fetching the same user multiple times
+            const uniqueAssigneeIds = [...new Set(task.assigneeIds)];
+
+            const fetchedAssignees = await Promise.all(
+              uniqueAssigneeIds.map((id) => getUserById(id))
+            );
+            assigneesMap[task.id] = fetchedAssignees.filter(
+              (user) => user !== null
+            ) as User[];
+          } catch (error) {
+            console.error(
+              `Failed to fetch assignees for task ${task.id}:`,
+              error
+            );
+            assigneesMap[task.id] = [];
+          }
+        } else {
+          assigneesMap[task.id] = [];
+        }
+      }
+
+      setTaskAssignees(assigneesMap);
+    };
+
+    fetchAllAssignees();
+  }, [tasks]);
+
   // Handle task click to show details
   const handleTaskClick = async (task: TaskResponse) => {
     setSelectedTask(task);
     setIsSheetOpen(true);
 
-    if (task.assigneeIds && task.assigneeIds.length > 0) {
+    // Use already fetched assignees if available
+    if (taskAssignees[task.id]) {
+      setAssignees(taskAssignees[task.id]);
+    } else if (task.assigneeIds && task.assigneeIds.length > 0) {
       try {
+        // Deduplicate assignee IDs here as well
+        const uniqueAssigneeIds = [...new Set(task.assigneeIds)];
+
         const fetchedAssignees = await Promise.all(
-          task.assigneeIds.map((id) => getUserById(id))
+          uniqueAssigneeIds.map((id) => getUserById(id))
         );
         setAssignees(
           fetchedAssignees.filter((user) => user !== null) as User[]
         );
       } catch (error) {
         console.error("Failed to fetch assignees:", error);
+        setAssignees([]);
       }
     } else {
       setAssignees([]);
@@ -66,7 +111,7 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
   };
 
   // Handle delete button click
-  const handleDeleteClick = (e: React.MouseEvent, task: TaskResponse) => {
+  const handleDeleteClick = async (e: React.MouseEvent, task: TaskResponse) => {
     e.stopPropagation();
     setTaskToDelete(task);
     setIsDeleteDialogOpen(true);
@@ -75,10 +120,37 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
   // Handle task update success
   const handleTaskUpdated = async () => {
     await queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    router.invalidate()
+    router.invalidate();
     setIsEditDialogOpen(false);
     setIsAddDialogOpen(false);
   };
+
+  const handleTaskDelete = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    router.invalidate();
+    setIsDeleteDialogOpen(false);
+    setTaskToDelete(null);
+  };
+
+  const dedupedTasksMap = new Map<string, TaskResponse>();
+
+  tasks.forEach((task) => {
+    if (!dedupedTasksMap.has(task.id)) {
+      dedupedTasksMap.set(task.id, { ...task });
+    } else {
+      // If already exists, merge assigneeIds
+      const existing = dedupedTasksMap.get(task.id)!;
+      const mergedAssigneeIds = Array.from(
+        new Set([...(existing.assigneeIds || []), ...(task.assigneeIds || [])])
+      );
+      dedupedTasksMap.set(task.id, {
+        ...existing,
+        assigneeIds: mergedAssigneeIds,
+      });
+    }
+  });
+
+  const dedupedTasks = Array.from(dedupedTasksMap.values());
 
   return (
     <div>
@@ -90,7 +162,8 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
         </div>
       ) : (
         <TaskTable
-          tasks={tasks}
+          tasks={dedupedTasks}
+          taskAssignees={taskAssignees}
           onTaskClick={handleTaskClick}
           onEditClick={handleEditClick}
           onDeleteClick={handleDeleteClick}
@@ -131,14 +204,7 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
         task={taskToDelete}
-        onSuccess={async () => {
-          await queryClient.invalidateQueries({
-            queryKey: ["tasks", projectId],
-          });
-          setIsDeleteDialogOpen(false);
-          setTaskToDelete(null);
-          router.invalidate();
-        }}
+        onSuccess={handleTaskDelete}
       />
     </div>
   );

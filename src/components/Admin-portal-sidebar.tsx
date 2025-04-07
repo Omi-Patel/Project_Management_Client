@@ -15,7 +15,13 @@ import {
 } from "@/components/ui/sidebar";
 import type { UserResponse } from "@/schemas/user-schema";
 import { Link } from "@tanstack/react-router";
-import { Folders, GalleryVerticalEnd, Home, Users2 } from "lucide-react";
+import {
+  Folders,
+  GalleryVerticalEnd,
+  HardDrive,
+  Home,
+  Users2,
+} from "lucide-react";
 import { NavUser } from "./NavUser";
 
 // Admin Menu items.
@@ -29,6 +35,11 @@ export const adminItems = [
     title: "All Projects",
     url: "/app/admin-portal/projects",
     icon: Folders,
+  },
+  {
+    title: "All Tasks",
+    url: "/app/admin-portal/tasks",
+    icon: HardDrive,
   },
   {
     title: "Users",
