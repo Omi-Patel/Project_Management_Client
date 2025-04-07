@@ -41,6 +41,7 @@ export function TaskTable({
       <TableHeader>
         <TableRow>
           <TableHead>Sr. No.</TableHead>
+          <TableHead>Project Name</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Priority</TableHead>
@@ -63,6 +64,11 @@ export function TaskTable({
               onClick={() => onTaskClick(task)}
             >
               <TableCell>{index + 1}.</TableCell>
+              <TableCell>
+                <Badge className="text-black font-semibold tracking-wide" style={{ backgroundColor: `${task.project.color}` }}>
+                  {task.project.name}
+                </Badge>
+              </TableCell>
               <TableCell>{task.title}</TableCell>
               <TableCell>
                 <Badge

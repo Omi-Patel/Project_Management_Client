@@ -309,16 +309,16 @@ function RouteComponent() {
               <TabsTrigger value="taskList">
                 <Table />
               </TabsTrigger>
-              {/* <TabsTrigger value="taskBoard">
+              <TabsTrigger value="taskBoard">
                 <BarChart2 />
-              </TabsTrigger> */}
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="taskList">
               <TaskList tasks={data ?? []} projectId={""} />
             </TabsContent>
-            {/* <TabsContent value="taskBoard">
-              <TaskBoard taskIds={data} />
-            </TabsContent> */}
+            <TabsContent value="taskBoard">
+              <TaskBoard taskIds={data?.map((task) => task.id) || []} />
+            </TabsContent>
           </Tabs>
         )}
 

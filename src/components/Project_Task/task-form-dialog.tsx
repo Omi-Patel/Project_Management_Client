@@ -120,7 +120,7 @@ export function TaskFormDialog({
     if (mode === "edit" && task) {
       form.reset({
         id: task.id,
-        projectId: task.projectId,
+        projectId: task.project.id ?? "",
         title: task.title,
         description: task.description || "",
         status: task.status,

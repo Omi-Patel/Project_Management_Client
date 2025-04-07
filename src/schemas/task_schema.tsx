@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { ProjectSchema } from "./project-schema";
 
 // Schema for a Task Request (used for creating/updating tasks)
 export const TaskRequestSchema = z.object({
@@ -13,7 +14,7 @@ export const TaskRequestSchema = z.object({
 // Schema for a Task Response (used for API responses)
 export const TaskResponseSchema = z.object({
   id: z.string(), // Task ID is required
-  projectId: z.string(), // Project ID is required
+  project: ProjectSchema, // Project ID is required
   title: z.string(), // Title is required
   description: z.string().nullable().optional(), // Description is optional and can be null
   assigneeIds: z.array(z.string()), // List of assignee IDs is required

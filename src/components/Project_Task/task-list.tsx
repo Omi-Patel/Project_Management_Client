@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { getUserById } from "@/lib/actions";
 import type { TaskResponse } from "@/schemas/task_schema";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 
 import { TaskDetailsSheet } from "./task-details-sheet";
@@ -41,39 +41,49 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
   const router = useRouter();
 
   // Fetch all assignees for all tasks when tasks change
-  useEffect(() => {
-    const fetchAllAssignees = async () => {
-      const assigneesMap: Record<string, User[]> = {};
+  const { data: assigneeMap = {}, isLoading: isAssigneesLoading } = useQuery({
+    queryKey: ["assignees", tasks],
+    queryFn: async () => {
+      // Collect all unique assignee IDs across all tasks
+      const allAssigneeIds = tasks
+        .flatMap((task) => task.assigneeIds || [])
+        .filter((id, index, self) => self.indexOf(id) === index); // Deduplicate IDs
 
-      for (const task of tasks) {
-        if (task.assigneeIds && task.assigneeIds.length > 0) {
-          try {
-            // Deduplicate assignee IDs to prevent fetching the same user multiple times
-            const uniqueAssigneeIds = [...new Set(task.assigneeIds)];
-
-            const fetchedAssignees = await Promise.all(
-              uniqueAssigneeIds.map((id) => getUserById(id))
-            );
-            assigneesMap[task.id] = fetchedAssignees.filter(
-              (user) => user !== null
-            ) as User[];
-          } catch (error) {
-            console.error(
-              `Failed to fetch assignees for task ${task.id}:`,
-              error
-            );
-            assigneesMap[task.id] = [];
-          }
-        } else {
-          assigneesMap[task.id] = [];
-        }
+      if (allAssigneeIds.length === 0) {
+        return {};
       }
 
-      setTaskAssignees(assigneesMap);
-    };
+      // Fetch all unique assignees in a single batch
+      const fetchedAssignees = await Promise.all(
+        allAssigneeIds.map((id) => getUserById(id))
+      );
 
-    fetchAllAssignees();
-  }, [tasks]);
+      // Create a map of assignee IDs to user objects
+      return fetchedAssignees
+        .filter((user) => user !== null)
+        .reduce(
+          (map, user) => {
+            map[user!.id] = user!;
+            return map;
+          },
+          {} as Record<string, User>
+        );
+    },
+    enabled: tasks.length > 0, // Only fetch if there are tasks
+    staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
+  });
+
+  // Map the fetched assignees back to their respective tasks
+  useEffect(() => {
+    if (!isAssigneesLoading) {
+      const assigneesMap: Record<string, User[]> = {};
+      tasks.forEach((task) => {
+        assigneesMap[task.id] =
+          task.assigneeIds?.map((id) => assigneeMap[id]).filter(Boolean) || [];
+      });
+      setTaskAssignees(assigneesMap);
+    }
+  }, [tasks, assigneeMap, isAssigneesLoading]);
 
   // Handle task click to show details
   const handleTaskClick = async (task: TaskResponse) => {
