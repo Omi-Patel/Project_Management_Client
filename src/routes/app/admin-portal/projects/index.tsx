@@ -139,7 +139,7 @@ function RouteComponent() {
     mutationFn: updateProject,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["projects"] });
-      navigate({ to: "/app/projects", replace: true });
+      navigate({ to: "/app/admin-portal/projects", replace: true });
       setOpen(false);
       toast.success("Project updated successfully");
       router.invalidate();
@@ -154,7 +154,7 @@ function RouteComponent() {
     mutationFn: deleteProject,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["projects"] });
-      navigate({ to: "/app/projects", replace: true });
+      navigate({ to: "/app/admin-portal/projects", replace: true });
       setDeleteDialogOpen(false);
       setProjectToDelete(null);
       toast.success("Project deleted successfully");

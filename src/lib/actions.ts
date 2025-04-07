@@ -225,6 +225,9 @@ export async function getAllTasks(params: {
   page: number;
   size: number;
   search?: string | null;
+  statuses?: string[] | null; // Updated to handle an array of statuses
+  priorities?: string[] | null; // Added priorities filter
+  assigneeIds?: string[] | null;
 }): Promise<TaskResponse[]> {
   try {
     const response = await axios.post<TaskResponse[]>(

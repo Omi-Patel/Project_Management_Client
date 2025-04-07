@@ -330,41 +330,43 @@ function RouteComponent() {
 
                   <div>
                     {/* Right side - Actions */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        className=" "
-                        asChild
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className=" rounded-full w-8 h-8 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    {project.userId === userId && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          className=" "
+                          asChild
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          <MoreVertical className="h-4 w-4 text-primary " />
-                          <span className="sr-only">Project Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        align="end"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <DropdownMenuItem
-                          onSelect={() => handleEditClick(project)}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className=" rounded-full w-8 h-8 hover:bg-gray-200 dark:hover:bg-gray-600"
+                          >
+                            <MoreVertical className="h-4 w-4 text-primary " />
+                            <span className="sr-only">Project Actions</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          <PencilIcon className="mr-2 h-4 w-4" />
-                          <span>Edit Project</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className="text-red-600 focus:text-red-600 "
-                          onSelect={() => handleDeleteClick(project)}
-                        >
-                          <Trash2Icon className="mr-2 h-4 w-4" />
-                          <span>Delete Project</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          <DropdownMenuItem
+                            onSelect={() => handleEditClick(project)}
+                          >
+                            <PencilIcon className="mr-2 h-4 w-4" />
+                            <span>Edit Project</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-red-600 focus:text-red-600 "
+                            onSelect={() => handleDeleteClick(project)}
+                          >
+                            <Trash2Icon className="mr-2 h-4 w-4" />
+                            <span>Delete Project</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
                 </div>
                 {/* Project Details */}
