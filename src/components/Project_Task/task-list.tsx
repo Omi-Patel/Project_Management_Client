@@ -76,14 +76,23 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
   // Map the fetched assignees back to their respective tasks
   useEffect(() => {
     if (!isAssigneesLoading) {
-      const assigneesMap: Record<string, User[]> = {};
+      const newAssigneesMap: Record<string, User[]> = {};
+  
       tasks.forEach((task) => {
-        assigneesMap[task.id] =
+        newAssigneesMap[task.id] =
           task.assigneeIds?.map((id) => assigneeMap[id]).filter(Boolean) || [];
       });
-      setTaskAssignees(assigneesMap);
+  
+      // Only update state if the map has changed
+      const isDifferent =
+        JSON.stringify(taskAssignees) !== JSON.stringify(newAssigneesMap);
+  
+      if (isDifferent) {
+        setTaskAssignees(newAssigneesMap);
+      }
     }
   }, [tasks, assigneeMap, isAssigneesLoading]);
+  
 
   // Handle task click to show details
   const handleTaskClick = async (task: TaskResponse) => {
