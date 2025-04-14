@@ -297,11 +297,11 @@ function RouteComponent() {
     calendarDay.setHours(0, 0, 0, 0);
 
     if (calendarDay.getTime() < today.getTime()) {
-      return "bg-red-50 border-red-200";
+      return "bg-red-100 border-red-300";
     } else if (calendarDay.getTime() === today.getTime()) {
-      return "bg-amber-50 border-amber-200";
+      return "bg-amber-100 border-amber-300";
     } else {
-      return "bg-emerald-50 border-emerald-200";
+      return "bg-emerald-100 border-emerald-300";
     }
   };
 
@@ -579,15 +579,23 @@ function RouteComponent() {
                   </div>
 
                   {/* Calendar days */}
-                  <div className="grid grid-cols-7 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-1 md:gap-2">
                     {calendarDays.map((day, index) => (
                       <div
                         key={index}
-                        className={`min-h-[100px] border rounded-lg p-2 ${day ? getDayStatus(day) : "bg-gray-50 dark:bg-gray-800"} ${isToday(day) ? "ring-2 ring-primary" : ""}`}
+                        className={`
+            min-h-[80px] md:min-h-[100px] 
+            border rounded-lg 
+            p-1 md:p-2 
+            transition-colors duration-200
+            hover:border-blue-300 dark:hover:border-blue-700
+            ${day ? getDayStatus(day) : "bg-gray-50 dark:bg-gray-800"} 
+            ${isToday(day) ? "ring-2 ring-blue-500 dark:ring-blue-400" : ""}
+          `}
                       >
                         {day && (
                           <>
-                            <div className="text-right text-sm font-medium mb-1">
+                            <div className="text-right text-xs md:text-sm font-medium mb-1">
                               {day.getDate()}
                             </div>
                             <div className="space-y-1">
@@ -596,17 +604,16 @@ function RouteComponent() {
                                 .map((project) => (
                                   <div
                                     key={project.id}
-                                    className="text-xs p-1 rounded cursor-pointer truncate text-black font-bold"
+                                    className="text-xs p-1 rounded cursor-pointer truncate text-black font-bold hover:opacity-100 transition-opacity"
                                     style={{
                                       backgroundColor: project.color,
                                       opacity: 0.8,
                                     }}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
+                                    onClick={() =>
                                       navigate({
                                         to: `/app/projects/${project.id}`,
-                                      });
-                                    }}
+                                      })
+                                    }
                                   >
                                     {project.name}
                                   </div>
@@ -615,27 +622,24 @@ function RouteComponent() {
                               {getProjectsForDay(day).length >= 2 && (
                                 <Popover>
                                   <PopoverTrigger asChild>
-                                    <div
-                                      className="text-xs text-blue-600 cursor-pointer underline"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
+                                    <button className="text-xs text-blue-600 dark:text-blue-400 cursor-pointer hover:text-blue-800 dark:hover:text-blue-300 font-medium w-full text-left transition-colors">
                                       +{getProjectsForDay(day).length - 1} more
-                                    </div>
+                                    </button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-64 max-h-60 overflow-y-auto p-2 space-y-1 z-[100]">
+                                  <PopoverContent className="w-64 max-h-60 overflow-y-auto p-2 space-y-1 z-50">
                                     {getProjectsForDay(day).map((project) => (
                                       <div
                                         key={project.id}
-                                        className="text-xs p-1 rounded cursor-pointer truncate text-black font-bold"
+                                        className="text-xs p-2 rounded cursor-pointer truncate text-black font-bold hover:opacity-100 transition-opacity"
                                         style={{
                                           backgroundColor: project.color,
                                           opacity: 0.8,
                                         }}
-                                        onClick={() => {
+                                        onClick={() =>
                                           navigate({
                                             to: `/app/projects/${project.id}`,
-                                          });
-                                        }}
+                                          })
+                                        }
                                       >
                                         {project.name}
                                       </div>
@@ -654,15 +658,15 @@ function RouteComponent() {
                 {/* Legend */}
                 <div className="p-4 border-t flex flex-wrap gap-4">
                   <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-red-100 border border-red-200 mr-2"></div>
+                    <div className="w-3 h-3 rounded-full bg-red-200 border border-red-200 mr-2"></div>
                     <span className="text-xs">Overdue</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-amber-100 border border-amber-200 mr-2"></div>
+                    <div className="w-3 h-3 rounded-full bg-amber-200 border border-amber-200 mr-2"></div>
                     <span className="text-xs">Due Today</span>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-emerald-100 border border-emerald-200 mr-2"></div>
+                    <div className="w-3 h-3 rounded-full bg-emerald-200 border border-emerald-200 mr-2"></div>
                     <span className="text-xs">Upcoming</span>
                   </div>
                 </div>
