@@ -9,6 +9,7 @@ export const TaskRequestSchema = z.object({
   assigneeIds: z.array(z.string()).optional(), // List of assignee IDs is optional
   status: z.enum(["TO_DO", "IN_PROGRESS", "DONE"]).default("TO_DO"), // Status with default value
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"), // Priority with default value
+  dueDate: z.string().nullable().optional(),
 });
 
 // Schema for a Task Response (used for API responses)
@@ -20,6 +21,7 @@ export const TaskResponseSchema = z.object({
   assigneeIds: z.array(z.string()), // List of assignee IDs is required
   status: z.enum(["TO_DO", "IN_PROGRESS", "DONE"]), // Status is required
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]), // Priority is required
+  dueDate: z.string().nullable().optional(),
   createdAt: z.number().nullable().optional(), // Created timestamp is required
   updatedAt: z.number().nullable().optional(), // Updated timestamp is required
 });

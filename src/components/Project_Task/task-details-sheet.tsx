@@ -17,7 +17,11 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import {
+  AlertCircle,
+  CalendarClock,
   CalendarIcon,
+  CheckCircle2,
+  Clock,
   Clock3Icon,
   Flag,
   MessageSquare,
@@ -64,23 +68,37 @@ export function TaskDetailsSheet({
     }).format(date);
   };
 
-  // Get relative time (e.g., "2 days ago")
-  const getRelativeTime = (dateString: any) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  // Function to get relative time
+  const getRelativeTime = (date: any) => {
+    if (!date) return "";
+
+    // This is a placeholder - in a real app you'd use a library like date-fns
     const now = new Date();
-    const diffInDays = Math.round(
-      (date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    const then = new Date(date);
+    const diffInDays = Math.floor(
+      (now.getTime() - then.getTime()) / (1000 * 60 * 60 * 24)
     );
 
     if (diffInDays === 0) return "Today";
-    if (diffInDays === -1) return "Yesterday";
-    if (diffInDays < -1 && diffInDays > -7)
-      return rtf.format(diffInDays, "day");
-    if (diffInDays <= -7 && diffInDays > -30)
-      return rtf.format(Math.round(diffInDays / 7), "week");
-    return rtf.format(Math.round(diffInDays / 30), "month");
+    if (diffInDays === 1) return "Yesterday";
+    if (diffInDays === -1) return "Tomorrow";
+    if (diffInDays > 0) return `${diffInDays} days ago`;
+    return `In ${Math.abs(diffInDays)} days`;
+  };
+
+  // Get status icon
+  const getStatusIcon = (status: any) => {
+    switch (status?.toLowerCase()) {
+      case "completed":
+      case "done":
+        return <CheckCircle2 className="h-3 w-3 mr-1" />;
+      case "in progress":
+        return <Clock className="h-3 w-3 mr-1" />;
+      case "overdue":
+        return <AlertCircle className="h-3 w-3 mr-1" />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -112,13 +130,14 @@ export function TaskDetailsSheet({
           <Separator className="my-2" />
 
           {/* Task details */}
-          <div className="px-6 py-3">
-            <h3 className="text-sm font-medium text-gray-500 mb-3 flex items-center">
+          <div className="px-6 py-4">
+            <h3 className="text-sm font-semibold text-gray-600 mb-4 flex items-center">
               <Tag className="h-4 w-4 mr-2 opacity-70" />
-              Details
+              Task Details
             </h3>
 
-            <div className="grid grid-cols-2 gap-y-4 gap-x-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
+              {/* Status */}
               <div>
                 <p className="text-xs text-gray-500 mb-1">Status</p>
                 <Badge className={`${getBadgeColor(task.status)} text-black`}>
@@ -126,17 +145,22 @@ export function TaskDetailsSheet({
                 </Badge>
               </div>
 
+              {/* Priority */}
               <div>
                 <p className="text-xs text-gray-500 mb-1">Priority</p>
-                <Badge className={`${getBadgeColor(task.priority)} text-black`}>
-                  <Flag className="h-3 w-3 mr-1" /> {task.priority}
+                <Badge
+                  className={`${getBadgeColor(task.priority)} text-black flex items-center`}
+                >
+                  <Flag className="h-3 w-3 mr-1" />
+                  {task.priority}
                 </Badge>
               </div>
 
+              {/* Created At */}
               <div>
                 <p className="text-xs text-gray-500 mb-1">Created</p>
                 <div className="flex items-center">
-                  <CalendarIcon className="h-3 w-3 mr-1 text-gray-500" />
+                  <CalendarIcon className="h-4 w-4 mr-2 text-gray-500" />
                   <p className="text-sm font-medium">
                     {formatDateTime(task.createdAt)}
                   </p>
@@ -146,16 +170,31 @@ export function TaskDetailsSheet({
                 </p>
               </div>
 
+              {/* Updated At */}
               <div>
                 <p className="text-xs text-gray-500 mb-1">Last Updated</p>
                 <div className="flex items-center">
-                  <Clock3Icon className="h-3 w-3 mr-1 text-gray-500" />
+                  <Clock3Icon className="h-4 w-4 mr-2 text-gray-500" />
                   <p className="text-sm font-medium">
                     {formatDateTime(task.updatedAt)}
                   </p>
                 </div>
                 <p className="text-xs text-gray-400 mt-1">
                   {getRelativeTime(task.updatedAt)}
+                </p>
+              </div>
+
+              {/* Due Date */}
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Due Date</p>
+                <div className="flex items-center">
+                  <CalendarClock className="h-4 w-4 mr-2 text-gray-500" />
+                  <p className="text-sm font-medium">
+                    {formatDateTime(task.dueDate)}
+                  </p>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">
+                  {getRelativeTime(task.dueDate)}
                 </p>
               </div>
             </div>

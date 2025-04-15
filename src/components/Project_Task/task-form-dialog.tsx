@@ -42,6 +42,8 @@ import type { TaskResponse } from "@/schemas/task_schema";
 import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import { Check, Search, User, Users } from "lucide-react";
+import { Calendar } from "../ui/calendar";
+import { format } from "date-fns";
 
 // Task schema for form validation
 const TaskFormSchema = z.object({
@@ -51,6 +53,7 @@ const TaskFormSchema = z.object({
   description: z.string().nullable().optional(),
   status: z.enum(["TO_DO", "IN_PROGRESS", "DONE"]).default("TO_DO"),
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"),
+  dueDate: z.string().optional().nullable(),
   assigneeIds: z.array(z.string()).optional().default([]), // Made optional
 });
 
@@ -92,6 +95,7 @@ export function TaskFormDialog({
       description: "",
       status: "TO_DO",
       priority: "MEDIUM",
+      dueDate: null,
       assigneeIds: [],
     },
   });
@@ -125,6 +129,9 @@ export function TaskFormDialog({
         description: task.description || "",
         status: task.status,
         priority: task.priority,
+        dueDate: task.dueDate
+          ? new Date(task.dueDate).getTime().toString()
+          : null,
         assigneeIds: task.assigneeIds || [],
       });
       setAssigneeIds(task.assigneeIds || []);
@@ -136,6 +143,7 @@ export function TaskFormDialog({
         description: "",
         status: "TO_DO",
         priority: "MEDIUM",
+        dueDate: null,
         assigneeIds: [],
       });
       setAssigneeIds([]);
@@ -319,6 +327,57 @@ export function TaskFormDialog({
                 )}
               />
             </div>
+
+            {/* Set Due Date */}
+            <FormField
+              control={form.control}
+              name="dueDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Due Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={`
+                w-full justify-start text-left font-normal
+                ${!field.value ? "text-muted-foreground" : ""}
+              `}
+                        >
+                          {field.value
+                            ? format(
+                                new Date(Number(field.value)),
+                                "yyyy-MM-dd"
+                              )
+                            : "Pick a date"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value
+                            ? new Date(Number(field.value))
+                            : undefined
+                        }
+                        onSelect={(date) => {
+                          if (date) {
+                            // Convert selected date to epoch time (milliseconds)
+                            const epochTime = date.getTime();
+                            field.onChange(epochTime.toString());
+                          }
+                        }}
+                        disabled={(date) => date < new Date()} // Disable past dates
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* User Assignment Section */}
             <FormField
