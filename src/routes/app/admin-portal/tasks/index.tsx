@@ -22,6 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllTasks, getAllUsers } from "@/lib/actions";
+import { exportTasksToExcel } from "@/lib/export-report";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -31,9 +32,11 @@ import {
   Filter,
   Search,
   Table,
+  Upload,
   User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/admin-portal/tasks/")({
   component: RouteComponent,
@@ -86,6 +89,48 @@ function RouteComponent() {
 
   const statuses = ["TO_DO", "IN_PROGRESS", "DONE"];
   const priorities = ["LOW", "MEDIUM", "HIGH"];
+
+  // Inside your RouteComponent function, add this state
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Add this handler function inside your RouteComponent
+  const handleExportReport = () => {
+    try {
+      setIsExporting(true);
+
+      // Check if we have data to export
+      if (!data || data.length === 0) {
+        toast.info("Nothing to export");
+        setIsExporting(false);
+        return;
+      }
+
+      // Generate a descriptive filename based on filters
+      let fileName = "my-tasks";
+
+      if (search) {
+        fileName += `-search-${search.replace(/[^a-z0-9]/gi, "_")}`;
+      }
+
+      if (selectedStatus.length > 0) {
+        fileName += `-${selectedStatus.join("-")}`;
+      }
+
+      if (selectedPriority.length > 0) {
+        fileName += `-${selectedPriority.join("-")}`;
+      }
+
+      // Export the data using already fetched tasks and assignees
+      exportTasksToExcel(data, assignees, fileName);
+
+      toast.success("Export successful");
+    } catch (error) {
+      console.error("Error exporting tasks:", error);
+      toast.error("Export failed");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   // Fetch assignees when the component mounts
   useEffect(() => {
@@ -298,7 +343,20 @@ function RouteComponent() {
           </Popover>
         </div>
 
-        <h2 className="text-xl font-bold text-primary mb-4">All Tasks in the System.</h2>
+        <div className=" flex justify-between items-center py-2">
+          <h2 className="text-xl font-bold text-primary mb-4">
+            All Tasks in the System.
+          </h2>
+          <Button
+            onClick={handleExportReport}
+            disabled={isExporting || isLoading || !data || data.length === 0}
+            className="flex items-center gap-2"
+          >
+            {isExporting ? "Exporting..." : "Export Report"}
+            <Upload className="h-4 w-4" />
+          </Button>
+        </div>
+
         {isLoading ? (
           <p>Loading tasks...</p>
         ) : error ? (
