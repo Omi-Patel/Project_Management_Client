@@ -7,7 +7,6 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -17,11 +16,8 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import {
-  AlertCircle,
   CalendarClock,
   CalendarIcon,
-  CheckCircle2,
-  Clock,
   Clock3Icon,
   Flag,
   MessageSquare,
@@ -84,21 +80,6 @@ export function TaskDetailsSheet({
     if (diffInDays === -1) return "Tomorrow";
     if (diffInDays > 0) return `${diffInDays} days ago`;
     return `In ${Math.abs(diffInDays)} days`;
-  };
-
-  // Get status icon
-  const getStatusIcon = (status: any) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-      case "done":
-        return <CheckCircle2 className="h-3 w-3 mr-1" />;
-      case "in progress":
-        return <Clock className="h-3 w-3 mr-1" />;
-      case "overdue":
-        return <AlertCircle className="h-3 w-3 mr-1" />;
-      default:
-        return null;
-    }
   };
 
   return (
