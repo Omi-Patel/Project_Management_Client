@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"; // Assuming you have a ShadCN Sidebar component
 import { Separator } from "@/components/ui/separator";
@@ -11,6 +12,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { STORAGE_KEYS } from "@/lib/auth";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 export const Route = createFileRoute("/app/dashboard/")({
   component: RouteComponent,
@@ -19,13 +21,28 @@ export const Route = createFileRoute("/app/dashboard/")({
       const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
   
       if (!userId) {
-        // If email exists in localStorage, redirect to dashboard
+        // If id not exists in localStorage, redirect to dashboard
         return redirect({ to: "/auth/login" });
       }
     },
 });
 
+
 function RouteComponent() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <SidebarInset>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -46,6 +63,12 @@ function RouteComponent() {
         </div>
       </header>
       <Separator className="mb-4" />
+
+      <main>
+        <div className="px-4 pb-6 space-y-6">
+          <h1>Welcom 👋, Dashboard of PMS.</h1>
+        </div>
+      </main>
     </SidebarInset>
   );
 }

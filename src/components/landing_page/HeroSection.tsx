@@ -28,7 +28,7 @@ const HeroSection = () => {
       >
         <h1 className="text-4xl md:text-6xl font-extrabold mb-8 leading-tight tracking-tight">
           Build. Track. Deliver. <br />
-          <span className="bg-gradient-to-r from-black via-gray-700 to-gray-500 bg-clip-text text-transparent animate-gradient-x">
+          <span className="bg-gradient-to-r from-slate-600 via-gray-700 to-gray-500 bg-clip-text text-transparent animate-gradient-x">
             Projects Made Simple
           </span>
         </h1>
