@@ -8,7 +8,6 @@ import type { ProjectSchema } from "@/schemas/project-schema";
 import type { TaskRequest, TaskResponse } from "@/schemas/task_schema";
 import type {
   TAuthResponse,
-  TLogin,
   TRefreshTokenRequest,
 } from "@/schemas/auth-schema";
 
