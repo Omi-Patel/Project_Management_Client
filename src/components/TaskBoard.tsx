@@ -152,19 +152,6 @@ const TaskBoard = ({ taskIds }: TaskBoardProps) => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "LOW":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "MEDIUM":
-        return "bg-amber-100 text-amber-800 border-amber-200";
-      case "HIGH":
-        return "bg-red-100 text-red-800 border-red-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

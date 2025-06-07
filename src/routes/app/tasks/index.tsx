@@ -1,3 +1,4 @@
+import { LoadingScreen } from "@/components/LoadingScreen";
 import TaskList from "@/components/Project_Task/task-list";
 import TaskBoard from "@/components/TaskBoard";
 import { Badge } from "@/components/ui/badge";
@@ -375,7 +376,7 @@ function RouteComponent() {
           </Button>
         </div>
         {isLoading ? (
-          <p>Loading tasks...</p>
+          <LoadingScreen />
         ) : error ? (
           <p className="text-red-500">Failed to load tasks.</p>
         ) : (

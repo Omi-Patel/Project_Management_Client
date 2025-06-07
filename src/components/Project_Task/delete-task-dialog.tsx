@@ -29,7 +29,7 @@ export function DeleteTaskDialog({ isOpen, onOpenChange, task, onSuccess }: Dele
     mutationFn: deleteTask,
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["tasks", task?.projectId],
+        queryKey: ["tasks", task?.project?.id],
       })
       toast.success("Task deleted successfully")
       onSuccess()

@@ -68,7 +68,7 @@ export function AdminAppSidebar({ user }: AdminAppSidebarProps) {
                     className="font-semibold text-lg"
                     style={{ fontFamily: "Edu VIC WA NT Hand" }}
                   >
-                    Veltrix Employee
+                    Veltrix | Admin
                   </span>
                 </div>
               </Link>

@@ -94,11 +94,11 @@ const HeroSection = () => {
 
       {/* Trust Badge with animation */}
       <div
-        className={`inline-block px-6 py-3 rounded-full border border-gray-300 text-sm text-muted-foreground shadow-md bg-white/90 backdrop-blur-md transition-all duration-1000 delay-700 transform ${
+        className={`inline-block px-6 py-3 rounded-full border border-gray-300 text-sm text-muted-foreground shadow-md bg-secondary backdrop-blur-md transition-all duration-1000 delay-700 transform ${
           isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
         } hover:shadow-lg hover:scale-105 duration-300`}
       >
-        Trusted by <span className="font-semibold text-black">2,000+</span>{" "}
+        Trusted by <span className="font-semibold text-primary">2,000+</span>{" "}
         teams worldwide
       </div>
     </div>

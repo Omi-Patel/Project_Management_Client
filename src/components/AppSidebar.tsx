@@ -79,7 +79,7 @@ export function AppSidebar({
                     className="font-semibold text-lg"
                     style={{ fontFamily: "Edu VIC WA NT Hand" }}
                   >
-                    Veltrix Employee
+                    Veltrix | Employee
                   </span>
                 </div>
               </a>

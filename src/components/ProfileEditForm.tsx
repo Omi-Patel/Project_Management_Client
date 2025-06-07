@@ -80,6 +80,7 @@ const ProfileEditForm = ({
       id: user.id,
       createdAt: user.createdAt,
       updatedAt: Date.now(),
+      role: user.role,
     });
   };
 

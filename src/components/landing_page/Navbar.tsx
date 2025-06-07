@@ -11,22 +11,11 @@ import { useEffect, useState } from "react";
 const Navbar = () => {
   const isMobile = useIsMobile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
 
   // Check if user is logged in
   const isLoggedIn = () => {
     return !!localStorage.getItem(STORAGE_KEYS.USER_ID);
   };
-
-  // Handle scroll effect for navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Prevent body scroll when sheet is open
   useEffect(() => {

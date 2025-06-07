@@ -4,7 +4,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { getUserById } from "@/lib/actions";
 import { STORAGE_KEYS } from "@/lib/auth";
 import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/app")({
