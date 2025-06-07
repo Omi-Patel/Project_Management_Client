@@ -1,31 +1,31 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { Separator } from "@/components/ui/separator"
-import { Link } from "@tanstack/react-router"
-import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react"
-import { useState } from "react"
+import { Separator } from "@/components/ui/separator";
+import { Link } from "@tanstack/react-router";
+import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import { useState } from "react";
 
 const Footer = () => {
-  const year = new Date().getFullYear()
-  const [email, setEmail] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubscribed, setIsSubscribed] = useState(false)
+  const year = new Date().getFullYear();
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
   const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email) return
+    e.preventDefault();
+    if (!email) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     // Simulate API call
     setTimeout(() => {
-      setIsSubmitting(false)
-      setIsSubscribed(true)
-      setEmail("")
-    }, 1000)
-  }
+      setIsSubmitting(false);
+      setIsSubscribed(true);
+      setEmail("");
+    }, 1000);
+  };
 
   return (
     <footer className="bg-background text-foreground pt-16 pb-8 border-t">
@@ -35,27 +35,42 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Product</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Features
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Integrations
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Changelog
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Roadmap
                 </Link>
               </li>
@@ -66,27 +81,42 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Resources</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Blog
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Documentation
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Guides
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Webinars
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Help Center
                 </Link>
               </li>
@@ -97,27 +127,42 @@ const Footer = () => {
             <h3 className="font-semibold text-lg mb-4">Company</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Careers
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Contact
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Partners
                 </Link>
               </li>
               <li>
-                <Link to="/" className="text-muted-foreground hover:text-primary transition-colors duration-300">
+                <Link
+                  to="/"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
+                >
                   Legal
                 </Link>
               </li>
@@ -158,13 +203,18 @@ const Footer = () => {
                 <Github size={20} />
               </a>
             </div>
-            <p className="text-muted-foreground text-sm">Subscribe to our newsletter for updates</p>
+            <p className="text-muted-foreground text-sm">
+              Subscribe to our newsletter for updates
+            </p>
             {isSubscribed ? (
               <div className="p-3 bg-green-50 text-green-700 rounded-md text-sm">
                 Thanks for subscribing! We'll be in touch soon.
               </div>
             ) : (
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row mt-2 gap-2">
+              <form
+                onSubmit={handleSubscribe}
+                className="flex flex-col sm:flex-row mt-2 gap-2"
+              >
                 <input
                   type="email"
                   placeholder="Enter your email"
@@ -193,25 +243,34 @@ const Footer = () => {
               to="/"
               className="font-bold text-foreground text-lg mr-2 hover:text-primary transition-colors duration-300"
             >
-              PMS
+              <span style={{ fontFamily: "Edu VIC WA NT Hand" }}>Veltrix</span>
             </Link>
             © {year} All rights reserved.
           </div>
           <div className="flex space-x-6">
-            <Link to="/" className="hover:text-primary transition-colors duration-300">
+            <Link
+              to="/"
+              className="hover:text-primary transition-colors duration-300"
+            >
               Privacy Policy
             </Link>
-            <Link to="/" className="hover:text-primary transition-colors duration-300">
+            <Link
+              to="/"
+              className="hover:text-primary transition-colors duration-300"
+            >
               Terms of Service
             </Link>
-            <Link to="/" className="hover:text-primary transition-colors duration-300">
+            <Link
+              to="/"
+              className="hover:text-primary transition-colors duration-300"
+            >
               Cookie Policy
             </Link>
           </div>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

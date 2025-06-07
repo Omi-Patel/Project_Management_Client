@@ -107,9 +107,9 @@ const Navbar = () => {
     >
       <Link
         to="/"
-        className="font-bold text-2xl tracking-tight transition-transform duration-300 hover:scale-105"
+        className="font-bold text-4xl tracking-tight transition-transform duration-300 hover:scale-105"
       >
-        PMS
+        <span style={{ fontFamily: "Edu VIC WA NT Hand" }}>Veltrix</span>
       </Link>
 
       {isMobile ? (

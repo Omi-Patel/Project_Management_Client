@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteUser, getAllUsers, updateUser } from "@/lib/actions";
+import { authService } from "@/lib/auth";
 import {
   Table,
   TableBody,
@@ -77,6 +78,17 @@ import { getStatusColor } from "@/lib/task-utils";
 
 export const Route = createFileRoute("/app/admin-portal/users/")({
   component: RouteComponent,
+  loader: async () => {
+    const isLoggedIn = await authService.isLoggedIn();
+    if (!isLoggedIn) {
+      return redirect({ to: "/auth/login" });
+    }
+
+    const isAdmin = await authService.hasRole("ADMIN");
+    if (!isAdmin) {
+      return redirect({ to: "/app/dashboard" });
+    }
+  },
 });
 
 function RouteComponent() {

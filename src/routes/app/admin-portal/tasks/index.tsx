@@ -1,3 +1,4 @@
+import { LoadingScreen } from "@/components/LoadingScreen";
 import TaskList from "@/components/Project_Task/task-list";
 import TaskBoard from "@/components/TaskBoard";
 import { Badge } from "@/components/ui/badge";
@@ -22,9 +23,10 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllTasks, getAllUsers } from "@/lib/actions";
+import { authService } from "@/lib/auth";
 import { exportTasksToExcel } from "@/lib/export-report";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import {
   AlertCircle,
   BarChart2,
@@ -40,6 +42,17 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/admin-portal/tasks/")({
   component: RouteComponent,
+  loader: async () => {
+    const isLoggedIn = await authService.isLoggedIn();
+    if (!isLoggedIn) {
+      return redirect({ to: "/auth/login" });
+    }
+
+    const isAdmin = await authService.hasRole("ADMIN");
+    if (!isAdmin) {
+      return redirect({ to: "/app/dashboard" });
+    }
+  },
 });
 
 function RouteComponent() {
@@ -358,7 +371,7 @@ function RouteComponent() {
         </div>
 
         {isLoading ? (
-          <p>Loading tasks...</p>
+          <LoadingScreen />
         ) : error ? (
           <p className="text-red-500">Failed to load tasks.</p>
         ) : (

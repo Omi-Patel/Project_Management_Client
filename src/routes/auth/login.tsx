@@ -19,7 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { authService, STORAGE_KEYS } from "@/lib/auth";
+import { authService } from "@/lib/auth";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import axios from "axios";
 
@@ -55,22 +55,12 @@ function RouteComponent() {
       // Store tokens and user info in localStorage
       await authService.setTokens(data);
 
-      // Get roles from localStorage
-      const roles = JSON.parse(
-        localStorage.getItem(STORAGE_KEYS.ROLES) || "[]"
-      );
-
       // Show success toast
       toast.success("Login Successful", {
         description: "Welcome back! Redirecting to dashboard...",
       });
 
-      // Navigate based on role
-      if (roles.includes("ADMIN")) {
-        navigate({ to: "/app/admin-portal/dashboard" });
-      } else {
-        navigate({ to: "/app/dashboard" });
-      }
+      navigate({ to: "/app/dashboard" });
     },
     onError: (error) => {
       console.error("Login error:", error);

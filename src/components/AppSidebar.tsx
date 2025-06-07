@@ -19,7 +19,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { TeamSwitcher } from "./TeamSwitcher";
 import { NavMain } from "./NavMain";
 import { NavUser } from "./NavUser";
 import type { UserResponse } from "@/schemas/user-schema";
@@ -76,7 +75,12 @@ export function AppSidebar({
                   <GalleryVerticalEnd className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">PMS EMPLOYEE</span>
+                  <span
+                    className="font-semibold text-lg"
+                    style={{ fontFamily: "Edu VIC WA NT Hand" }}
+                  >
+                    Veltrix Employee
+                  </span>
                 </div>
               </a>
             </SidebarMenuButton>
