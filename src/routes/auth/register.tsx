@@ -19,15 +19,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { authService } from "@/lib/auth";
 
 export const Route = createFileRoute("/auth/register")({
   component: RouteComponent,
   loader: async () => {
-    const userId = localStorage.getItem("userId");
-
-    if (userId) {
-      // If email exists in localStorage, redirect to dashboard
-      return redirect({ to: "/" });
+    const isLoggedIn = await authService.isLoggedIn();
+    if (isLoggedIn) {
+      return redirect({ to: "/app/dashboard" });
     }
   },
 });
