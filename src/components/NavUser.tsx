@@ -129,9 +129,19 @@ export function NavUser({ user }: { user: UserResponse }) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => {
-                authService.clearTokens();
-                navigate({ to: "/" });
+              onClick={async () => {
+                try {
+                  // Clear tokens and reset auth state
+                  authService.clearTokens();
+                  // Reset axios interceptors
+                  authService.setupInterceptors();
+                  // Force a page reload to clear any cached state
+                  window.location.href = "/";
+                } catch (error) {
+                  console.error("Error during logout:", error);
+                  // Fallback to force reload
+                  window.location.href = "/";
+                }
               }}
             >
               <LogOut />

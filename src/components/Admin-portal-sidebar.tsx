@@ -12,6 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import type { UserResponse } from "@/schemas/user-schema";
 import { Link } from "@tanstack/react-router";
@@ -20,31 +21,42 @@ import {
   GalleryVerticalEnd,
   HardDrive,
   Home,
+  LayoutDashboard,
   Users2,
 } from "lucide-react";
 import { NavUser } from "./NavUser";
 
 // Admin Menu items.
-export const adminItems = [
+const adminItems = [
   {
-    title: "Dashboard",
-    url: "/app/admin-portal/dashboard",
+    title: "Home",
+    url: "/",
     icon: Home,
+    iconColor: "text-blue-500",
+  },
+  {
+    title: "Admin Dashboard",
+    url: "/app/admin-portal/dashboard",
+    icon: LayoutDashboard,
+    iconColor: "text-teal-500",
   },
   {
     title: "All Projects",
     url: "/app/admin-portal/projects",
     icon: Folders,
+    iconColor: "text-green-500",
   },
   {
     title: "All Tasks",
     url: "/app/admin-portal/tasks",
     icon: HardDrive,
+    iconColor: "text-purple-500",
   },
   {
     title: "Users",
     url: "/app/admin-portal/users",
     icon: Users2,
+    iconColor: "text-yellow-500",
   },
 ];
 
@@ -53,6 +65,7 @@ interface AdminAppSidebarProps {
 }
 
 export function AdminAppSidebar({ user }: AdminAppSidebarProps) {
+  const { setOpenMobile } = useSidebar();
   return (
     <Sidebar>
       <SidebarHeader>
@@ -84,8 +97,8 @@ export function AdminAppSidebar({ user }: AdminAppSidebarProps) {
               {adminItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link to={item.url}>
-                      <item.icon />
+                    <Link to={item.url} onClick={() => setOpenMobile(false)}>
+                      <item.icon className={item.iconColor} />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
