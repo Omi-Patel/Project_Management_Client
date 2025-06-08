@@ -1,10 +1,16 @@
 "use client";
 
 import type React from "react";
-
-import { Separator } from "@/components/ui/separator";
 import { Link } from "@tanstack/react-router";
-import { Facebook, Twitter, Instagram, Linkedin, Github } from "lucide-react";
+import {
+  Twitter,
+  Instagram,
+  Linkedin,
+  Github,
+  Mail,
+  Check,
+  GanttChart,
+} from "lucide-react";
 import { useState } from "react";
 
 const Footer = () => {
@@ -27,206 +33,110 @@ const Footer = () => {
     }, 1000);
   };
 
+  const socialLinks = [
+    { icon: Twitter, href: "#", label: "Twitter" },
+    { icon: Github, href: "#", label: "GitHub" },
+    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: Instagram, href: "#", label: "Instagram" },
+  ];
+
+  const quickLinks = [
+    { label: "Features", href: "/" },
+    { label: "Pricing", href: "/" },
+    { label: "Documentation", href: "/" },
+    { label: "About", href: "/" },
+    { label: "Contact", href: "/" },
+  ];
+
+  const legalLinks = [
+    { label: "Privacy", href: "/" },
+    { label: "Terms", href: "/" },
+    { label: "Cookies", href: "/" },
+  ];
+
   return (
-    <footer className="bg-background text-foreground pt-16 pb-8 border-t">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg mb-4">Product</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Features
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Integrations
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Changelog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Roadmap
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg mb-4">Resources</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Documentation
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Guides
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Webinars
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Help Center
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg mb-4">Company</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Partners
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300"
-                >
-                  Legal
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg mb-4">Connect</h3>
-            <div className="flex flex-wrap gap-4 mb-6">
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:scale-110 transform"
+    <footer className="bg-background border-t">
+      <div className="container mx-auto px-6 py-12">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
+          {/* Brand & Description */}
+          <div className="lg:col-span-1 space-y-6">
+            <Link to="/" className="flex items-center gap-2 group w-fit">
+              <div className="p-1.5 rounded-lg shadow-md shadow-blue-500/20 ">
+                <GanttChart className="h-5 w-5 " />
+              </div>
+              <span
+                style={{ fontFamily: "Edu VIC WA NT Hand" }}
+                className="font-bold text-2xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
               >
-                <Facebook size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:scale-110 transform"
-              >
-                <Twitter size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:scale-110 transform"
-              >
-                <Instagram size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:scale-110 transform"
-              >
-                <Linkedin size={20} />
-              </a>
-              <a
-                href="#"
-                className="text-muted-foreground hover:text-primary transition-colors duration-300 hover:scale-110 transform"
-              >
-                <Github size={20} />
-              </a>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              Subscribe to our newsletter for updates
+                Veltrix
+              </span>
+            </Link>
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-sm">
+              Building the future of project management with intuitive tools
+              that help teams collaborate and succeed.
             </p>
+
+            {/* Social Links */}
+            <div className="flex items-center gap-4">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all duration-300 hover:scale-110"
+                  aria-label={social.label}
+                >
+                  <social.icon className="h-4 w-4" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div className="lg:col-span-1">
+            <h3 className="font-semibold text-foreground mb-6">Quick Links</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {quickLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300 py-1"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Newsletter */}
+          <div className="lg:col-span-1">
+            <h3 className="font-semibold text-foreground mb-6">Stay Updated</h3>
+            <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+              Get the latest updates and features delivered to your inbox.
+            </p>
+
             {isSubscribed ? (
-              <div className="p-3 bg-green-50 text-green-700 rounded-md text-sm">
-                Thanks for subscribing! We'll be in touch soon.
+              <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800">
+                <Check className="h-4 w-4 flex-shrink-0" />
+                <span className="text-sm">Thanks for subscribing!</span>
               </div>
             ) : (
-              <form
-                onSubmit={handleSubscribe}
-                className="flex flex-col sm:flex-row mt-2 gap-2"
-              >
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="bg-background border rounded-md px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 sm:rounded-l-md sm:rounded-r-none"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+              <form onSubmit={handleSubscribe} className="space-y-3">
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="w-full pl-10 pr-4 py-3 bg-muted/50 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-300"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-primary text-primary-foreground px-3 py-2 rounded-md text-sm hover:bg-primary/90 transition-colors duration-300 sm:rounded-r-md sm:rounded-l-none disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Subscribing..." : "Subscribe"}
                 </button>
@@ -235,37 +145,23 @@ const Footer = () => {
           </div>
         </div>
 
-        <Separator className="my-8" />
-
-        <div className="flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <div className="mb-4 md:mb-0">
-            <Link
-              to="/"
-              className="font-bold text-foreground text-lg mr-2 hover:text-primary transition-colors duration-300"
-            >
-              <span style={{ fontFamily: "Edu VIC WA NT Hand" }}>Veltrix</span>
-            </Link>
-            © {year} All rights reserved.
-          </div>
-          <div className="flex space-x-6">
-            <Link
-              to="/"
-              className="hover:text-primary transition-colors duration-300"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              to="/"
-              className="hover:text-primary transition-colors duration-300"
-            >
-              Terms of Service
-            </Link>
-            <Link
-              to="/"
-              className="hover:text-primary transition-colors duration-300"
-            >
-              Cookie Policy
-            </Link>
+        {/* Footer Bottom */}
+        <div className="mt-12 pt-8 border-t border-border">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-sm text-muted-foreground">
+              © {year} Veltrix. All rights reserved.
+            </div>
+            <div className="flex items-center gap-6">
+              {legalLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

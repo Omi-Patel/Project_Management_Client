@@ -82,7 +82,7 @@ const HeroSection = () => {
               asChild
               variant="outline"
               size="lg"
-              className="border-gray-400 text-black hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg"
+              className=" text-primary dark:bg-secondary transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg"
             >
               <Link to="/" className="flex items-center">
                 <Play className="mr-2 h-4 w-4" /> Watch Demo

@@ -31,7 +31,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { authService } from "@/lib/auth";
 
 export function NavUser({ user }: { user: UserResponse }) {
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile } = useSidebar();
   const { setTheme, theme } = useTheme();
   const navigate = useNavigate();
 
@@ -107,13 +107,13 @@ export function NavUser({ user }: { user: UserResponse }) {
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <Link to="/app/profile">
+              <Link to="/app/profile" onClick={() => setOpenMobile(false)}>
                 <DropdownMenuItem>
                   <BadgeCheck />
                   Account
                 </DropdownMenuItem>
               </Link>
-              <DropdownMenuItem
+                <DropdownMenuItem
                 onClick={() => {
                   setTheme(theme === "light" ? "dark" : "light");
                 }}
