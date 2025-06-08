@@ -22,6 +22,7 @@ import {
   HardDrive,
   Home,
   LayoutDashboard,
+  LucideLayoutDashboard,
   Users2,
 } from "lucide-react";
 import { NavUser } from "./NavUser";
@@ -33,6 +34,12 @@ const adminItems = [
     url: "/",
     icon: Home,
     iconColor: "text-blue-500",
+  },
+  {
+    title: "Dashboard",
+    url: "/app/dashboard",
+    icon: LucideLayoutDashboard,
+    iconColor: "text-primary",
   },
   {
     title: "Admin Dashboard",

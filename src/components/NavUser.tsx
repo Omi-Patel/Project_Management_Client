@@ -27,13 +27,12 @@ import {
 } from "@/components/ui/sidebar";
 import type { UserResponse } from "@/schemas/user-schema";
 import { useTheme } from "./theme-provider";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { authService } from "@/lib/auth";
 
 export function NavUser({ user }: { user: UserResponse }) {
   const { isMobile, setOpenMobile } = useSidebar();
   const { setTheme, theme } = useTheme();
-  const navigate = useNavigate();
 
   return (
     <SidebarMenu>
