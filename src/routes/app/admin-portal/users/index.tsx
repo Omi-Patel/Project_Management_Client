@@ -11,10 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";

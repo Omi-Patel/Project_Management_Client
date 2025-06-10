@@ -28,7 +28,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart2,
   Table,
-  CalendarIcon,
   ClockIcon,
   ListTodo,
   Search,
@@ -43,7 +42,6 @@ import TaskBoard from "@/components/TaskBoard";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/app/projects/$projectId")({

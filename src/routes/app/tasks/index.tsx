@@ -43,7 +43,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/app/tasks/")({
   component: RouteComponent,
@@ -60,7 +59,6 @@ export const Route = createFileRoute("/app/tasks/")({
 
 function RouteComponent() {
   const taskIds = Route.useLoaderData();
-  const navigate = useNavigate();
 
   const [page, setPage] = useState(1);
   const [size] = useState(10);
