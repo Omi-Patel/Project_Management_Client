@@ -1,7 +1,6 @@
 "use client";
 
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
@@ -43,38 +42,31 @@ export const Route = createFileRoute("/app/dashboard/")({
 });
 
 function RouteComponent() {
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   // Fetch user data
-  const { data: user } = useQuery({
+  const { data: user, isLoading: isUserLoading } = useQuery({
     queryKey: ["user", userId],
     queryFn: () => getUserById(userId!),
     enabled: !!userId,
   });
 
   // Fetch user's tasks
-  const { data: tasks } = useQuery({
+  const { data: tasks, isLoading: isTasksLoading } = useQuery({
     queryKey: ["tasks", userId],
     queryFn: () => getAllTasks({ userId: userId!, page: 1, size: 1000 }),
     enabled: !!userId,
   });
 
   // Fetch user's projects
-  const { data: projects } = useQuery({
+  const { data: projects, isLoading: isProjectsLoading } = useQuery({
     queryKey: ["projects", userId],
     queryFn: () => getAllProjects(userId!),
     enabled: !!userId,
   });
+
+  const isLoading = isUserLoading || isTasksLoading || isProjectsLoading;
 
   if (isLoading) {
     return <LoadingScreen />;

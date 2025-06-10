@@ -24,11 +24,13 @@ import {
   LayoutDashboard,
   LucideLayoutDashboard,
   Users2,
+  Shield,
 } from "lucide-react";
 import { NavUser } from "./NavUser";
+import { Badge } from "@/components/ui/badge";
 
-// Admin Menu items.
-const adminItems = [
+// General navigation items
+const generalItems = [
   {
     title: "Home",
     url: "/",
@@ -41,6 +43,10 @@ const adminItems = [
     icon: LucideLayoutDashboard,
     iconColor: "text-primary",
   },
+];
+
+// Admin-specific items
+const adminItems = [
   {
     title: "Admin Dashboard",
     url: "/app/admin-portal/dashboard",
@@ -73,40 +79,81 @@ interface AdminAppSidebarProps {
 
 export function AdminAppSidebar({ user }: AdminAppSidebarProps) {
   const { setOpenMobile } = useSidebar();
+
   return (
     <Sidebar>
-      <SidebarHeader>
+      {/* Header */}
+      <SidebarHeader className=" border-b">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              className=" hover:bg-sidebar-accent/50"
+            >
               <Link to="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <GalleryVerticalEnd className="size-4" />
+                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <GalleryVerticalEnd className="size-5" />
                 </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span
-                    className="font-semibold text-lg"
-                    style={{ fontFamily: "Edu VIC WA NT Hand" }}
-                  >
-                    Veltrix | Admin
-                  </span>
+                <div className="flex flex-col gap-1 leading-none">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="font-bold text-lg"
+                      style={{ fontFamily: "Edu VIC WA NT Hand" }}
+                    >
+                      Veltrix
+                    </span>
+                    <Badge
+                      variant="destructive"
+                      className="text-xs px-2 py-0.5"
+                    >
+                      <Shield className="size-3 mr-1" />
+                      Admin
+                    </Badge>
+                  </div>
                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+
+      {/* Content */}
+      <SidebarContent className="p-4 space-y-6">
+        {/* General Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel>Admin Portal</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground mb-3">
+            General
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-2">
+              {generalItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild className="h-10 px-3">
+                    <Link to={item.url} onClick={() => setOpenMobile(false)}>
+                      <item.icon className={`size-4 ${item.iconColor}`} />
+                      <span className="font-medium">{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Admin Portal */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground mb-3">
+            Admin Portal
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-2">
               {adminItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="h-10 px-3">
                     <Link to={item.url} onClick={() => setOpenMobile(false)}>
-                      <item.icon className={item.iconColor} />
-                      <span>{item.title}</span>
+                      <item.icon className={`size-4 ${item.iconColor}`} />
+                      <span className="font-medium">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -115,7 +162,9 @@ export function AdminAppSidebar({ user }: AdminAppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+
+      {/* Footer */}
+      <SidebarFooter className="p-4 border-t">
         <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />

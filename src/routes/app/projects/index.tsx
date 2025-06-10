@@ -323,17 +323,17 @@ function RouteComponent() {
 
   return (
     <SidebarInset>
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between w-full px-6">
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-16 items-center gap-2 px-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbItem className="hidden md:flex cursor-pointer items-center">
                   <BreadcrumbLink
-                    href="#"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => navigate({ to: "/app/projects" })}
+                    className="flex items-center hover:text-primary transition-colors"
                   >
                     Projects
                   </BreadcrumbLink>
@@ -347,13 +347,15 @@ function RouteComponent() {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <Button
-            onClick={handleAddClick}
-            className="shadow-sm hover:shadow-md transition-all duration-200"
-          >
-            <PlusIcon className="size-4 mr-2" />
-            New Project
-          </Button>
+          <div className="ml-auto">
+            <Button
+              onClick={handleAddClick}
+              className="shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              <PlusIcon className="size-4 mr-2" />
+              New Project
+            </Button>
+          </div>
         </div>
       </header>
 

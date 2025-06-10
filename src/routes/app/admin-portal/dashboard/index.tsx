@@ -111,24 +111,24 @@ function RouteComponent() {
   return (
     <SidebarInset>
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md">
-        <div className="flex h-16 items-center gap-2 px-6">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-16 items-center gap-4 px-6">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger className="-ml-1 text-white/90 hover:text-white transition-colors" />
+            <Separator orientation="vertical" className="h-6 bg-white/10" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink
                     href="#"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-white/70 hover:text-white transition-colors"
                   >
                     Admin Portal
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbSeparator className="hidden md:block text-white/30" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="font-medium">
+                  <BreadcrumbPage className="font-medium text-white">
                     Analytics Dashboard
                   </BreadcrumbPage>
                 </BreadcrumbItem>

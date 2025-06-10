@@ -1,12 +1,13 @@
 "use client";
 
-import * as React from "react";
+import type * as React from "react";
 import {
   Archive,
   Folder,
   GalleryVerticalEnd,
   Home,
   Layers,
+  User,
 } from "lucide-react";
 
 import {
@@ -22,8 +23,9 @@ import {
 import { NavMain } from "./NavMain";
 import { NavUser } from "./NavUser";
 import type { UserResponse } from "@/schemas/user-schema";
+import { Badge } from "@/components/ui/badge";
 
-// This is sample data.
+// Navigation data
 const data = {
   teams: [
     {
@@ -66,31 +68,46 @@ export function AppSidebar({
 }: React.ComponentProps<typeof Sidebar> & { user: UserResponse }) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+      {/* Header */}
+      <SidebarHeader className=" border-b">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
+            <SidebarMenuButton
+              size="lg"
+              asChild
+              className=" hover:bg-sidebar-accent/50"
+            >
               <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <GalleryVerticalEnd className="size-4" />
+                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <GalleryVerticalEnd className="size-5" />
                 </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span
-                    className="font-semibold text-lg"
-                    style={{ fontFamily: "Edu VIC WA NT Hand" }}
-                  >
-                    Veltrix | Employee
-                  </span>
+                <div className="flex flex-col gap-1 leading-none">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="font-bold text-lg"
+                      style={{ fontFamily: "Edu VIC WA NT Hand" }}
+                    >
+                      Veltrix
+                    </span>
+                    <Badge variant="outline" className="text-xs px-2 py-0.5">
+                      <User className="size-3 mr-1" />
+                      Employee
+                    </Badge>
+                  </div>
                 </div>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+
+      {/* Content */}
+      <SidebarContent className="p-4">
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
+
+      {/* Footer */}
+      <SidebarFooter className="p-4 border-t">
         <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />

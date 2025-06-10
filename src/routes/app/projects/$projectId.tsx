@@ -36,11 +36,15 @@ import {
   ChevronRight,
   PlusCircle,
   CheckCircle2,
+  Target,
+  Calendar,
 } from "lucide-react";
 import TaskBoard from "@/components/TaskBoard";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/app/projects/$projectId")({
   component: RouteComponent,
@@ -134,16 +138,36 @@ function RouteComponent() {
   // Get status label and color
   const getStatusInfo = () => {
     if (daysRemaining === null)
-      return { label: "No Deadline", color: "bg-gray-100 text-gray-600" };
+      return {
+        label: "No Deadline",
+        variant: "secondary" as const,
+        className: "bg-gray-100 text-gray-700 hover:bg-gray-200",
+      };
 
     if (daysRemaining < 0) {
-      return { label: "Overdue", color: "bg-red-100 text-red-800" };
+      return {
+        label: "Overdue",
+        variant: "destructive" as const,
+        className: "bg-red-100 text-red-800 hover:bg-red-200",
+      };
     } else if (daysRemaining === 0) {
-      return { label: "Due Today", color: "bg-orange-100 text-orange-800" };
+      return {
+        label: "Due Today",
+        variant: "default" as const,
+        className: "bg-orange-100 text-orange-800 hover:bg-orange-200",
+      };
     } else if (daysRemaining <= 7) {
-      return { label: "Due Soon", color: "bg-yellow-100 text-yellow-800" };
+      return {
+        label: "Due Soon",
+        variant: "default" as const,
+        className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-200",
+      };
     } else {
-      return { label: "On Track", color: "bg-green-100 text-green-800" };
+      return {
+        label: "On Track",
+        variant: "default" as const,
+        className: "bg-green-100 text-green-800 hover:bg-green-200",
+      };
     }
   };
 
@@ -157,9 +181,10 @@ function RouteComponent() {
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   return (
-    <SidebarInset className="">
-      <header className="flex h-16 shrink-0 items-center gap-2 ">
-        <div className="flex items-center justify-between w-full px-4">
+    <SidebarInset className="flex flex-col min-h-screen">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-16 items-center gap-2 px-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
@@ -168,221 +193,205 @@ function RouteComponent() {
                 <BreadcrumbItem className="hidden md:flex cursor-pointer items-center">
                   <BreadcrumbLink
                     onClick={() => navigate({ to: "/app/projects" })}
-                    className="flex items-center "
+                    className="flex items-center hover:text-primary transition-colors"
                   >
                     Projects
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>{project.name}</BreadcrumbPage>
+                  <BreadcrumbPage className="font-medium">
+                    {project.name}
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </div>
       </header>
-      <Separator className="mb-4" />
 
-      <div className="container  mx-auto pb-12">
-        {/* Project Overview Card */}
-        <div className="mt-6 mb-6">
-          <div className="">
-            <div className="border-b px-6 py-4 flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-                Project Overview
+      {/* Main Content */}
+      <main className="flex-1 space-y-8 p-6 pb-16">
+        {/* Project Header */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold tracking-tight">
+                {project.name}
               </h1>
-              <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${statusInfo.color}`}
-              >
-                {statusInfo.label}
-              </span>
+              <p className="text-muted-foreground">
+                {project.description || "No description available"}
+              </p>
             </div>
+            <Badge className={statusInfo.className}>{statusInfo.label}</Badge>
+          </div>
+        </div>
 
-            <div className="p-6">
-              {/* Project Name and Timeline */}
-              <div className="flex flex-col md:flex-row gap-6 mb-6">
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
-                    {project.name}
-                  </h2>
-                  <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-100 dark:border-gray-600">
-                    <p className="text-gray-700 dark:text-gray-300">
-                      {project.description || "No description available"}
-                    </p>
-                  </div>
-                </div>
+        {/* Project Overview Cards */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-lg border bg-card p-6">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Progress</h3>
+              <Target className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="space-y-2">
+              <div className="text-2xl font-bold">{progress}%</div>
+              <Progress value={progress} className="h-2" />
+              <p className="text-xs text-muted-foreground">
+                {completedTasks} of {totalTasks} tasks completed
+              </p>
+            </div>
+          </div>
 
-                <div className="flex-1 space-y-4 ">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">
-                        Progress
-                      </span>
-                      <span className="font-medium">{progress}%</span>
-                    </div>
-                    <Progress value={progress} className="h-2" />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 ">
-                    <div className="bg-blue-50 dark:bg-blue-500/5 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50">
-                      <div className="flex items-center mb-1">
-                        <CalendarIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Start Date
-                        </span>
-                      </div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {formatDate(project.startDate)}
-                      </div>
-                    </div>
-
-                    <div className="bg-purple-50 dark:bg-purple-500/5 p-3 rounded-lg border border-purple-100 dark:border-purple-800/50">
-                      <div className="flex items-center mb-1">
-                        <ClockIcon className="h-4 w-4 text-purple-600 dark:text-purple-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          End Date
-                        </span>
-                      </div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {formatDate(project.endDate)}
-                      </div>
-                    </div>
-
-                    <div className="bg-green-50 dark:bg-green-500/5 p-3 rounded-lg border border-green-100 dark:border-green-800/50">
-                      <div className="flex items-center mb-1">
-                        <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Tasks Completed
-                        </span>
-                      </div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {completedTasks} of {totalTasks} ({taskCompletion}%)
-                      </div>
-                    </div>
-
-                    <div className="bg-amber-50 dark:bg-amber-500/5 p-3 rounded-lg border border-amber-100 dark:border-amber-800/50">
-                      <div className="flex items-center mb-1">
-                        <ListTodo className="h-4 w-4 text-amber-600 dark:text-amber-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Timeline
-                        </span>
-                      </div>
-                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {daysRemaining !== null
-                          ? daysRemaining >= 0
-                            ? `${daysRemaining} days left`
-                            : `${Math.abs(daysRemaining)} days overdue`
-                          : "No deadline set"}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <div className="rounded-lg border bg-card p-6">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Start Date</h3>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold">
+                {formatDate(project.startDate)}
               </div>
+              <p className="text-xs text-muted-foreground">Project kickoff</p>
+            </div>
+          </div>
+
+          <div className="rounded-lg border bg-card p-6">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">End Date</h3>
+              <ClockIcon className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold">
+                {formatDate(project.endDate)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {daysRemaining !== null
+                  ? daysRemaining >= 0
+                    ? `${daysRemaining} days remaining`
+                    : `${Math.abs(daysRemaining)} days overdue`
+                  : "No deadline set"}
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-lg border bg-card p-6">
+            <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 className="text-sm font-medium">Total Tasks</h3>
+              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div>
+              <div className="text-2xl font-bold">{totalTasks}</div>
+              <p className="text-xs text-muted-foreground">
+                {taskCompletion}% completion rate
+              </p>
             </div>
           </div>
         </div>
 
         {/* Tasks Section */}
-        <div className="bg-secondary ">
-          <div className="border-b px-6 py-4 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white flex items-center">
-              <ListTodo className="h-5 w-5 mr-2 text-blue-600" />
-              Project Tasks
-            </h2>
-
-            <Button
-              onClick={() => setIsAddDialogOpen(true)}
-              className="bg-primary"
-            >
-              <PlusCircle className="h-4 w-4 mr-1" /> Add Task
+        <div className="rounded-lg border bg-card">
+          <div className="flex items-center justify-between p-6 border-b">
+            <div className="flex items-center gap-2">
+              <ListTodo className="h-5 w-5" />
+              <h2 className="text-lg font-semibold">Project Tasks</h2>
+            </div>
+            <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
+              <PlusCircle className="h-4 w-4" />
+              Add Task
             </Button>
           </div>
-
-          <div className="p-6">
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search tasks..."
-                  value={search || ""}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10 w-full bg-gray-50 dark:bg-gray-700"
-                />
-              </div>
+          <div className="p-6 space-y-6">
+            {/* Search */}
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search tasks..."
+                value={search || ""}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="pl-10"
+              />
             </div>
 
+            {/* Content */}
             {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="flex items-center justify-center py-12">
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <span className="text-sm text-muted-foreground">
+                    Loading tasks...
+                  </span>
+                </div>
               </div>
             ) : error ? (
-              <div className="bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-900/50 text-red-800 dark:text-red-300 p-4 rounded-lg text-center">
-                Failed to load tasks. Please try again.
+              <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-center">
+                <p className="text-sm text-destructive">
+                  Failed to load tasks. Please try again.
+                </p>
               </div>
             ) : (
-              <Tabs defaultValue="taskList" className="flex flex-col">
-                {/* Tabs List - Aligned to Right */}
-                <div className="flex justify-end">
-                  <TabsList className="bg-gray-100 dark:bg-gray-700 ml-auto">
-                    <TabsTrigger
-                      value="taskList"
-                      className="flex items-center gap-1"
-                    >
-                      <Table className="h-4 w-4" /> List
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="taskBoard"
-                      className="flex items-center gap-1"
-                    >
-                      <BarChart2 className="h-4 w-4" /> Board
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
+              <div className="space-y-4">
+                {/* Tabs */}
+                <Tabs defaultValue="taskList" className="space-y-4">
+                  <div className="flex justify-end">
+                    <TabsList>
+                      <TabsTrigger value="taskList" className="gap-2">
+                        <Table className="h-4 w-4" />
+                        List View
+                      </TabsTrigger>
+                      <TabsTrigger value="taskBoard" className="gap-2">
+                        <BarChart2 className="h-4 w-4" />
+                        Board View
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
 
-                {/* Tabs Content */}
-                <TabsContent value="taskList" className="mt-4">
-                  <TaskList tasks={data ?? []} projectId={projectId} />
-                </TabsContent>
-                <TabsContent value="taskBoard" className="mt-4">
-                  <TaskBoard taskIds={data?.map((task) => task.id) ?? []} />
-                </TabsContent>
-              </Tabs>
-            )}
+                  <TabsContent value="taskList" className="space-y-4">
+                    <TaskList tasks={data ?? []} projectId={projectId} />
+                  </TabsContent>
 
-            {/* Pagination */}
-            {data && (
-              <div className="flex justify-between items-center mt-6 border-t pt-4">
-                <div className="text-sm text-gray-500">
-                  Showing {Math.min((page - 1) * size + 1, data.length)} to{" "}
-                  {Math.min(page * size, data.length)} of {data.length} tasks
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page <= 1}
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" /> Previous
-                  </Button>
-                  <Button
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={size > Math.ceil(data?.length ?? 0)}
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center"
-                  >
-                    Next <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
+                  <TabsContent value="taskBoard" className="space-y-4">
+                    <TaskBoard taskIds={data?.map((task) => task.id) ?? []} />
+                  </TabsContent>
+                </Tabs>
+
+                {/* Pagination */}
+                {data && data.length > 0 && (
+                  <div className="flex items-center justify-between border-t pt-4">
+                    <div className="text-sm text-muted-foreground">
+                      Showing {Math.min((page - 1) * size + 1, data.length)} to{" "}
+                      {Math.min(page * size, data.length)} of {data.length}{" "}
+                      tasks
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(page - 1)}
+                        disabled={page <= 1}
+                        className="gap-1"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Previous
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(page + 1)}
+                        disabled={size > Math.ceil(data?.length ?? 0)}
+                        className="gap-1"
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Add Task Dialog */}
       <TaskFormDialog

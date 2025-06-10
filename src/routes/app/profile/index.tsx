@@ -122,21 +122,21 @@ function RouteComponent() {
 
   return (
     <SidebarInset className="">
-      <header className="flex h-16 shrink-0 items-center gap-2 px-6  relative">
-        <div className="flex items-center justify-between w-full">
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-16 items-center gap-2 px-4">
           <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ml-1 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-md transition-colors" />
-            <Separator orientation="vertical" className="mr-2 h-6" />
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:flex cursor-pointer items-center">
-                  <BreadcrumbLink className="flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors">
+                  <BreadcrumbLink className="flex items-center text-muted-foreground hover:text-foreground transition-colors">
                     <User className="h-4 w-4 mr-1" /> My Profile
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="text-gray-900 dark:text-gray-100 font-medium">
+                  <BreadcrumbPage className="font-medium">
                     {user?.name}
                   </BreadcrumbPage>
                 </BreadcrumbItem>

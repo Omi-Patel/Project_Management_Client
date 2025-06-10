@@ -173,61 +173,58 @@ function RouteComponent() {
 
   return (
     <SidebarInset>
-      <header className="flex h-16 shrink-0 items-center gap-2">
-        <div className="flex items-center justify-between w-full px-4">
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-16 items-center gap-2 px-4">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Users</BreadcrumbLink>
+                  <BreadcrumbLink
+                    href="#"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Admin Portal
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Users List</BreadcrumbPage>
+                  <BreadcrumbPage className="font-medium">
+                    Users List
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </div>
       </header>
-      <Separator className="mb-4" />
 
-      <div className="container mx-auto py-8 ">
-        <div className="space-y-6">
-          <CardHeader className="bg-muted/10 px-6 py-4 ">
-            <div className="flex justify-between items-center">
-              <div>
-                <CardTitle className="text-2xl font-bold flex items-center gap-2">
-                  <UserIcon className="h-6 w-6 text-primary" />
-                  User Management
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Add, edit, and manage your platform users
-                </CardDescription>
-              </div>
-              <Button
-                onClick={() => refetch()}
-                variant="ghost"
-                size="sm"
-                className="gap-1"
-                disabled={isLoading}
-              >
-                <RefreshCw
-                  className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-                />
-                {isLoading ? "Refreshing..." : "Refresh"}
-              </Button>
+      {/* Admin Hero Section */}
+      <div className="px-6 py-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 border-b">
+        <div className="max-w-6xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <UserIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
-          </CardHeader>
+            <h1 className="text-2xl font-bold text-foreground">
+              User Management
+            </h1>
+          </div>
+          <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+            Comprehensive overview of all users across the platform. Monitor activity, manage roles, and ensure proper access control.
+          </p>
+        </div>
+      </div>
 
+      <div className="container mx-auto py-8">
+        <div className="space-y-6">
           {/* Search Input */}
           <div className="px-6">
             <div className="relative">
               <Input
                 type="text"
-                placeholder="Search tasks..."
+                placeholder="Search users..."
                 value={search || ""}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="w-full pl-10"
