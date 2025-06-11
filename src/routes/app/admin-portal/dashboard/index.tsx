@@ -114,21 +114,21 @@ function RouteComponent() {
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center gap-4 px-6">
           <div className="flex items-center gap-4">
-            <SidebarTrigger className="-ml-1 text-white/90 hover:text-white transition-colors" />
+            <SidebarTrigger className="-ml-1 " />
             <Separator orientation="vertical" className="h-6 bg-white/10" />
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
                   <BreadcrumbLink
                     href="#"
-                    className="text-white/70 hover:text-white transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Admin Portal
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block text-white/30" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="font-medium text-white">
+                  <BreadcrumbPage className="font-medium ">
                     Analytics Dashboard
                   </BreadcrumbPage>
                 </BreadcrumbItem>

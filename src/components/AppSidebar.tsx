@@ -102,12 +102,12 @@ export function AppSidebar({
       </SidebarHeader>
 
       {/* Content */}
-      <SidebarContent className="p-4">
+      <SidebarContent className="py-4">
         <NavMain items={data.navMain} />
       </SidebarContent>
 
       {/* Footer */}
-      <SidebarFooter className="p-4 border-t">
+      <SidebarFooter className="py-4 border-t">
         <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
