@@ -26,8 +26,8 @@ const loadingFacts = [
 const loadingStages = [
   { icon: Coffee, text: "Brewing your request...", duration: 2000 },
   { icon: Zap, text: "Processing data...", duration: 3000 },
-  { icon: Rocket, text: "Optimizing results...", duration: 2500 },
-  { icon: CheckCircle, text: "Almost ready...", duration: 1500 },
+  { icon: Rocket, text: "Optimizing results...", duration: 4000 },
+  { icon: CheckCircle, text: "Almost ready...", duration: 5000 },
 ];
 
 export function LoadingScreen() {
@@ -102,15 +102,6 @@ export function LoadingScreen() {
             </div>
           </div>
         </motion.div>
-
-        {/* Progress Bar */}
-        <div className="w-full space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Progress</span>
-            <span>{Math.round(progress)}%</span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
 
         {/* Current Stage */}
         <motion.div
@@ -205,35 +196,6 @@ export function LoadingScreen() {
             </motion.p>
           )}
         </motion.div>
-
-        {/* Completion Animation */}
-        <AnimatePresence>
-          {isComplete && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-            >
-              <div className="text-center space-y-4">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                >
-                  <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
-                </motion.div>
-                <motion.p
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-lg font-medium text-foreground"
-                >
-                  All set! 🎉
-                </motion.p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );
