@@ -10,7 +10,6 @@ import {
   Clock,
   CheckCircle,
 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 
 const loadingFacts = [
   "Did you know? The first computer bug was an actual bug found in 1947!",
@@ -35,14 +34,12 @@ export function LoadingScreen() {
   const [currentFact, setCurrentFact] = useState(0);
   const [currentStage, setCurrentStage] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
 
   // Progress simulation
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          setIsComplete(true);
           return 100;
         }
         // Slower progress at the end to make it more realistic
