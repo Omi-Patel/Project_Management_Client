@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingScreen } from "@/components/LoadingScreen";
 import ProfileChart from "@/components/ProfileChart";
 import ProfileEditForm from "@/components/ProfileEditForm";
 import TaskList from "@/components/Project_Task/task-list";
@@ -105,19 +106,7 @@ function RouteComponent() {
       .length || 0;
 
   if (isUserLoading || isTasksLoading || !user || !tasks) {
-    return (
-      <div className="flex items-center justify-center w-full h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="text-center p-8 rounded-lg bg-white dark:bg-gray-800 shadow-lg  animate-pulse">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-          <h2 className="text-2xl font-semibold mb-2">Loading profile...</h2>
-          <p className="text-gray-500 dark:text-gray-400">
-            Please wait while we fetch your data.
-          </p>
-          <div className="mt-6 h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-3/4 mx-auto"></div>
-          <div className="mt-4 h-2 bg-gray-200 dark:bg-gray-700 rounded-full w-1/2 mx-auto"></div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
@@ -161,7 +150,7 @@ function RouteComponent() {
               <Badge
                 className={`${getStatusColor(
                   user.status || "unknown"
-                )} text-white text-sm font-bold capitalize`}
+                )} text-white text-sm font-bold capitalize rounded-full`}
               >
                 {user?.status}
               </Badge>
