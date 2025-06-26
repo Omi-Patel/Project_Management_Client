@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { STORAGE_KEYS } from "@/lib/auth";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, ExternalLink, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const HeroSection = () => {
@@ -20,6 +20,20 @@ const HeroSection = () => {
 
   return (
     <div className="container mx-auto px-6 pt-32  text-center min-h-[90vh] flex flex-col justify-center items-center">
+      {/* Give us a star badge */}
+      <a
+        href="https://github.com/Omi-Patel/Project_Management_Client"
+        target="_blank"
+      >
+        <div
+          className={`inline-flex items-center justify-center gap-2 mb-6 px-5 py-2 rounded-full border border-emerald-400 bg-emerald-100 text-emerald-800 font-semibold shadow-md transition-all duration-700 transform ${
+            isVisible ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
+          } hover:shadow-lg hover:scale-105`}
+        >
+          ⭐ Give us a star on GitHub!
+          <ExternalLink className=" h-4 w-4" />
+        </div>
+      </a>
       {/* Heading with animation */}
       <div
         className={`transition-all duration-1000 transform ${
@@ -90,16 +104,6 @@ const HeroSection = () => {
             </Button>
           </>
         )}
-      </div>
-
-      {/* Trust Badge with animation */}
-      <div
-        className={`inline-block px-6 py-3 rounded-full border border-gray-300 text-sm text-muted-foreground shadow-md bg-secondary backdrop-blur-md transition-all duration-1000 delay-700 transform ${
-          isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-        } hover:shadow-lg hover:scale-105 duration-300`}
-      >
-        Trusted by <span className="font-semibold text-primary">2,000+</span>{" "}
-        teams worldwide
       </div>
     </div>
   );
