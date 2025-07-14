@@ -16,10 +16,14 @@ interface CommentFormProps {
   onCommentAdded: () => void;
 }
 
-export function CommentForm({ taskId, currentUserName, onCommentAdded }: CommentFormProps) {
+export function CommentForm({
+  taskId,
+  currentUserName,
+  onCommentAdded,
+}: CommentFormProps) {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  console.log("isSubmitting", isSubmitting);
   const queryClient = useQueryClient();
   const currentUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
 
@@ -45,7 +49,7 @@ export function CommentForm({ taskId, currentUserName, onCommentAdded }: Comment
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!content.trim()) {
       toast.error("Please enter a comment");
       return;
@@ -67,7 +71,10 @@ export function CommentForm({ taskId, currentUserName, onCommentAdded }: Comment
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-gray-200 dark:border-gray-800 p-4">
+    <form
+      onSubmit={handleSubmit}
+      className="border-t border-gray-200 dark:border-gray-800 p-4"
+    >
       <div className="flex gap-3">
         <Avatar className="h-8 w-8 flex-shrink-0">
           <AvatarImage
@@ -89,12 +96,12 @@ export function CommentForm({ taskId, currentUserName, onCommentAdded }: Comment
             maxLength={1000}
             disabled={createMutation.isPending}
           />
-          
+
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500">
               {content.length}/1000 characters
             </span>
-            
+
             <Button
               type="submit"
               size="sm"
@@ -118,4 +125,4 @@ export function CommentForm({ taskId, currentUserName, onCommentAdded }: Comment
       </div>
     </form>
   );
-} 
+}

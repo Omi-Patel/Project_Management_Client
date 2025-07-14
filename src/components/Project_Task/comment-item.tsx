@@ -11,7 +11,7 @@ import type { CommentResponse } from "@/schemas/comment-schema";
 import { STORAGE_KEYS } from "@/lib/auth";
 import { format } from "date-fns";
 import { Edit2, Trash2, X, Check } from "lucide-react";
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 
 interface CommentItemProps {
   comment: CommentResponse;

@@ -4,7 +4,16 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { User, Lock, Eye, EyeOff, LogIn, Sparkles, Shield, Zap } from "lucide-react";
+import {
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+  LogIn,
+  Sparkles,
+  Shield,
+  Zap,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { LoginInputSchema, type LoginInput } from "@/schemas/user-schema";
@@ -21,7 +30,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { authService } from "@/lib/auth";
 import { LoadingScreen } from "@/components/LoadingScreen";
-import axios from "axios";
 
 export const Route = createFileRoute("/auth/login")({
   component: RouteComponent,
@@ -85,12 +93,12 @@ function RouteComponent() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(120,119,198,0.1),transparent_50%)]" />
-        
+
         {/* Floating Elements */}
         <div className="absolute top-20 left-20 w-32 h-32 bg-primary/5 rounded-full blur-xl" />
         <div className="absolute bottom-20 right-20 w-24 h-24 bg-primary/10 rounded-full blur-lg" />
         <div className="absolute top-1/2 left-1/3 w-16 h-16 bg-primary/5 rounded-full blur-md" />
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center h-full px-16 text-center">
           <div className="space-y-8">
@@ -102,10 +110,11 @@ function RouteComponent() {
                 Welcome Back
               </h1>
               <p className="text-lg text-muted-foreground max-w-md">
-                Sign in to access your project management dashboard and continue where you left off.
+                Sign in to access your project management dashboard and continue
+                where you left off.
               </p>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center space-x-3 text-sm text-muted-foreground">
                 <Shield className="w-4 h-4" />
@@ -134,14 +143,19 @@ function RouteComponent() {
 
           <div className="space-y-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 {/* Email Field */}
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-foreground">Email Address</FormLabel>
+                      <FormLabel className="text-sm font-medium text-foreground">
+                        Email Address
+                      </FormLabel>
                       <div className="relative">
                         <FormControl>
                           <Input
@@ -164,7 +178,9 @@ function RouteComponent() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-foreground">Password</FormLabel>
+                      <FormLabel className="text-sm font-medium text-foreground">
+                        Password
+                      </FormLabel>
                       <div className="relative">
                         <FormControl>
                           <Input
@@ -225,7 +241,9 @@ function RouteComponent() {
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or</span>
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or
+                </span>
               </div>
             </div>
 

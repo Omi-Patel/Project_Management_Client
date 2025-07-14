@@ -16,6 +16,7 @@ interface TaskCommentsProps {
 
 export function TaskComments({ taskId }: TaskCommentsProps) {
   const [commentCount, setCommentCount] = useState(0);
+  console.log("commentCount", commentCount);
   const currentUserId = localStorage.getItem(STORAGE_KEYS.USER_ID);
 
   // Get current user info

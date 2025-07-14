@@ -1,6 +1,14 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import type { UseMutationOptions, UseQueryOptions } from "@tanstack/react-query";
-import { handleApiError, handleApiErrorSilent, ErrorCategory, isAuthError, isAuthzError } from "@/lib/error-handler";
+import type {
+  UseMutationOptions,
+  UseQueryOptions,
+} from "@tanstack/react-query";
+import {
+  handleApiError,
+  handleApiErrorSilent,
+  isAuthError,
+  isAuthzError,
+} from "@/lib/error-handler";
 import { useNavigate } from "@tanstack/react-router";
 
 interface ErrorHandlerOptions {
@@ -62,16 +70,21 @@ export function useErrorHandler(options: ErrorHandlerOptions = {}) {
 /**
  * Enhanced useMutation with automatic error handling
  */
-export function useMutationWithError<TData = unknown, TError = unknown, TVariables = unknown>(
+export function useMutationWithError<
+  TData = unknown,
+  TError = unknown,
+  TVariables = unknown,
+>(
   mutationFn: (variables: TVariables) => Promise<TData>,
-  options: UseMutationOptions<TData, TError, TVariables> & ErrorHandlerOptions = {}
+  options: UseMutationOptions<TData, TError, TVariables> &
+    ErrorHandlerOptions = {}
 ) {
   const { handleError } = useErrorHandler(options);
 
   return useMutation({
     mutationFn,
     ...options,
-    onError: (error, variables, context) => {
+    onError: (error) => {
       handleError(error);
       options.onError?.(error);
     },
@@ -127,4 +140,4 @@ export function useErrorTypeHandler() {
     handleValidationError,
     handleNetworkError,
   };
-} 
+}

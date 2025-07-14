@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -20,17 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { ProjectSchema } from "@/schemas/project-schema";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Calendar, Pencil } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import {
@@ -47,11 +40,16 @@ interface EditProjectDialogProps {
   onUpdate: (projectData: any) => Promise<void>;
 }
 
-export function EditProjectDialog({ project, open, onOpenChange, workspaceId, onUpdate }: EditProjectDialogProps) {
+export function EditProjectDialog({
+  project,
+  open,
+  onOpenChange,
+  workspaceId,
+  onUpdate,
+}: EditProjectDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
-  const queryClient = useQueryClient();
 
   const form = useForm<ProjectSchema>({
     resolver: zodResolver(ProjectSchema),
@@ -81,15 +79,19 @@ export function EditProjectDialog({ project, open, onOpenChange, workspaceId, on
       form.reset(formData);
 
       // Set dates for the date pickers
-      setStartDate(project.startDate ? new Date(parseInt(project.startDate)) : undefined);
-      setEndDate(project.endDate ? new Date(parseInt(project.endDate)) : undefined);
+      setStartDate(
+        project.startDate ? new Date(parseInt(project.startDate)) : undefined
+      );
+      setEndDate(
+        project.endDate ? new Date(parseInt(project.endDate)) : undefined
+      );
     }
   }, [project, form, workspaceId]);
 
   const onSubmit = async (data: ProjectSchema) => {
     try {
       setIsLoading(true);
-      
+
       const projectData = {
         ...data,
         id: project.id,
@@ -117,10 +119,7 @@ export function EditProjectDialog({ project, open, onOpenChange, workspaceId, on
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form 
-            onSubmit={form.handleSubmit(onSubmit)} 
-            className="space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -134,7 +133,7 @@ export function EditProjectDialog({ project, open, onOpenChange, workspaceId, on
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="description"
@@ -233,10 +232,7 @@ export function EditProjectDialog({ project, open, onOpenChange, workspaceId, on
               >
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                disabled={isLoading}
-              >
+              <Button type="submit" disabled={isLoading}>
                 {isLoading ? "Updating..." : "Update Project"}
               </Button>
             </DialogFooter>
@@ -245,4 +241,4 @@ export function EditProjectDialog({ project, open, onOpenChange, workspaceId, on
       </DialogContent>
     </Dialog>
   );
-} 
+}

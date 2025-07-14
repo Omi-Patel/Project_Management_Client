@@ -1,18 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getWorkspacesForUser } from "@/lib/workspace-actions";
 import { WorkspaceResponseSchema } from "@/schemas/workspace-schema";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
@@ -29,16 +22,12 @@ import {
   Trash2,
   Search,
   Calendar,
-  User,
-  Sparkles,
-  Plus,
   Building2,
   ArrowRight,
   MoreHorizontal,
-  Globe,
   Shield,
   Users2,
-  Activity
+  Activity,
 } from "lucide-react";
 import { format } from "date-fns";
 import { CreateWorkspaceDialog } from "./create-workspace-dialog";
@@ -220,7 +209,7 @@ export function WorkspaceList({ userId }: WorkspaceListProps) {
                 >
                   {/* Background Pattern */}
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
+
                   {/* Top Section */}
                   <div className="relative z-10 flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -238,7 +227,10 @@ export function WorkspaceList({ userId }: WorkspaceListProps) {
                               Owner
                             </Badge>
                           ) : (
-                            <Badge variant="secondary" className="bg-gray-100 text-gray-700 text-xs px-2 py-0.5">
+                            <Badge
+                              variant="secondary"
+                              className="bg-gray-100 text-gray-700 text-xs px-2 py-0.5"
+                            >
                               <Users2 className="h-3 w-3 mr-1" />
                               Member
                             </Badge>
@@ -261,15 +253,17 @@ export function WorkspaceList({ userId }: WorkspaceListProps) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem onClick={(e) => {
-                            e.stopPropagation();
-                            handleSettingsClick(workspace);
-                          }}>
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSettingsClick(workspace);
+                            }}
+                          >
                             <Settings className="h-4 w-4 mr-2" />
                             Settings
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeleteClick(workspace);
@@ -300,7 +294,9 @@ export function WorkspaceList({ userId }: WorkspaceListProps) {
                       <div className="text-sm font-bold text-gray-900 dark:text-white">
                         {workspace.memberCount}
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">members</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        members
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -310,14 +306,18 @@ export function WorkspaceList({ userId }: WorkspaceListProps) {
                       <div className="text-sm font-bold text-gray-900 dark:text-white">
                         {workspace.projectCount || 0}
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">projects</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        projects
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <div className="flex items-center justify-center w-5 h-5 bg-green-100 dark:bg-green-900/30 rounded-sm">
                         <Activity className="h-3 w-3 text-green-600 dark:text-green-400" />
                       </div>
-                      <span className="text-sm font-bold text-green-600 dark:text-green-400">Active</span>
+                      <span className="text-sm font-bold text-green-600 dark:text-green-400">
+                        Active
+                      </span>
                     </div>
                   </div>
 
@@ -325,7 +325,9 @@ export function WorkspaceList({ userId }: WorkspaceListProps) {
                   <div className="relative z-10 flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
                     <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                       <Calendar className="h-3 w-3" />
-                      <span>Created {format(workspace.createdAt, "MMM d, yyyy")}</span>
+                      <span>
+                        Created {format(workspace.createdAt, "MMM d, yyyy")}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400 font-medium">
                       <span>Open</span>

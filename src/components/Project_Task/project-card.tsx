@@ -1,6 +1,4 @@
-import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -65,8 +63,7 @@ export function ProjectCard({
               today.setHours(0, 0, 0, 0);
 
               const daysRemaining = Math.ceil(
-                (endDate.getTime() - today.getTime()) /
-                  (1000 * 60 * 60 * 24)
+                (endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
               );
 
               return daysRemaining < 0
@@ -86,8 +83,7 @@ export function ProjectCard({
               today.setHours(0, 0, 0, 0);
 
               const daysRemaining = Math.ceil(
-                (endDate.getTime() - today.getTime()) /
-                  (1000 * 60 * 60 * 24)
+                (endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
               );
 
               return daysRemaining < 0
@@ -106,10 +102,7 @@ export function ProjectCard({
       {showActions && canEdit && (
         <div className="absolute top-4 right-4 z-20 ">
           <DropdownMenu>
-            <DropdownMenuTrigger
-              asChild
-              onClick={(e) => e.stopPropagation()}
-            >
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
               <Button
                 variant="ghost"
                 size="icon"
@@ -219,4 +212,4 @@ export function ProjectCard({
       </div>
     </div>
   );
-} 
+}

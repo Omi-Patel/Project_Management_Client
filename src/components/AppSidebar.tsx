@@ -3,7 +3,6 @@
 import type * as React from "react";
 import {
   Archive,
-  Folder,
   GalleryVerticalEnd,
   Home,
   Layers,

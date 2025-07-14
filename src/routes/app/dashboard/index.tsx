@@ -16,17 +16,13 @@ import {
 import { STORAGE_KEYS } from "@/lib/auth";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { getAllTasks, getAllProjects, getUserById } from "@/lib/actions";
-import {
-  getWorkspacesForUser,
-  getWorkspaceMembers,
-} from "@/lib/workspace-actions";
+import { getWorkspacesForUser } from "@/lib/workspace-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useRouter } from "@tanstack/react-router";
 import {
   CheckCircle2,
-  Clock,
   FolderKanban,
   ListTodo,
   Target,
@@ -35,21 +31,10 @@ import {
   Activity,
   Users,
   TrendingUp,
-  Calendar,
-  AlertCircle,
-  Star,
-  Zap,
   Building2,
-  Globe,
-  MessageSquare,
-  FileText,
-  PieChart,
-  LineChart,
   Target as TargetIcon,
   Award,
   Lightbulb,
-  Settings,
-  Plus,
 } from "lucide-react";
 
 export const Route = createFileRoute("/app/dashboard/")({
@@ -110,11 +95,6 @@ function RouteComponent() {
     tasks?.filter((task) => task.status === "IN_PROGRESS").length || 0;
   const todoTasks =
     tasks?.filter((task) => task.status === "TO_DO").length || 0;
-  const overdueTasks =
-    tasks?.filter((task) => {
-      if (!task.dueDate) return false;
-      return new Date(task.dueDate) < new Date() && task.status !== "DONE";
-    }).length || 0;
 
   const completionRate =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;

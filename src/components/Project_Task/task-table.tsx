@@ -60,7 +60,7 @@ function TaskCommentCount({ taskId }: { taskId: string }) {
 export function TaskTable({
   tasks,
   taskAssignees,
-  workspaces,
+  // workspaces,
   onTaskClick,
   onEditClick,
   onDeleteClick,
@@ -88,7 +88,7 @@ export function TaskTable({
           </TableRow>
         ) : (
           tasks.map((task, index) => {
-            const workspace = task.project?.workspaceId ? workspaces[task.project.workspaceId] : null;
+            // const workspace = task.project?.workspaceId ? workspaces[task.project.workspaceId] : null;
             
             return (
               <TableRow

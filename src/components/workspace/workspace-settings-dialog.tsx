@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,10 +25,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { WorkspaceUpdateSchema, InviteUserSchema, WorkspaceMemberSchema } from "@/schemas/workspace-schema";
-import { updateWorkspace, inviteUserToWorkspace, getWorkspaceMembers, removeMember } from "@/lib/workspace-actions";
+import {
+  WorkspaceUpdateSchema,
+  WorkspaceMemberSchema,
+} from "@/schemas/workspace-schema";
+import {
+  updateWorkspace,
+  inviteUserToWorkspace,
+  getWorkspaceMembers,
+  // removeMember,
+} from "@/lib/workspace-actions";
 import { toast } from "sonner";
-import { Loader2, Mail, UserPlus, Users, Settings, X } from "lucide-react";
+import { Loader2, Mail, UserPlus, Users, Settings } from "lucide-react";
 
 interface WorkspaceSettingsDialogProps {
   workspace: any;
@@ -37,11 +45,11 @@ interface WorkspaceSettingsDialogProps {
   userId: string;
 }
 
-export function WorkspaceSettingsDialog({ 
-  workspace, 
-  open, 
-  onOpenChange, 
-  userId 
+export function WorkspaceSettingsDialog({
+  workspace,
+  open,
+  onOpenChange,
+  userId,
 }: WorkspaceSettingsDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isInviting, setIsInviting] = useState(false);
@@ -124,23 +132,9 @@ export function WorkspaceSettingsDialog({
     }
   };
 
-  const handleRemoveMember = async (memberUserId: string, memberName: string) => {
-    if (!confirm(`Are you sure you want to remove ${memberName} from this workspace?`)) {
-      return;
-    }
-
-    try {
-      await removeMember(workspace.id, memberUserId, userId);
-      toast.success("Member removed successfully!");
-      await loadMembers();
-    } catch (error) {
-      toast.error("Failed to remove member");
-      console.error("Error removing member:", error);
-    }
-  };
-
   const isOwner = workspace?.ownerId === userId;
-  const isAdmin = members.find(m => m.userId === userId)?.role === "ADMIN" || isOwner;
+  const isAdmin =
+    members.find((m) => m.userId === userId)?.role === "ADMIN" || isOwner;
 
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
@@ -158,7 +152,7 @@ export function WorkspaceSettingsDialog({
   const getInitials = (name: string) => {
     return name
       .split(" ")
-      .map(word => word.charAt(0))
+      .map((word) => word.charAt(0))
       .join("")
       .toUpperCase()
       .slice(0, 2);
@@ -191,7 +185,10 @@ export function WorkspaceSettingsDialog({
 
           <TabsContent value="general" className="space-y-4">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="name"
@@ -246,7 +243,7 @@ export function WorkspaceSettingsDialog({
                 <UserPlus className="h-4 w-4" />
                 <h3 className="text-lg font-medium">Invite Members</h3>
               </div>
-              
+
               <div className="flex gap-2">
                 <Input
                   type="email"
@@ -269,7 +266,7 @@ export function WorkspaceSettingsDialog({
                   {isInviting ? "Sending..." : "Invite"}
                 </Button>
               </div>
-              
+
               {!isAdmin && (
                 <p className="text-sm text-muted-foreground">
                   Only workspace owners and admins can invite new members.
@@ -309,16 +306,20 @@ export function WorkspaceSettingsDialog({
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium text-sm">{member.userName}</p>
-                          <p className="text-xs text-muted-foreground">{member.userEmail}</p>
+                          <p className="font-medium text-sm">
+                            {member.userName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {member.userEmail}
+                          </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <Badge className={getRoleBadgeColor(member.role)}>
                           {member.role}
                         </Badge>
-                        
+
                         {/* {isOwner && member.role !== "OWNER" && (
                           <Button
                             variant="ghost"
@@ -340,4 +341,4 @@ export function WorkspaceSettingsDialog({
       </DialogContent>
     </Dialog>
   );
-} 
+}

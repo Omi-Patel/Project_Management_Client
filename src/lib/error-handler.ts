@@ -89,6 +89,7 @@ export function extractErrorInfo(error: any): ErrorInfo {
  * Determine error category based on status code and message
  */
 function getErrorCategory(status: number, message?: string): ErrorCategory {
+  console.log("message", message);
   switch (status) {
     case 401:
       return ErrorCategory.AUTHENTICATION;
