@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import '../styles.css'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/components/theme-provider'
+import ErrorBoundary from '@/components/ErrorBoundary'
 // Create a client
 const queryClient = new QueryClient()
 
@@ -16,10 +17,12 @@ function RootComponent() {
     // Provide the client to your App
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <React.Fragment>
-          <Toaster />
-          <Outlet />
-        </React.Fragment>
+        <ErrorBoundary>
+          <React.Fragment>
+            <Toaster />
+            <Outlet />
+          </React.Fragment>
+        </ErrorBoundary>
       </ThemeProvider>
     </QueryClientProvider>
   )

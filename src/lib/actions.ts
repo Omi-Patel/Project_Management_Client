@@ -10,6 +10,8 @@ import type {
   TAuthResponse,
   TRefreshTokenRequest,
 } from "@/schemas/auth-schema";
+import type { CommentRequest, CommentResponse, ListCommentsRequest } from "@/schemas/comment-schema";
+import { handleApiError } from "./error-handler";
 
 export function getBackendUrl() {
   const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -32,7 +34,26 @@ export async function createUser(userInput: UserInput): Promise<UserResponse> {
     );
     return response.data;
   } catch (error) {
-    throw new Error("Failed to create user");
+    handleApiError(error);
+    throw error;
+  }
+}
+
+export async function verifyOtp(email: string, otpCode: string): Promise<void> {
+  try {
+    await axios.post(`${API_BASE_URL}/auth/verify-otp`, { email, otpCode });
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+}
+
+export async function resendOtp(email: string): Promise<void> {
+  try {
+    await axios.post(`${API_BASE_URL}/auth/resend-otp`, { email });
+  } catch (error) {
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -50,8 +71,9 @@ export async function loginUser(
       }
     );
     return response.data;
-  } catch (error) {
-    throw new Error("Failed to login user");
+  } catch (error: any) {
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -74,7 +96,8 @@ export async function getAllUsers(params: {
     );
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch users");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -88,7 +111,8 @@ export async function getUserById(id: string): Promise<UserResponse | null> {
     if (error.response?.status === 404) {
       return null;
     }
-    throw new Error("Failed to fetch user");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -110,7 +134,8 @@ export async function updateUser(
     if (error.response?.status === 404) {
       return null;
     }
-    throw new Error("Failed to update user");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -118,7 +143,8 @@ export async function deleteUser(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/users/delete/${id}`);
   } catch (error) {
-    throw new Error("Failed to delete user");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -137,7 +163,8 @@ export async function createProject(
     );
     return response.data;
   } catch (error) {
-    throw new Error("Failed to create project");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -150,7 +177,8 @@ export async function getAllProjects(userId: string): Promise<ProjectSchema[]> {
     const response = await axios.get<ProjectSchema[]>(url);
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch projects");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -166,7 +194,8 @@ export async function getProjectById(
     if (error.response?.status === 404) {
       return null;
     }
-    throw new Error("Failed to fetch project");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -188,7 +217,8 @@ export async function updateProject(
     if (error.response?.status === 404) {
       return null;
     }
-    throw new Error("Failed to update project");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -196,7 +226,8 @@ export async function deleteProject(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/projects/delete/${id}`);
   } catch (error) {
-    throw new Error("Failed to delete project");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -215,7 +246,8 @@ export async function createTask(
     );
     return response.data;
   } catch (error) {
-    throw new Error("Failed to create task");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -235,7 +267,8 @@ export async function getAllTasks(params: {
     );
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch tasks");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -252,7 +285,8 @@ export async function getAllTasksByProjectId(params: {
     );
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch tasks");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -266,7 +300,8 @@ export async function getTaskById(id: string): Promise<TaskResponse | null> {
     if (error.response?.status === 404) {
       return null;
     }
-    throw new Error("Failed to fetch task");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -288,7 +323,8 @@ export async function updateTask(
     if (error.response?.status === 404) {
       return null;
     }
-    throw new Error("Failed to update task");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -302,7 +338,8 @@ export async function updateTaskStatus(
     );
     return response.data;
   } catch (error) {
-    throw new Error("Failed to update task's status");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -310,7 +347,8 @@ export async function deleteTask(id: string): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}/tasks/delete/${id}`);
   } catch (error) {
-    throw new Error("Failed to delete task");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -321,7 +359,8 @@ export async function getTasksByUserId(userId: string): Promise<string[]> {
     );
     return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch tasks for user");
+    handleApiError(error);
+    throw error;
   }
 }
 
@@ -340,6 +379,105 @@ export async function assignUsersToTask(
       }
     );
   } catch (error) {
-    throw new Error("Failed to assign users to task");
+    handleApiError(error);
+    throw error;
+  }
+}
+
+// Comment Actions
+export async function createComment(
+  comment: CommentRequest,
+  userId: string
+): Promise<CommentResponse> {
+  try {
+    const response = await axios.post<CommentResponse>(
+      `${API_BASE_URL}/task-comments/create?userId=${userId}`,
+      comment,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+}
+
+export async function getCommentsForTask(
+  request: ListCommentsRequest
+): Promise<CommentResponse[]> {
+  try {
+    const response = await axios.post<CommentResponse[]>(
+      `${API_BASE_URL}/task-comments/list`,
+      request
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+}
+
+export async function getCommentById(id: string): Promise<CommentResponse | null> {
+  try {
+    const response = await axios.get<CommentResponse>(
+      `${API_BASE_URL}/task-comments/get/${id}`
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return null;
+    }
+    handleApiError(error);
+    throw error;
+  }
+}
+
+export async function updateComment(
+  id: string,
+  content: string,
+  userId: string
+): Promise<CommentResponse | null> {
+  try {
+    const response = await axios.put<CommentResponse>(
+      `${API_BASE_URL}/task-comments/update/${id}?userId=${userId}`,
+      content,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return null;
+    }
+    handleApiError(error);
+    throw error;
+  }
+}
+
+export async function deleteComment(id: string, userId: string): Promise<void> {
+  try {
+    await axios.delete(`${API_BASE_URL}/task-comments/delete/${id}?userId=${userId}`);
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+}
+
+export async function getCommentCount(taskId: string): Promise<number> {
+  try {
+    const response = await axios.get<number>(
+      `${API_BASE_URL}/task-comments/count/${taskId}`
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
   }
 }

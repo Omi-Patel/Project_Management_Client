@@ -24,7 +24,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAllTasks, getAllUsers, getTasksByUserId } from "@/lib/actions";
+import { getAllTasks, getAllUsers, getTasksByUserId, getAllProjects } from "@/lib/actions";
+import { getWorkspacesForUser } from "@/lib/workspace-actions";
 import { STORAGE_KEYS } from "@/lib/auth";
 import { exportTasksToExcel } from "@/lib/export-report";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -38,8 +39,9 @@ import {
   Filter,
   Search,
   Table,
-  User,
   X,
+  Building2,
+  FolderOpen,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -66,10 +68,13 @@ function RouteComponent() {
 
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
   const [selectedPriority, setSelectedPriority] = useState<string[]>([]);
-  const [selectedAssignee, setSelectedAssignee] = useState<string[]>([]);
+  const [selectedWorkspaces, setSelectedWorkspaces] = useState<string[]>([]);
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [assignees, setAssignees] = useState<{ id: string; name: string }[]>(
     []
   );
+  const [workspaces, setWorkspaces] = useState<{ id: string; name: string }[]>([]);
+  const [projects, setProjects] = useState<{ id: string; name: string; workspaceId: string | null }[]>([]);
 
   const [isExporting, setIsExporting] = useState(false);
 
@@ -102,7 +107,7 @@ function RouteComponent() {
       toast.success("Export successful");
     } catch (error) {
       console.error("Error exporting tasks:", error);
-      toast.error("Export failed");
+      // Error handling is now done centrally in the actions file
     } finally {
       setIsExporting(false);
     }
@@ -117,7 +122,8 @@ function RouteComponent() {
       taskIds,
       selectedStatus,
       selectedPriority,
-      selectedAssignee,
+      selectedWorkspaces,
+      selectedProjects,
     ],
     queryFn: async () => {
       const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
@@ -133,11 +139,30 @@ function RouteComponent() {
         size,
         statuses: selectedStatus.length ? selectedStatus : null,
         priorities: selectedPriority.length ? selectedPriority : null,
-        assigneeIds: selectedAssignee.length ? selectedAssignee : null,
       });
     },
     placeholderData: keepPreviousData,
   });
+
+  // Filter tasks based on workspace and project selections
+  const filteredData = data ? data.filter(task => {
+    // Filter by workspace
+    if (selectedWorkspaces.length > 0) {
+      const taskWorkspaceId = task.project?.workspaceId;
+      if (!taskWorkspaceId || !selectedWorkspaces.includes(taskWorkspaceId)) {
+        return false;
+      }
+    }
+
+    // Filter by project
+    if (selectedProjects.length > 0) {
+      if (!selectedProjects.includes(task.project?.id || '')) {
+        return false;
+      }
+    }
+
+    return true;
+  }) : [];
 
   const handleSearch = (newSearch: string) => {
     setSearch(newSearch);
@@ -154,7 +179,8 @@ function RouteComponent() {
   const clearAllFilters = () => {
     setSelectedStatus([]);
     setSelectedPriority([]);
-    setSelectedAssignee([]);
+    setSelectedWorkspaces([]);
+    setSelectedProjects([]);
     setSearch(null);
     setPage(1);
   };
@@ -162,12 +188,32 @@ function RouteComponent() {
   const hasActiveFilters =
     selectedStatus.length > 0 ||
     selectedPriority.length > 0 ||
-    selectedAssignee.length > 0 ||
+    selectedWorkspaces.length > 0 ||
+    selectedProjects.length > 0 ||
     search;
 
+  // Fetch workspaces, projects, and assignees
   useEffect(() => {
-    const fetchAssignees = async () => {
+    const fetchData = async () => {
       try {
+        const userId = localStorage.getItem(STORAGE_KEYS.USER_ID);
+        if (!userId) return;
+
+        // Fetch workspaces
+        const workspacesData = await getWorkspacesForUser(userId);
+        setWorkspaces(workspacesData.map(ws => ({ id: ws.id, name: ws.name })));
+
+        // Fetch all projects
+        const projectsData = await getAllProjects(userId);
+        setProjects(projectsData
+          .filter(p => p.id) // Filter out projects without ID
+          .map(p => ({ 
+            id: p.id!, 
+            name: p.name, 
+            workspaceId: p.workspaceId || null 
+          })));
+
+        // Fetch assignees
         const users = await getAllUsers({ page: 1, size: 100 });
         const formattedAssignees = users.map((user) => ({
           id: user.id,
@@ -175,11 +221,12 @@ function RouteComponent() {
         }));
         setAssignees(formattedAssignees);
       } catch (error) {
-        console.error("Failed to fetch assignees:", error);
+        console.error("Failed to fetch data:", error);
+        // Error handling is now done centrally in the actions file
       }
     };
 
-    fetchAssignees();
+    fetchData();
   }, []);
 
   return (
@@ -216,7 +263,7 @@ function RouteComponent() {
           </div>
           <Button
             onClick={handleExportReport}
-            disabled={isExporting || isLoading || !data || data.length === 0}
+            disabled={isExporting || isLoading || !filteredData || filteredData.length === 0}
             className="flex items-center gap-2 shadow-sm"
             size="sm"
           >
@@ -258,7 +305,7 @@ function RouteComponent() {
           </div>
 
           {/* Filter Controls */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {/* Status Filter */}
             <Popover>
               <PopoverTrigger asChild>
@@ -351,7 +398,7 @@ function RouteComponent() {
               </PopoverContent>
             </Popover>
 
-            {/* Assignee Filter */}
+            {/* Workspace Filter */}
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -359,11 +406,11 @@ function RouteComponent() {
                   className="justify-between bg-background shadow-sm"
                 >
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4 text-muted-foreground" />
+                    <Building2 className="h-4 w-4 text-muted-foreground" />
                     <span className="truncate">
-                      {selectedAssignee.length > 0
-                        ? `Assignee (${selectedAssignee.length})`
-                        : "All Assignees"}
+                      {selectedWorkspaces.length > 0
+                        ? `Workspace (${selectedWorkspaces.length})`
+                        : "All Workspaces"}
                     </span>
                   </div>
                   <ChevronDown className="h-4 w-4 opacity-50" />
@@ -371,32 +418,81 @@ function RouteComponent() {
               </PopoverTrigger>
               <PopoverContent className="w-64 p-3" align="start">
                 <div className="space-y-2">
-                  <h4 className="font-medium text-sm">Filter by Assignee</h4>
+                  <h4 className="font-medium text-sm">Filter by Workspace</h4>
                   <Separator />
                   <div className="max-h-48 overflow-auto space-y-1">
-                    {assignees.map((assignee) => (
+                    {workspaces.map((workspace) => (
                       <Label
-                        key={assignee.id}
+                        key={workspace.id}
                         className="flex items-center gap-2 cursor-pointer hover:bg-muted px-2 py-1.5 rounded-sm transition-colors"
                       >
                         <Checkbox
-                          checked={selectedAssignee.includes(assignee.id)}
+                          checked={selectedWorkspaces.includes(workspace.id)}
                           onCheckedChange={(checked) => {
-                            setSelectedAssignee((prev) =>
+                            setSelectedWorkspaces((prev) =>
                               checked
-                                ? [...prev, assignee.id]
-                                : prev.filter((id) => id !== assignee.id)
+                                ? [...prev, workspace.id]
+                                : prev.filter((id) => id !== workspace.id)
                             );
                             setPage(1);
                           }}
                         />
-                        <span className="text-sm">{assignee.name}</span>
+                        <span className="text-sm">{workspace.name}</span>
                       </Label>
                     ))}
                   </div>
                 </div>
               </PopoverContent>
             </Popover>
+
+            {/* Project Filter */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="justify-between bg-background shadow-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                    <span className="truncate">
+                      {selectedProjects.length > 0
+                        ? `Project (${selectedProjects.length})`
+                        : "All Projects"}
+                    </span>
+                  </div>
+                  <ChevronDown className="h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64 p-3" align="start">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-sm">Filter by Project</h4>
+                  <Separator />
+                  <div className="max-h-48 overflow-auto space-y-1">
+                    {projects.map((project) => (
+                      <Label
+                        key={project.id}
+                        className="flex items-center gap-2 cursor-pointer hover:bg-muted px-2 py-1.5 rounded-sm transition-colors"
+                      >
+                        <Checkbox
+                          checked={selectedProjects.includes(project.id)}
+                          onCheckedChange={(checked) => {
+                            setSelectedProjects((prev) =>
+                              checked
+                                ? [...prev, project.id]
+                                : prev.filter((id) => id !== project.id)
+                            );
+                            setPage(1);
+                          }}
+                        />
+                        <span className="text-sm">{project.name}</span>
+                      </Label>
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+
           </div>
 
           {/* Active Filters Display */}
@@ -437,20 +533,33 @@ function RouteComponent() {
                   />
                 </Badge>
               ))}
-              {selectedAssignee.map((assigneeId) => (
-                <Badge key={assigneeId} variant="secondary" className="gap-1">
-                  {assignees.find((a) => a.id === assigneeId)?.name ||
-                    assigneeId}
+              {selectedWorkspaces.map((workspaceId) => (
+                <Badge key={workspaceId} variant="secondary" className="gap-1">
+                  {workspaces.find((w) => w.id === workspaceId)?.name || workspaceId}
                   <X
                     className="h-3 w-3 cursor-pointer hover:text-destructive"
                     onClick={() =>
-                      setSelectedAssignee((prev) =>
-                        prev.filter((id) => id !== assigneeId)
+                      setSelectedWorkspaces((prev) =>
+                        prev.filter((id) => id !== workspaceId)
                       )
                     }
                   />
                 </Badge>
               ))}
+              {selectedProjects.map((projectId) => (
+                <Badge key={projectId} variant="secondary" className="gap-1">
+                  {projects.find((p) => p.id === projectId)?.name || projectId}
+                  <X
+                    className="h-3 w-3 cursor-pointer hover:text-destructive"
+                    onClick={() =>
+                      setSelectedProjects((prev) =>
+                        prev.filter((id) => id !== projectId)
+                      )
+                    }
+                  />
+                </Badge>
+              ))}
+
             </div>
           )}
         </div>
@@ -478,7 +587,7 @@ function RouteComponent() {
               <div className="flex items-center justify-between p-6 pb-4 border-b">
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-semibold">
-                    Tasks {data && `(${data.length})`}
+                    Tasks {filteredData && `(${filteredData.length})`}
                   </h2>
                 </div>
                 <TabsList className="grid w-auto grid-cols-2">
@@ -501,8 +610,8 @@ function RouteComponent() {
 
               <div className="p-6">
                 <TabsContent value="taskList" className="mt-0">
-                  {data && data.length > 0 ? (
-                    <TaskList tasks={data} projectId={""} />
+                  {filteredData && filteredData.length > 0 ? (
+                    <TaskList tasks={filteredData} projectId={""} />
                   ) : (
                     <div className="text-center py-12">
                       <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -526,10 +635,10 @@ function RouteComponent() {
         )}
 
         {/* Pagination */}
-        {data && data.length > 0 && (
+        {filteredData && filteredData.length > 0 && (
           <div className="flex items-center justify-between bg-muted/20 rounded-lg border p-4">
             <p className="text-sm text-muted-foreground">
-              Showing {Math.min(size, data.length)} of {data.length} tasks
+              Showing {Math.min(size, filteredData.length)} of {filteredData.length} tasks
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -545,7 +654,7 @@ function RouteComponent() {
               </div>
               <Button
                 onClick={() => handlePageChange(page + 1)}
-                disabled={size > Math.ceil(data?.length ?? 0)}
+                disabled={size > Math.ceil(filteredData?.length ?? 0)}
                 variant="outline"
                 size="sm"
               >

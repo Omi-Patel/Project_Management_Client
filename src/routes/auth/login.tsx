@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { User, Lock, Eye, EyeOff } from "lucide-react";
+import { User, Lock, Eye, EyeOff, LogIn, Sparkles, Shield, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 import { LoginInputSchema, type LoginInput } from "@/schemas/user-schema";
@@ -64,10 +64,7 @@ function RouteComponent() {
     },
     onError: (error) => {
       console.error("Login error:", error);
-
-      toast.error("Login Failed", {
-        description: getErrorMessage(),
-      });
+      // Error handling is now done centrally in the actions file
     },
   });
 
@@ -75,163 +72,176 @@ function RouteComponent() {
     loginMutation.mutate(data);
   };
 
-  // Determine error message based on the error type
-  const getErrorMessage = () => {
-    if (!loginMutation.error) return null;
-
-    if (
-      axios.isAxiosError(loginMutation.error) &&
-      loginMutation.error.response
-    ) {
-      return (
-        loginMutation.error.response.data.message ||
-        "Login failed. Please check your credentials."
-      );
-    }
-
-    return "Unable to connect to the server. Please try again later.";
-  };
+  // Error handling is now done centrally in the actions file
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg border border-border">
-        <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold text-card-foreground">
-            Welcome Back
-          </h1>
-          <p className="text-muted-foreground">
-            Sign in to access your account
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex">
+      {/* Left Side - Decorative */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(120,119,198,0.1),transparent_50%)]" />
+        
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-20 w-32 h-32 bg-primary/5 rounded-full blur-xl" />
+        <div className="absolute bottom-20 right-20 w-24 h-24 bg-primary/10 rounded-full blur-lg" />
+        <div className="absolute top-1/2 left-1/3 w-16 h-16 bg-primary/5 rounded-full blur-md" />
+        
+        {/* Content */}
+        <div className="relative z-10 flex flex-col justify-center items-center h-full px-16 text-center">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl">
+                <Sparkles className="w-10 h-10 text-primary" />
+              </div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                Welcome Back
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-md">
+                Sign in to access your project management dashboard and continue where you left off.
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                <Shield className="w-4 h-4" />
+                <span>Secure authentication</span>
+              </div>
+              <div className="flex items-center space-x-3 text-sm text-muted-foreground">
+                <Zap className="w-4 h-4" />
+                <span>Lightning fast performance</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Email Field */}
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-card-foreground">Email</FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your email"
-                        {...field}
-                        disabled={loginMutation.isPending}
-                        className="bg-input pl-10"
-                      />
-                    </FormControl>
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      {/* Right Side - Login Form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-md space-y-8">
+          {/* Mobile Header */}
+          <div className="lg:hidden text-center space-y-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-2xl">
+              <LogIn className="w-8 h-8 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold">Welcome Back</h1>
+            <p className="text-muted-foreground">Sign in to your account</p>
+          </div>
 
-            {/* Password Field */}
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-card-foreground">
-                    Password
-                  </FormLabel>
-                  <div className="relative">
-                    <FormControl>
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        {...field}
-                        disabled={loginMutation.isPending}
-                        className="bg-input pl-10 pr-10"
-                      />
-                    </FormControl>
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
-                      onClick={togglePasswordVisibility}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      )}
-                      <span className="sr-only">
-                        {showPassword ? "Hide password" : "Show password"}
-                      </span>
-                    </Button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <div className="space-y-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {/* Email Field */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-foreground">Email Address</FormLabel>
+                      <div className="relative">
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your email"
+                            {...field}
+                            disabled={loginMutation.isPending}
+                            className="h-12 bg-background border-2 border-border pl-12 pr-4 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                          />
+                        </FormControl>
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            {/* <div className="flex items-center justify-end">
-              <a
-                href="/auth/forgot-password"
-                className="text-sm text-primary hover:underline"
-              >
-                Forgot password?
-              </a>
-            </div> */}
+                {/* Password Field */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-foreground">Password</FormLabel>
+                      <div className="relative">
+                        <FormControl>
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your password"
+                            {...field}
+                            disabled={loginMutation.isPending}
+                            className="h-12 bg-background border-2 border-border pl-12 pr-12 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                          />
+                        </FormControl>
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted/50 rounded-lg"
+                          onClick={togglePasswordVisibility}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                          )}
+                          <span className="sr-only">
+                            {showPassword ? "Hide password" : "Show password"}
+                          </span>
+                        </Button>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loginMutation.isPending}
-            >
-              {loginMutation.isPending ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Signing in...
-                </>
-              ) : (
-                "Sign In"
-              )}
-            </Button>
-          </form>
-        </Form>
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+                  disabled={loginMutation.isPending}
+                >
+                  {loginMutation.isPending ? (
+                    <>
+                      <div className="animate-spin -ml-1 mr-3 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                      Signing in...
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Sign In
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Form>
 
-        {/* Don't have an account */}
-        <div className="text-center mt-4">
-          <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link
-              to="/auth/register"
-              className="text-primary hover:underline font-semibold"
-            >
-              Sign Up
-            </Link>
-          </p>
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or</span>
+              </div>
+            </div>
+
+            {/* Don't have an account */}
+            <div className="text-center space-y-2">
+              <p className="text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <Link
+                  to="/auth/register"
+                  className="text-primary hover:text-primary/80 font-semibold transition-colors duration-200"
+                >
+                  Create one now
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -54,6 +54,12 @@ const adminItems = [
     iconColor: "text-teal-500",
   },
   {
+    title: "All Workspaces",
+    url: "/app/admin-portal/workspaces",
+    icon: Folders,
+    iconColor: "text-blue-500",
+  },
+  {
     title: "All Projects",
     url: "/app/admin-portal/projects",
     icon: Folders,

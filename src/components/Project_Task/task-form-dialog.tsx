@@ -37,6 +37,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTask, updateTask, getAllUsers } from "@/lib/actions";
+import { getWorkspaceMembersForTasks } from "@/lib/workspace-actions";
 import { toast } from "sonner";
 import type { TaskResponse } from "@/schemas/task_schema";
 import { useEffect, useState } from "react";
@@ -71,6 +72,7 @@ interface TaskFormDialogProps {
   projectId: string;
   mode: "add" | "edit";
   onSuccess: () => void;
+  workspaceId?: string;
 }
 
 export function TaskFormDialog({
@@ -80,6 +82,7 @@ export function TaskFormDialog({
   projectId,
   mode,
   onSuccess,
+  workspaceId,
 }: TaskFormDialogProps) {
   const queryClient = useQueryClient();
   const [users, setUsers] = useState<User[]>([]);
@@ -104,8 +107,19 @@ export function TaskFormDialog({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        if (workspaceId) {
+          // If workspaceId is provided, fetch workspace members only
+          const userId = localStorage.getItem("pms-userId") || "";
+          const workspaceMembers = await getWorkspaceMembersForTasks(workspaceId, userId);
+          setUsers(workspaceMembers.map((member: any) => ({
+            id: member.userId,
+            name: member.userName,
+          })));
+        } else {
+          // Fallback to all users if no workspaceId
         const allUsers = await getAllUsers({ page: 1, size: 1000, search: null });
         setUsers(allUsers);
+        }
       } catch (error) {
         console.error("Failed to fetch users:", error);
         toast.error("Failed to load users");
@@ -115,7 +129,7 @@ export function TaskFormDialog({
     if (isOpen) {
       fetchUsers();
     }
-  }, [isOpen]);
+  }, [isOpen, workspaceId]);
 
   // Reset form when task changes or dialog opens
   useEffect(() => {

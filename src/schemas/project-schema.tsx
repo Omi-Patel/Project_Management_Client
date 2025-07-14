@@ -8,6 +8,7 @@ export const ProjectSchema = z.object({
   taskIds: z.array(z.string()).optional(), // List of task IDs is optional
   description: z.string().nullable(), // Description can be null
   userId: z.string(),
+  workspaceId: z.string().nullable().optional(), // Workspace ID is optional
   color: z.string(),
   startDate: z.string().nullable(), // Start date can be null
   endDate: z.string().nullable(), // End date can be null

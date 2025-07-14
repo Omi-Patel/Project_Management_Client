@@ -190,6 +190,18 @@ function RouteComponent() {
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:flex cursor-pointer items-center">
                   <BreadcrumbLink
+                    onClick={() => navigate({ to: "/app/dashboard" })}
+                    className="flex items-center hover:text-primary transition-colors"
+                  >
+                    Dashboard
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+
+                {project.workspaceId && (
+                  <BreadcrumbSeparator className="hidden md:block" />
+                )}
+                <BreadcrumbItem className="hidden md:flex cursor-pointer items-center">
+                  <BreadcrumbLink
                     onClick={() => navigate({ to: "/app/projects" })}
                     className="flex items-center hover:text-primary transition-colors"
                   >
@@ -345,7 +357,11 @@ function RouteComponent() {
                   </div>
 
                   <TabsContent value="taskList" className="space-y-4">
-                    <TaskList tasks={data ?? []} projectId={projectId} />
+                    <TaskList
+                      tasks={data ?? []}
+                      projectId={projectId}
+                      workspaceId={project.workspaceId || undefined}
+                    />
                   </TabsContent>
 
                   <TabsContent value="taskBoard" className="space-y-4">
@@ -399,6 +415,7 @@ function RouteComponent() {
         projectId={projectId}
         mode="add"
         onSuccess={handleTaskAdded}
+        workspaceId={project.workspaceId || undefined}
       />
     </SidebarInset>
   );

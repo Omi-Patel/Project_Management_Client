@@ -3,6 +3,7 @@ import { refreshTokenAction } from "./actions";
 import axios from "axios";
 import { getBackendUrl } from "./actions";
 import type { TAuthResponse, TUserJwtInformation } from "@/schemas/auth-schema";
+import { handleApiError } from "./error-handler";
 
 // Constants for localStorage keys
 export const STORAGE_KEYS = {
@@ -129,6 +130,7 @@ export const authService = {
 
       console.error("Token refresh failed:", error);
       this.clearTokens();
+      handleApiError(error);
       throw error;
     } finally {
       this._refreshQueue = [];

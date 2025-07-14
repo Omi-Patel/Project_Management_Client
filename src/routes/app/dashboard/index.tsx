@@ -16,8 +16,13 @@ import {
 import { STORAGE_KEYS } from "@/lib/auth";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { getAllTasks, getAllProjects, getUserById } from "@/lib/actions";
+import {
+  getWorkspacesForUser,
+  getWorkspaceMembers,
+} from "@/lib/workspace-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { useRouter } from "@tanstack/react-router";
 import {
   CheckCircle2,
@@ -28,6 +33,23 @@ import {
   ArrowRight,
   BarChart3,
   Activity,
+  Users,
+  TrendingUp,
+  Calendar,
+  AlertCircle,
+  Star,
+  Zap,
+  Building2,
+  Globe,
+  MessageSquare,
+  FileText,
+  PieChart,
+  LineChart,
+  Target as TargetIcon,
+  Award,
+  Lightbulb,
+  Settings,
+  Plus,
 } from "lucide-react";
 
 export const Route = createFileRoute("/app/dashboard/")({
@@ -66,13 +88,21 @@ function RouteComponent() {
     enabled: !!userId,
   });
 
-  const isLoading = isUserLoading || isTasksLoading || isProjectsLoading;
+  // Fetch user's workspaces
+  const { data: workspaces, isLoading: isWorkspacesLoading } = useQuery({
+    queryKey: ["workspaces", userId],
+    queryFn: () => getWorkspacesForUser(userId!),
+    enabled: !!userId,
+  });
+
+  const isLoading =
+    isUserLoading || isTasksLoading || isProjectsLoading || isWorkspacesLoading;
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
-  // Calculate statistics
+  // Calculate comprehensive statistics
   const totalTasks = tasks?.length || 0;
   const completedTasks =
     tasks?.filter((task) => task.status === "DONE").length || 0;
@@ -80,9 +110,39 @@ function RouteComponent() {
     tasks?.filter((task) => task.status === "IN_PROGRESS").length || 0;
   const todoTasks =
     tasks?.filter((task) => task.status === "TO_DO").length || 0;
+  const overdueTasks =
+    tasks?.filter((task) => {
+      if (!task.dueDate) return false;
+      return new Date(task.dueDate) < new Date() && task.status !== "DONE";
+    }).length || 0;
+
   const completionRate =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   const totalProjects = projects?.length || 0;
+  const totalWorkspaces = workspaces?.length || 0;
+
+  // Calculate productivity metrics
+  const highPriorityTasks =
+    tasks?.filter((task) => task.priority === "HIGH").length || 0;
+  const mediumPriorityTasks =
+    tasks?.filter((task) => task.priority === "MEDIUM").length || 0;
+  const lowPriorityTasks =
+    tasks?.filter((task) => task.priority === "LOW").length || 0;
+
+  // Calculate recent activity (last 7 days)
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const recentTasks =
+    tasks?.filter((task) => {
+      if (!task.updatedAt) return false;
+      return new Date(task.updatedAt) >= sevenDaysAgo;
+    }).length || 0;
+
+  // Get recent projects (last 3)
+  const recentProjects = projects?.slice(0, 3) || [];
+
+  // Get recent workspaces (last 3)
+  const recentWorkspaces = workspaces?.slice(0, 3) || [];
 
   return (
     <SidebarInset>
@@ -111,15 +171,15 @@ function RouteComponent() {
         </div>
       </header>
 
-      <main className="min-h-screen bg-background">
+      <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950/20">
         <div className="p-6 space-y-8">
-          {/* Hero Welcome Section */}
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 p-8 text-white">
-            <div className="relative">
+          {/* Enhanced Hero Welcome Section */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 p-8 text-white shadow-2xl">
+            <div className="relative z-10">
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm">
+                    <div className="p-3 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
                       <Target className="h-6 w-6" />
                     </div>
                     <div>
@@ -127,7 +187,7 @@ function RouteComponent() {
                         Welcome back, {user?.name || "User"}!
                       </h1>
                       <p className="text-white/70">
-                        Here's an overview of your tasks and projects
+                        Here's your comprehensive project management overview
                       </p>
                     </div>
                   </div>
@@ -136,6 +196,10 @@ function RouteComponent() {
                   <div className="text-center">
                     <div className="text-2xl font-bold">{completionRate}%</div>
                     <div className="text-sm text-white/70">Success Rate</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold">{totalWorkspaces}</div>
+                    <div className="text-sm text-white/70">Workspaces</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold">{totalTasks}</div>
@@ -149,12 +213,12 @@ function RouteComponent() {
             <div className="absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-purple-500/10 blur-3xl" />
           </div>
 
-          {/* Metrics Dashboard */}
+          {/* Enhanced Metrics Dashboard */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Total Tasks Metric */}
-            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/50 p-6 transition-all hover:scale-105">
+            <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-300 hover:scale-105 hover:shadow-xl">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-blue-500/10 rounded-xl">
+                <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-200 dark:border-blue-800">
                   <ListTodo className="h-5 w-5 text-blue-600" />
                 </div>
               </div>
@@ -163,14 +227,17 @@ function RouteComponent() {
                   {totalTasks}
                 </div>
                 <div className="text-sm text-muted-foreground">Total Tasks</div>
+                <div className="text-xs text-green-600 font-medium">
+                  +{recentTasks} this week
+                </div>
               </div>
               <div className="absolute -bottom-2 -right-2 h-16 w-16 rounded-full bg-blue-500/5" />
             </div>
 
             {/* Active Projects Metric */}
-            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/50 dark:to-green-900/50 p-6 transition-all hover:scale-105">
+            <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-300 hover:scale-105 hover:shadow-xl">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-green-500/10 rounded-xl">
+                <div className="p-3 bg-green-500/10 rounded-xl border border-green-200 dark:border-green-800">
                   <FolderKanban className="h-5 w-5 text-green-600" />
                 </div>
               </div>
@@ -181,139 +248,457 @@ function RouteComponent() {
                 <div className="text-sm text-muted-foreground">
                   Active Projects
                 </div>
+                <div className="text-xs text-blue-600 font-medium">
+                  Across {totalWorkspaces} workspaces
+                </div>
               </div>
               <div className="absolute -bottom-2 -right-2 h-16 w-16 rounded-full bg-green-500/5" />
             </div>
 
-            {/* Completed Tasks Metric */}
-            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/50 dark:to-orange-900/50 p-6 transition-all hover:scale-105">
+            {/* Completion Rate Metric */}
+            <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-300 hover:scale-105 hover:shadow-xl">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-orange-500/10 rounded-xl">
+                <div className="p-3 bg-orange-500/10 rounded-xl border border-orange-200 dark:border-orange-800">
                   <CheckCircle2 className="h-5 w-5 text-orange-600" />
                 </div>
               </div>
               <div className="space-y-1">
                 <div className="text-2xl font-bold text-foreground">
-                  {completedTasks}
+                  {completionRate}%
                 </div>
-                <div className="text-sm text-muted-foreground">Completed</div>
+                <div className="text-sm text-muted-foreground">
+                  Completion Rate
+                </div>
+                <div className="text-xs text-orange-600 font-medium">
+                  {completedTasks} completed
+                </div>
               </div>
               <div className="absolute -bottom-2 -right-2 h-16 w-16 rounded-full bg-orange-500/5" />
             </div>
 
-            {/* In Progress Metric */}
-            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/50 dark:to-purple-900/50 p-6 transition-all hover:scale-105">
+            {/* Workspaces Metric */}
+            <div className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-300 hover:scale-105 hover:shadow-xl">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-2 bg-purple-500/10 rounded-xl">
-                  <Clock className="h-5 w-5 text-purple-600" />
+                <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-200 dark:border-purple-800">
+                  <Building2 className="h-5 w-5 text-purple-600" />
                 </div>
               </div>
               <div className="space-y-1">
                 <div className="text-2xl font-bold text-foreground">
-                  {inProgressTasks}
+                  {totalWorkspaces}
                 </div>
-                <div className="text-sm text-muted-foreground">In Progress</div>
+                <div className="text-sm text-muted-foreground">Workspaces</div>
+                <div className="text-xs text-purple-600 font-medium">
+                  Collaborative spaces
+                </div>
               </div>
               <div className="absolute -bottom-2 -right-2 h-16 w-16 rounded-full bg-purple-500/5" />
             </div>
           </div>
 
-          {/* Task Status and Activity Section */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Enhanced Analytics Section */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             {/* Task Status Visualization */}
-            <div className="rounded-2xl bg-card p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-blue-500/10 rounded-xl">
-                  <BarChart3 className="h-5 w-5 text-blue-600" />
+            <div className="rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-lg border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-200 dark:border-blue-800">
+                  <BarChart3 className="h-6 w-6 text-blue-600" />
                 </div>
-                <h2 className="text-lg font-semibold">Task Progress</h2>
+                <div>
+                  <h2 className="text-xl font-bold">Task Progress Overview</h2>
+                  <p className="text-muted-foreground">
+                    Detailed breakdown of task statuses and priorities
+                  </p>
+                </div>
               </div>
 
-              <div className="space-y-6">
-                {/* To Do Progress */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">To Do</span>
-                    <span className="text-sm text-muted-foreground">
-                      {todoTasks} (
-                      {totalTasks > 0
-                        ? Math.round((todoTasks / totalTasks) * 100)
-                        : 0}
-                      %)
-                    </span>
-                  </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-600 rounded-full"
-                      style={{
-                        width: `${totalTasks > 0 ? (todoTasks / totalTasks) * 100 : 0}%`,
-                      }}
+              <div className="space-y-8">
+                {/* Status Progress Bars */}
+                <div className="space-y-6">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold">To Do</span>
+                      <span className="text-sm text-muted-foreground">
+                        {todoTasks} (
+                        {totalTasks > 0
+                          ? Math.round((todoTasks / totalTasks) * 100)
+                          : 0}
+                        %)
+                      </span>
+                    </div>
+                    <Progress
+                      value={
+                        totalTasks > 0 ? (todoTasks / totalTasks) * 100 : 0
+                      }
+                      className="h-3"
                     />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold">In Progress</span>
+                      <span className="text-sm text-muted-foreground">
+                        {inProgressTasks} (
+                        {totalTasks > 0
+                          ? Math.round((inProgressTasks / totalTasks) * 100)
+                          : 0}
+                        %)
+                      </span>
+                    </div>
+                    <Progress
+                      value={
+                        totalTasks > 0
+                          ? (inProgressTasks / totalTasks) * 100
+                          : 0
+                      }
+                      className="h-3"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold">Completed</span>
+                      <span className="text-sm text-muted-foreground">
+                        {completedTasks} ({completionRate}%)
+                      </span>
+                    </div>
+                    <Progress value={completionRate} className="h-3" />
                   </div>
                 </div>
 
-                {/* In Progress */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">In Progress</span>
-                    <span className="text-sm text-muted-foreground">
-                      {inProgressTasks} (
-                      {totalTasks > 0
-                        ? Math.round((inProgressTasks / totalTasks) * 100)
-                        : 0}
-                      %)
-                    </span>
-                  </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-orange-600 rounded-full"
-                      style={{
-                        width: `${totalTasks > 0 ? (inProgressTasks / totalTasks) * 100 : 0}%`,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Completed */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">Completed</span>
-                    <span className="text-sm text-muted-foreground">
-                      {completedTasks} ({completionRate}%)
-                    </span>
-                  </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-green-600 rounded-full"
-                      style={{ width: `${completionRate}%` }}
-                    />
+                {/* Priority Distribution */}
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-700">
+                  <h4 className="text-sm font-semibold mb-4">
+                    Priority Distribution
+                  </h4>
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="text-center p-4 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800">
+                      <div className="text-2xl font-bold text-red-600">
+                        {highPriorityTasks}
+                      </div>
+                      <div className="text-xs text-muted-foreground font-medium">
+                        High Priority
+                      </div>
+                    </div>
+                    <div className="text-center p-4 rounded-xl bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800">
+                      <div className="text-2xl font-bold text-yellow-600">
+                        {mediumPriorityTasks}
+                      </div>
+                      <div className="text-xs text-muted-foreground font-medium">
+                        Medium Priority
+                      </div>
+                    </div>
+                    <div className="text-center p-4 rounded-xl bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
+                      <div className="text-2xl font-bold text-green-600">
+                        {lowPriorityTasks}
+                      </div>
+                      <div className="text-xs text-muted-foreground font-medium">
+                        Low Priority
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Recent Activity Feed */}
-            <div className="rounded-2xl bg-card p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-purple-500/10 rounded-xl">
-                  <Activity className="h-5 w-5 text-purple-600" />
+            {/* Performance Insights */}
+            <div className="rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-lg border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-3 bg-orange-500/10 rounded-xl border border-orange-200 dark:border-orange-800">
+                  <TrendingUp className="h-6 w-6 text-orange-600" />
                 </div>
-                <h2 className="text-lg font-semibold">Recent Activity</h2>
+                <div>
+                  <h2 className="text-xl font-bold">Performance Insights</h2>
+                  <p className="text-muted-foreground">
+                    Your productivity metrics
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-8">
+                {/* Weekly Progress */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-semibold">
+                      Weekly Progress
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {recentTasks} tasks
+                    </span>
+                  </div>
+                  <Progress
+                    value={
+                      recentTasks > 0
+                        ? Math.min((recentTasks / 10) * 100, 100)
+                        : 0
+                    }
+                    className="h-3"
+                  />
+                </div>
+
+                {/* Efficiency Score */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 rounded-xl bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
+                    <div className="text-2xl font-bold text-green-600">
+                      {completionRate}%
+                    </div>
+                    <div className="text-xs text-muted-foreground font-medium">
+                      Efficiency
+                    </div>
+                  </div>
+                  <div className="text-center p-4 rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {totalWorkspaces}
+                    </div>
+                    <div className="text-xs text-muted-foreground font-medium">
+                      Collaboration
+                    </div>
+                  </div>
+                </div>
+
+                {/* Achievements */}
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-700">
+                  <h4 className="text-sm font-semibold mb-4">
+                    Recent Achievements
+                  </h4>
+                  <div className="space-y-3">
+                    {completedTasks > 0 && (
+                      <div className="flex items-center gap-3 text-sm">
+                        <Award className="h-4 w-4 text-yellow-600" />
+                        <span>Completed {completedTasks} tasks</span>
+                      </div>
+                    )}
+                    {totalWorkspaces > 0 && (
+                      <div className="flex items-center gap-3 text-sm">
+                        <Users className="h-4 w-4 text-blue-600" />
+                        <span>Joined {totalWorkspaces} workspaces</span>
+                      </div>
+                    )}
+                    {totalProjects > 0 && (
+                      <div className="flex items-center gap-3 text-sm">
+                        <FolderKanban className="h-4 w-4 text-green-600" />
+                        <span>Created {totalProjects} projects</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Productivity Tips */}
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-700">
+                  <h4 className="text-sm font-semibold mb-4">
+                    Productivity Tips
+                  </h4>
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-3">
+                      <Lightbulb className="h-4 w-4 text-yellow-600" />
+                      <span>Focus on high-priority tasks first</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <TargetIcon className="h-4 w-4 text-blue-600" />
+                      <span>Set realistic deadlines</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Users className="h-4 w-4 text-green-600" />
+                      <span>Collaborate with your team</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Workspace & Project Overview */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            {/* Recent Workspaces */}
+            <div className="rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-lg border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-200 dark:border-purple-800">
+                    <Building2 className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold">Your Workspaces</h2>
+                    <p className="text-muted-foreground">
+                      Collaborative environments
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.navigate({ to: "/app/workspaces" })}
+                >
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {recentWorkspaces.length > 0 ? (
+                  recentWorkspaces.map((workspace) => (
+                    <div
+                      key={workspace.id}
+                      className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-200 dark:border-purple-800">
+                            <Building2 className="h-5 w-5 text-purple-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold">{workspace.name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {workspace.memberCount} members •{" "}
+                              {workspace.projectCount} projects
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.navigate({
+                              to: `/app/workspace/${workspace.id}`,
+                            })
+                          }
+                        >
+                          Open
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-full w-fit mx-auto mb-4">
+                      <Building2 className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground mb-4">
+                      No workspaces found
+                    </p>
+                    <Button
+                      variant="outline"
+                      onClick={() => router.navigate({ to: "/app/workspaces" })}
+                    >
+                      Create Workspace
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Recent Projects */}
+            <div className="rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-lg border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-green-500/10 rounded-xl border border-green-200 dark:border-green-800">
+                    <FolderKanban className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold">Recent Projects</h2>
+                    <p className="text-muted-foreground">
+                      Your active project work
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.navigate({ to: "/app/projects" })}
+                >
+                  View All
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {recentProjects.length > 0 ? (
+                  recentProjects.map((project) => (
+                    <div
+                      key={project.id}
+                      className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="p-3 bg-green-500/10 rounded-xl border border-green-200 dark:border-green-800">
+                            <FolderKanban className="h-5 w-5 text-green-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold">{project.name}</h3>
+                            <p className="text-sm text-muted-foreground line-clamp-1">
+                              {project.description || "No description"}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            router.navigate({
+                              to: `/app/projects/${project.id}`,
+                            })
+                          }
+                        >
+                          Open
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-full w-fit mx-auto mb-4">
+                      <FolderKanban className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground mb-4">
+                      No projects found
+                    </p>
+                    <Button
+                      variant="outline"
+                      onClick={() => router.navigate({ to: "/app/projects" })}
+                    >
+                      Create Project
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Activity & Performance */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            {/* Recent Activity Feed */}
+            <div className="rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-lg border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-200 dark:border-blue-800">
+                  <Activity className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">Recent Activity</h2>
+                  <p className="text-muted-foreground">
+                    Latest updates and changes
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-4">
                 {tasks && tasks.length > 0 ? (
                   <>
                     {tasks.slice(0, 5).map((task) => (
-                      <div key={task.id} className="p-4 rounded-lg bg-muted/50">
+                      <div
+                        key={task.id}
+                        className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      >
                         <div className="flex items-center gap-4">
-                          <div className="p-2 bg-blue-500/10 rounded-xl">
+                          <div className="p-2 bg-blue-500/10 rounded-xl border border-blue-200 dark:border-blue-800">
                             <ListTodo className="h-4 w-4 text-blue-600" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{task.title}</p>
+                            <p className="font-semibold truncate">
+                              {task.title}
+                            </p>
                             <p className="text-sm text-muted-foreground truncate">
-                              {task.project.name}
+                              {task.project?.name || "No project"}
                             </p>
                           </div>
                           <Badge
@@ -328,7 +713,7 @@ function RouteComponent() {
                     ))}
                     <Button
                       variant="outline"
-                      className=""
+                      className="w-full h-12"
                       onClick={() => router.navigate({ to: "/app/tasks" })}
                     >
                       View All Tasks
@@ -336,81 +721,14 @@ function RouteComponent() {
                     </Button>
                   </>
                 ) : (
-                  <div className="text-center py-8">
-                    <div className="p-4 bg-muted rounded-full w-fit mx-auto mb-4">
-                      <ListTodo className="h-6 w-6 text-muted-foreground" />
+                  <div className="text-center py-12">
+                    <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-full w-fit mx-auto mb-4">
+                      <ListTodo className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <p className="text-muted-foreground">No tasks found</p>
+                    <p className="text-muted-foreground">No recent activity</p>
                   </div>
                 )}
               </div>
-            </div>
-          </div>
-
-          {/* Projects Showcase */}
-          <div className="rounded-2xl bg-card p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-green-500/10 rounded-xl">
-                <FolderKanban className="h-5 w-5 text-green-600" />
-              </div>
-              <h2 className="text-lg font-semibold">Your Projects</h2>
-            </div>
-
-            <div className="space-y-4">
-              {projects && projects.length > 0 ? (
-                <>
-                  {projects.slice(0, 3).map((project) => (
-                    <div
-                      key={project.id}
-                      className=" p-4 rounded-lg bg-muted/50"
-                    >
-                      <div className="flex flex-col sm:flex-row items- justify-between gap-4">
-                        <div className="flex items-center gap-4 flex-1 min-w-0">
-                          <div className="p-2 bg-green-500/10 rounded-xl">
-                            <FolderKanban className="h-5 w-5 text-green-600" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-medium truncate">
-                              {project.name}
-                            </h3>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {project.description ||
-                                "No description available"}
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            router.navigate({
-                              to: `/app/projects/${project.id}`,
-                            })
-                          }
-                        >
-                          View Details
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  <Button
-                    variant="outline"
-                    className=""
-                    onClick={() => router.navigate({ to: "/app/projects" })}
-                  >
-                    Explore All Projects
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="p-4 bg-muted rounded-full w-fit mx-auto mb-4">
-                    <FolderKanban className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <p className="text-muted-foreground">No projects found</p>
-                </div>
-              )}
             </div>
           </div>
         </div>

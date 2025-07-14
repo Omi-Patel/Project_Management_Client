@@ -29,6 +29,7 @@ import {
 import type { TaskResponse } from "@/schemas/task_schema";
 import { getBadgeColor } from "@/lib/task-utils";
 import { Separator } from "../ui/separator";
+import { TaskComments } from "./task-comments";
 
 interface User {
   id: string;
@@ -84,8 +85,9 @@ export function TaskDetailsSheet({
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[90%] sm:max-w-md md:max-w-lg p-0 overflow-y-auto">
-        <div className="h-full flex flex-col">
+      <SheetContent className="w-[90%] sm:max-w-md md:max-w-lg p-0 flex flex-col h-full">
+        {/* Scrollable Content Area */}
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {/* Header with status badge */}
           <div className="p-6 pb-2">
             <SheetHeader className="text-left">
@@ -228,29 +230,32 @@ export function TaskDetailsSheet({
             </TooltipProvider>
           </div>
 
-          {/* Spacer */}
-          <div className="flex-grow"></div>
+          <Separator className="my-2 " />
 
-          {/* Action Buttons */}
-          <div className="border-t border-gray-200 dark:border-gray-800 p-6 mt-4">
-            <div className="flex justify-between gap-4">
-              <Button
-                variant="outline"
-                onClick={() => onEditClick(task)}
-                className="flex-1 border-2"
-                size="sm"
-              >
-                <PencilIcon className="h-4 w-4 mr-2" /> Edit
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => onDeleteClick(task)}
-                className="flex-1"
-                size="sm"
-              >
-                <TrashIcon className="h-4 w-4 mr-2" /> Delete
-              </Button>
-            </div>
+          {/* Comments Section */}
+          <div className="p-4">
+            <TaskComments taskId={task.id} />
+          </div>
+        </div>
+        {/* Sticky Action Buttons with shadow */}
+        <div className="sticky bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-6 z-10 shadow-[0_-2px_8px_-2px_rgba(0,0,0,0.06)]">
+          <div className="flex justify-between gap-4">
+            <Button
+              variant="outline"
+              onClick={() => onEditClick(task)}
+              className="flex-1 border-2"
+              size="sm"
+            >
+              <PencilIcon className="h-4 w-4 mr-2" /> Edit
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => onDeleteClick(task)}
+              className="flex-1"
+              size="sm"
+            >
+              <TrashIcon className="h-4 w-4 mr-2" /> Delete
+            </Button>
           </div>
         </div>
       </SheetContent>

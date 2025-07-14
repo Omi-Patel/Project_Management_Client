@@ -8,6 +8,7 @@ import {
   Home,
   Layers,
   User,
+  Users,
 } from "lucide-react";
 
 import {
@@ -48,10 +49,10 @@ const data = {
       iconColor: "text-indigo-500",
     },
     {
-      title: "Projects",
-      url: "/app/projects",
-      icon: Folder,
-      iconColor: "text-amber-500",
+      title: "Workspaces",
+      url: "/app/workspaces",
+      icon: Users,
+      iconColor: "text-blue-500",
     },
     {
       title: "My Tasks",

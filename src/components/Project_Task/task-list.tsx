@@ -3,6 +3,7 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 import { getUserById } from "@/lib/actions";
+import { getWorkspacesForUser } from "@/lib/workspace-actions";
 import type { TaskResponse } from "@/schemas/task_schema";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -18,18 +19,25 @@ interface User {
   name: string;
 }
 
+interface Workspace {
+  id: string;
+  name: string;
+}
+
 interface TaskListProps {
   tasks: TaskResponse[];
   projectId: string;
+  workspaceId?: string;
 }
 
-export function TaskList({ tasks, projectId }: TaskListProps) {
+export function TaskList({ tasks, projectId, workspaceId }: TaskListProps) {
   const [selectedTask, setSelectedTask] = useState<TaskResponse | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [assignees, setAssignees] = useState<User[]>([]);
   const [taskAssignees, setTaskAssignees] = useState<Record<string, User[]>>(
     {}
   );
+  const [workspaces, setWorkspaces] = useState<Record<string, Workspace>>({});
 
   // Dialog states
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -73,6 +81,41 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
     staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
   });
 
+  // Fetch workspaces for all tasks
+  const { data: workspaceMap = {}, isLoading: isWorkspacesLoading } = useQuery({
+    queryKey: ["workspaces", tasks],
+    queryFn: async () => {
+      // Collect all unique workspace IDs from tasks
+      const allWorkspaceIds = tasks
+        .map((task) => task.project?.workspaceId)
+        .filter((id): id is string => id !== null && id !== undefined)
+        .filter((id, index, self) => self.indexOf(id) === index); // Deduplicate IDs
+
+      if (allWorkspaceIds.length === 0) {
+        return {};
+      }
+
+      // Fetch all unique workspaces
+      const userId = localStorage.getItem("USER_ID");
+      if (!userId) return {};
+
+      const workspacesData = await getWorkspacesForUser(userId);
+      
+      // Create a map of workspace IDs to workspace objects
+      // Only include workspaces that are actually used by tasks
+      const workspaceMap: Record<string, Workspace> = {};
+      workspacesData.forEach((workspace) => {
+        if (allWorkspaceIds.includes(workspace.id)) {
+          workspaceMap[workspace.id] = workspace;
+        }
+      });
+      
+      return workspaceMap;
+    },
+    enabled: tasks.length > 0, // Only fetch if there are tasks
+    staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
+  });
+
   // Map the fetched assignees back to their respective tasks
   useEffect(() => {
     if (!isAssigneesLoading) {
@@ -92,6 +135,13 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
       }
     }
   }, [tasks, assigneeMap, isAssigneesLoading]);
+
+  // Map the fetched workspaces
+  useEffect(() => {
+    if (!isWorkspacesLoading) {
+      setWorkspaces(workspaceMap);
+    }
+  }, [workspaceMap, isWorkspacesLoading]);
   
 
   // Handle task click to show details
@@ -183,6 +233,7 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
         <TaskTable
           tasks={dedupedTasks}
           taskAssignees={taskAssignees}
+          workspaces={workspaces}
           onTaskClick={handleTaskClick}
           onEditClick={handleEditClick}
           onDeleteClick={handleDeleteClick}
@@ -216,6 +267,7 @@ export function TaskList({ tasks, projectId }: TaskListProps) {
         projectId={projectId}
         mode={isEditDialogOpen ? "edit" : "add"}
         onSuccess={handleTaskUpdated}
+        workspaceId={workspaceId}
       />
 
       {/* Delete Task Dialog */}
