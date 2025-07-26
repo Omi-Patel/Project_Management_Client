@@ -17,7 +17,7 @@ import {
 import { toast } from "sonner";
 
 import { LoginInputSchema, type LoginInput } from "@/schemas/user-schema";
-import { loginUser } from "@/lib/actions";
+import { loginUser, resendOtp } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -70,9 +70,21 @@ function RouteComponent() {
 
       navigate({ to: "/app/dashboard" });
     },
-    onError: (error) => {
+    onError: async (error: any) => {
       console.error("Login error:", error);
-      // Error handling is now done centrally in the actions file
+
+      // Check if the error is about email verification
+      if (error?.response?.data?.message?.includes("verify your email")) {
+        const userEmail = form.getValues("email");
+
+        await resendOtp(userEmail);
+        // Automatically redirect to verify-otp screen with email
+        navigate({
+          to: "/auth/verify-otp",
+          search: { email: userEmail },
+        });
+      }
+      // Other error handling is done centrally in the actions file
     },
   });
 

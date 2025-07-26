@@ -4,7 +4,16 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
-import { Mail, ArrowLeft, RefreshCw, Loader2, Shield, CheckCircle, Clock, Key } from "lucide-react";
+import {
+  Mail,
+  ArrowLeft,
+  RefreshCw,
+  Loader2,
+  Shield,
+  CheckCircle,
+  Clock,
+  Key,
+} from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -189,7 +198,10 @@ function RouteComponent() {
               Please register first to verify your email address.
             </p>
           </div>
-          <Button onClick={handleBackToRegister} className="w-full h-12 rounded-xl">
+          <Button
+            onClick={handleBackToRegister}
+            className="w-full h-12 rounded-xl"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Register
           </Button>
@@ -205,12 +217,12 @@ function RouteComponent() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(120,119,198,0.1),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,rgba(120,119,198,0.1),transparent_50%)]" />
-        
+
         {/* Floating Elements */}
         <div className="absolute top-24 left-24 w-32 h-32 bg-primary/5 rounded-full blur-xl" />
         <div className="absolute bottom-24 right-24 w-28 h-28 bg-primary/10 rounded-full blur-lg" />
         <div className="absolute top-1/2 right-1/3 w-16 h-16 bg-primary/5 rounded-full blur-md" />
-        
+
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center h-full px-16 text-center">
           <div className="space-y-8">
@@ -222,10 +234,11 @@ function RouteComponent() {
                 Verify Your Email
               </h1>
               <p className="text-lg text-muted-foreground max-w-md">
-                We've sent a secure verification code to your email address to ensure your account security.
+                We've sent a secure verification code to your email address to
+                ensure your account security.
               </p>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center space-x-3 text-sm text-muted-foreground">
                 <CheckCircle className="w-4 h-4 text-green-500" />
@@ -253,7 +266,9 @@ function RouteComponent() {
               <Shield className="w-8 h-8 text-primary" />
             </div>
             <h1 className="text-3xl font-bold">Verify Email</h1>
-            <p className="text-muted-foreground">Enter the code sent to your email</p>
+            <p className="text-muted-foreground">
+              Enter the code sent to your email
+            </p>
           </div>
 
           <div className="space-y-6">
@@ -268,7 +283,10 @@ function RouteComponent() {
             </div>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 {/* OTP Input Fields */}
                 <FormField
                   control={form.control}
@@ -315,7 +333,8 @@ function RouteComponent() {
                   type="submit"
                   className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
                   disabled={
-                    verifyOtpMutation.isPending || otpDigits.join("").length !== 6
+                    verifyOtpMutation.isPending ||
+                    otpDigits.join("").length !== 6
                   }
                 >
                   {verifyOtpMutation.isPending ? (
@@ -376,34 +395,36 @@ function RouteComponent() {
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or</span>
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or
+                </span>
               </div>
             </div>
 
             {/* Back to Register */}
-            <div className="text-center">
+            <div className="flex justify-between items-center">
               <Button
                 type="button"
                 variant="ghost"
                 onClick={handleBackToRegister}
                 className="text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className=" h-4 w-4" />
                 Back to Register
               </Button>
-            </div>
 
-            {/* Already have an account */}
-            <div className="text-center pt-4 border-t border-border">
-              <p className="text-sm text-muted-foreground">
-                Already have an account?{" "}
-                <Link
-                  to="/auth/login"
-                  className="text-primary hover:text-primary/80 font-semibold transition-colors duration-200"
-                >
-                  Sign in here
-                </Link>
-              </p>
+              {/* Already have an account */}
+              <div className="text-center ">
+                <p className="text-sm text-muted-foreground">
+                  Already have an account?{" "}
+                  <Link
+                    to="/auth/login"
+                    className="text-primary hover:text-primary/80 font-semibold transition-colors duration-200"
+                  >
+                    Sign in here
+                  </Link>
+                </p>
+              </div>
             </div>
           </div>
         </div>
