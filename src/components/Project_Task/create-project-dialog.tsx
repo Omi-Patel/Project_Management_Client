@@ -73,8 +73,10 @@ export function CreateProjectDialog({
         endDate: endDate ? endDate.getTime().toString() : null,
       };
 
+      // Create project normally
       await createProject(projectData);
       toast.success("Project created successfully!");
+
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       if (workspaceId) {
         queryClient.invalidateQueries({

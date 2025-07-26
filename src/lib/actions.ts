@@ -168,6 +168,30 @@ export async function createProject(
   }
 }
 
+export async function generateAITasksForProject(
+  projectId: string
+): Promise<{
+  project: ProjectSchema;
+  generatedTasks: any[];
+  message: string;
+}> {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/projects/generate-ai-tasks/${projectId}`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+}
+
 export async function getAllProjects(userId: string): Promise<ProjectSchema[]> {
   try {
     const url = userId

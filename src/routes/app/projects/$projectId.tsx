@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import TaskList from "@/components/Project_Task/task-list";
 import { TaskFormDialog } from "@/components/Project_Task/task-form-dialog";
+import { AITaskGenerationDialog } from "@/components/Project_Task/ai-task-generation-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart2,
@@ -37,9 +38,10 @@ import {
   CheckCircle2,
   Target,
   Calendar,
+  Sparkles,
 } from "lucide-react";
 import TaskBoard from "@/components/TaskBoard";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -59,9 +61,11 @@ export const Route = createFileRoute("/app/projects/$projectId")({
 function RouteComponent() {
   const project = Route.useLoaderData();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { projectId } = useParams({ from: "/app/projects/$projectId" });
   const navigate = useNavigate();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isAIDialogOpen, setIsAIDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [size] = useState(10);
   const [search, setSearch] = useState<string | null>(null);
@@ -97,8 +101,19 @@ function RouteComponent() {
   }, [project, data]);
 
   const handleTaskAdded = async () => {
-    setIsAddDialogOpen(false);
+    // Invalidate React Query cache for tasks
+    await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    // Also invalidate router cache
     router.invalidate();
+    setIsAddDialogOpen(false);
+  };
+
+  const handleAITasksGenerated = async () => {
+    // Invalidate React Query cache for tasks
+    await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    // Also invalidate router cache
+    router.invalidate();
+    setIsAIDialogOpen(false);
   };
 
   const handleSearch = (newSearch: string) => {
@@ -301,15 +316,25 @@ function RouteComponent() {
 
         {/* Tasks Section */}
         <div className="rounded-lg border bg-card">
-          <div className="flex items-center justify-between p-6 border-b">
+          <div className="flex flex-col md:flex-row sm:items-center justify-between p-6 border-b">
             <div className="flex items-center gap-2">
               <ListTodo className="h-5 w-5" />
               <h2 className="text-lg font-semibold">Project Tasks</h2>
             </div>
-            <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
-              <PlusCircle className="h-4 w-4" />
-              Add Task
-            </Button>
+            <div className="flex flex-wrap sm:items-center gap-3 justify-end">
+              <Button 
+                variant="outline"
+                onClick={() => setIsAIDialogOpen(true)} 
+                className="gap-2 bg-gradient-to-r from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100 dark:from-purple-950/50 dark:to-blue-950/50 dark:hover:from-purple-900/50 dark:hover:to-blue-900/50 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200"
+              >
+                <Sparkles className="h-4 w-4" />
+                Generate AI Tasks
+              </Button>
+              <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
+                <PlusCircle className="h-4 w-4" />
+                Add Task
+              </Button>
+            </div>
           </div>
           <div className="p-6 space-y-6">
             {/* Search */}
@@ -416,6 +441,14 @@ function RouteComponent() {
         mode="add"
         onSuccess={handleTaskAdded}
         workspaceId={project.workspaceId || undefined}
+      />
+
+      {/* AI Task Generation Dialog */}
+      <AITaskGenerationDialog
+        isOpen={isAIDialogOpen}
+        onOpenChange={setIsAIDialogOpen}
+        project={project}
+        onSuccess={handleAITasksGenerated}
       />
     </SidebarInset>
   );
