@@ -1,28 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Sparkles,
   Brain,
   CheckCircle,
-  Clock,
-  Target,
-  Zap,
   FileText,
   ArrowRight,
   ListTodo,
+  BarChart3,
+  Settings,
+  Edit3,
+  Calendar,
+  RefreshCw,
 } from "lucide-react";
 import { generateAITasksForProject } from "@/lib/actions";
 import { toast } from "sonner";
 import type { ProjectSchema } from "@/schemas/project-schema";
+import type { TaskResponse } from "@/schemas/task_schema";
 
 interface AITaskGenerationDialogProps {
   isOpen: boolean;
@@ -31,255 +42,719 @@ interface AITaskGenerationDialogProps {
   onSuccess?: () => void;
 }
 
+interface GenerationPreferences {
+  complexity: "simple" | "balanced" | "detailed";
+  focusArea: "development" | "design" | "testing" | "planning" | "all";
+  taskCount: number;
+  templateStyle: "agile" | "waterfall" | "kanban" | "custom";
+  includeTimelines: boolean;
+  autoAssign: boolean;
+  includeSubtasks: boolean;
+  includeDependencies: boolean;
+  riskAssessment: boolean;
+  creativityLevel: number;
+  detailLevel: number;
+  customInstructions: string;
+}
+
+interface ProjectInsights {
+  estimatedDuration: string;
+  complexity: string;
+  recommendedTeamSize: number;
+  riskFactors: string[];
+  keyMilestones: string[];
+}
+
+interface GenerationStep {
+  id: string;
+  title: string;
+  status: "pending" | "processing" | "completed" | "error";
+  description: string;
+}
+
 export function AITaskGenerationDialog({
   isOpen,
   onOpenChange,
   project,
   onSuccess,
 }: AITaskGenerationDialogProps) {
+  // State management
+  const [currentTab, setCurrentTab] = useState("insights");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [generatedTasksCount, setGeneratedTasksCount] = useState(0);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [generatedTasks, setGeneratedTasks] = useState<TaskResponse[]>([]);
+  const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set());
+  const [editingTask, setEditingTask] = useState<string | null>(null);
+
+  // Preferences
+  const [preferences, setPreferences] = useState<GenerationPreferences>({
+    complexity: "balanced",
+    focusArea: "all",
+    taskCount: 8,
+    templateStyle: "agile",
+    includeTimelines: true,
+    autoAssign: false,
+    includeSubtasks: false,
+    includeDependencies: false,
+    riskAssessment: false,
+    creativityLevel: 50,
+    detailLevel: 70,
+    customInstructions: "",
+  });
+
+  // Insights and analysis
+  const [projectInsights, setProjectInsights] =
+    useState<ProjectInsights | null>(null);
+
+  // Generation steps
+  const generationSteps: GenerationStep[] = [
+    {
+      id: "analyze",
+      title: "Analyzing Project",
+      description: "Understanding project scope and requirements",
+      status: "pending",
+    },
+    {
+      id: "structure",
+      title: "Creating Task Structure",
+      description: "Building logical task hierarchy",
+      status: "pending",
+    },
+    {
+      id: "details",
+      title: "Adding Details",
+      description: "Generating descriptions and priorities",
+      status: "pending",
+    },
+    {
+      id: "optimize",
+      title: "Optimizing Flow",
+      description: "Arranging tasks for optimal workflow",
+      status: "pending",
+    },
+    {
+      id: "finalize",
+      title: "Finalizing Tasks",
+      description: "Applying final touches and validation",
+      status: "pending",
+    },
+  ];
+
+  // Reset state when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      resetState();
+    }
+  }, [isOpen]);
+
+  const resetState = () => {
+    setCurrentTab("insights");
+    setIsGenerating(false);
+    setGenerationProgress(0);
+    setCurrentStep(0);
+    setGeneratedTasks([]);
+    setSelectedTasks(new Set());
+    setEditingTask(null);
+    setProjectInsights(null);
+  };
 
   const handleGenerateAITasks = async () => {
     if (!project.id) return;
 
     try {
       setIsGenerating(true);
-      setIsCompleted(false);
-      const result = await generateAITasksForProject(project.id);
+      setCurrentTab("generation");
+      setGenerationProgress(0);
+      setCurrentStep(0);
 
-      // Set completion state
-      setIsCompleted(true);
-      setGeneratedTasksCount(result.generatedTasks.length);
+      // Simulate step-by-step generation with progress
+      for (let i = 0; i < generationSteps.length; i++) {
+        setCurrentStep(i);
+        setGenerationProgress((i / generationSteps.length) * 80);
 
-      toast.success(result.message, {
-        description: `Generated ${result.generatedTasks.length} intelligent tasks based on your project details.`,
-        duration: 4000,
+        // Simulate processing time for each step
+        await new Promise((resolve) => setTimeout(resolve, 800));
+      }
+
+      // Actual API call with preferences
+      const result = await generateAITasksForProject({
+        projectId: project.id,
+        complexity: preferences.complexity,
+        focusArea: preferences.focusArea,
+        taskCount: preferences.taskCount,
+        templateStyle: preferences.templateStyle,
+        includeTimelines: preferences.includeTimelines,
+        autoAssign: preferences.autoAssign,
+        includeSubtasks: preferences.includeSubtasks,
+        includeDependencies: preferences.includeDependencies,
+        riskAssessment: preferences.riskAssessment,
+        creativityLevel: preferences.creativityLevel,
+        detailLevel: preferences.detailLevel,
+        customInstructions: preferences.customInstructions,
+        projectContext: {
+          name: project.name,
+          description: project.description,
+          startDate: project.startDate,
+          endDate: project.endDate,
+          teamSize: projectInsights?.recommendedTeamSize,
+        },
       });
 
-      // Add a small delay to ensure backend processing is complete, then refetch tasks
-      setTimeout(() => {
-        onSuccess?.();
-      }, 500);
+      // Complete progress
+      setGenerationProgress(100);
+      setGeneratedTasks(result.generatedTasks || []);
 
+      // Select all tasks by default
+      const allTaskIds = new Set(result.generatedTasks?.map((t) => t.id) || []);
+      setSelectedTasks(allTaskIds);
+
+      // Move to preview tab
+      setCurrentTab("preview");
+
+      toast.success("Tasks generated successfully!", {
+        description: `Created ${result.generatedTasks?.length || 0} intelligent tasks`,
+        duration: 3000,
+      });
     } catch (error) {
       toast.error("Failed to generate AI tasks", {
         description:
           "Please try again or contact support if the issue persists.",
       });
       console.error("AI Task Generation Error:", error);
+      setCurrentTab("insights");
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleViewTasks = () => {
+  const handleApplyTasks = async () => {
+    // Apply selected tasks to the project
+    const tasksToApply = generatedTasks.filter((task) =>
+      selectedTasks.has(task.id)
+    );
+
+    if (tasksToApply.length === 0) {
+      toast.error("Please select at least one task to apply");
+      return;
+    }
+
+    // Add delay to ensure backend processing
+    setTimeout(() => {
+      onSuccess?.();
+    }, 300);
+
+    toast.success(`Applied ${tasksToApply.length} tasks to your project!`, {
+      description: "You can now view and manage them in your task list",
+      duration: 4000,
+    });
+
     onOpenChange(false);
-    onSuccess?.();
-    // Reset states
-    setIsCompleted(false);
-    setGeneratedTasksCount(0);
   };
 
-  const handleClose = () => {
-    onOpenChange(false);
-    // Reset states
-    setIsCompleted(false);
-    setGeneratedTasksCount(0);
+  const toggleTaskSelection = (taskId: string) => {
+    const newSelected = new Set(selectedTasks);
+    if (newSelected.has(taskId)) {
+      newSelected.delete(taskId);
+    } else {
+      newSelected.add(taskId);
+    }
+    setSelectedTasks(newSelected);
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority?.toLowerCase()) {
+      case "high":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "low":
+        return "bg-green-100 text-green-800 border-green-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[520px] p-0 gap-0 overflow-hidden bg-white dark:bg-slate-900 mx-auto">
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="w-[95vw] max-w-6xl h-[90vh] p-0 gap-0 overflow-hidden bg-white dark:bg-slate-900">
         {/* Modern Header */}
-        <div className="relative px-4 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4">
-          <div className="flex items-start gap-3 sm:gap-4">
-            <div className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shadow-lg transition-colors ${
-              isCompleted 
-                ? "bg-gradient-to-br from-green-500 to-emerald-600" 
-                : "bg-gradient-to-br from-purple-500 to-blue-600"
-            }`}>
-              {isCompleted ? (
-                <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-              ) : (
-                <Brain className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-              )}
+        <div className="relative px-6 pt-6 pb-4 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg">
+              <Brain className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <DialogTitle className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1 leading-tight">
-                {isCompleted ? "Tasks Generated Successfully!" : "AI Task Generator"}
+              <DialogTitle className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                AI Task Generator
               </DialogTitle>
-              <DialogDescription className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm leading-relaxed">
-                {isCompleted 
-                  ? `Created ${generatedTasksCount} intelligent tasks for your project`
-                  : "Let AI analyze your project and create intelligent, actionable tasks to kickstart your workflow."
-                }
+              <DialogDescription className="text-slate-600 dark:text-slate-400 text-sm">
+                Intelligent task generation for{" "}
+                <span className="font-medium">{project.name}</span>
               </DialogDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-xs">
+                <Sparkles className="h-3 w-3 mr-1" />
+                AI Powered
+              </Badge>
             </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6">
-          
-          {/* Success State */}
-          {isCompleted && (
-            <div className="text-center py-4 sm:py-6 space-y-3 animate-in slide-in-from-top-2 duration-300">
-              <div className="w-16 h-16 mx-auto bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-8 w-8 text-green-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">
-                  All Set!
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400">
-                  Your AI-generated tasks are ready. View them now to start working on your project.
-                </p>
-              </div>
+        {/* Content with Tabs */}
+        <div className="flex-1 overflow-hidden">
+          <Tabs value={currentTab} className="h-full flex flex-col">
+            <div className="px-6 pt-4">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger
+                  value="insights"
+                  className="flex items-center gap-2 pointer-events-none"
+                  disabled={currentTab !== "insights"}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Insights</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="preferences"
+                  className="flex items-center gap-2 pointer-events-none"
+                  disabled={currentTab !== "preferences"}
+                >
+                  <Settings className="h-4 w-4" />
+                  <span className="hidden sm:inline">Preferences</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="generation"
+                  className="flex items-center gap-2 pointer-events-none"
+                  disabled={currentTab !== "generation"}
+                >
+                  <RefreshCw
+                    className={`h-4 w-4 ${isGenerating ? "animate-spin" : ""}`}
+                  />
+                  <span className="hidden sm:inline">Generate</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="preview"
+                  className="flex items-center gap-2 pointer-events-none"
+                  disabled={currentTab !== "preview"}
+                >
+                  <ListTodo className="h-4 w-4" />
+                  <span className="hidden sm:inline">Preview</span>
+                </TabsTrigger>
+              </TabsList>
             </div>
-          )}
 
-          {/* Project Overview - Only show when not completed */}
-          {!isCompleted && (
-            <>
-              <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 sm:p-4 bg-slate-50 dark:bg-slate-800/50">
-                <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                  <FileText className="h-3 w-3 sm:h-4 sm:w-4 text-slate-500 flex-shrink-0" />
-                  <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Project Overview
-                  </span>
+            <div className="flex-1 overflow-auto">
+              {/* Project Insights Tab */}
+              <TabsContent value="insights" className="p-6 space-y-6 h-full">
+                <div className="max-w-2xl mx-auto">
+                  {/* Project Overview */}
+                  <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm">
+                    <div className="p-6 pb-4 border-b border-slate-200 dark:border-slate-700">
+                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
+                        <FileText className="h-5 w-5" />
+                        Project Overview
+                      </h3>
+                    </div>
+                    <div className="p-6 space-y-4">
+                      <div>
+                        <h4 className="font-medium text-slate-900 dark:text-slate-100 mb-2">
+                          {project.name}
+                        </h4>
+                        {project.description && (
+                          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                            {project.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {project.endDate && (
+                        <div className="flex items-center gap-2 text-sm">
+                          <Calendar className="h-4 w-4 text-slate-500" />
+                          <span className="text-slate-600 dark:text-slate-400">
+                            Due:{" "}
+                            {new Date(project.endDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
+              </TabsContent>
 
-                <div className="space-y-2">
-                  <div>
-                    <p className="text-sm sm:text-base font-medium text-slate-900 dark:text-slate-100 leading-tight">
-                      {project.name}
+              {/* Preferences Tab */}
+              <TabsContent value="preferences" className="p-6">
+                <div className="max-w-3xl mx-auto space-y-8">
+                  <div className="text-center space-y-2">
+                    <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+                      Task Generation Settings
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      Configure how you want your tasks to be generated
                     </p>
                   </div>
 
-                  {project.description && (
-                    <div>
-                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
-                        {project.description}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
+                  {/* Main Settings */}
+                  <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm">
+                    <div className="p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                            Task Complexity
+                          </label>
+                          <Select
+                            value={preferences.complexity}
+                            onValueChange={(value: any) =>
+                              setPreferences((prev) => ({
+                                ...prev,
+                                complexity: value,
+                              }))
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="simple">Simple</SelectItem>
+                              <SelectItem value="balanced">Balanced</SelectItem>
+                              <SelectItem value="detailed">Detailed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-              {/* AI Capabilities */}
-              <div className="space-y-3 sm:space-y-4 hidden sm:block">
-                <h3 className="text-xs sm:text-sm font-medium text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                  <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 flex-shrink-0" />
-                  <span>What AI Will Generate</span>
-                </h3>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                            Focus Area
+                          </label>
+                          <Select
+                            value={preferences.focusArea}
+                            onValueChange={(value: any) =>
+                              setPreferences((prev) => ({
+                                ...prev,
+                                focusArea: value,
+                              }))
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Areas</SelectItem>
+                              <SelectItem value="development">
+                                Development
+                              </SelectItem>
+                              <SelectItem value="design">Design</SelectItem>
+                              <SelectItem value="testing">Testing</SelectItem>
+                              <SelectItem value="planning">Planning</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                  {[
-                    {
-                      icon: Target,
-                      title: "Smart Breakdown",
-                      description: "5-8 actionable tasks",
-                      color: "text-emerald-600",
-                    },
-                    {
-                      icon: Clock,
-                      title: "Time Estimates",
-                      description: "Realistic durations",
-                      color: "text-blue-600",
-                    },
-                    {
-                      icon: CheckCircle,
-                      title: "Priority Levels",
-                      description: "High, Medium, Low",
-                      color: "text-orange-600",
-                    },
-                    {
-                      icon: Zap,
-                      title: "Ready to Start",
-                      description: "Immediately actionable",
-                      color: "text-purple-600",
-                    },
-                  ].map((feature, index) => (
-                    <div
-                      key={index}
-                      className="p-2.5 sm:p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-sm transition-shadow"
-                    >
-                      <div className="flex items-start gap-2 sm:gap-2.5">
-                        <feature.icon
-                          className={`h-3 w-3 sm:h-4 sm:w-4 mt-0.5 ${feature.color} flex-shrink-0`}
-                        />
-                        <div className="min-w-0">
-                          <p className="font-medium text-slate-900 dark:text-slate-100 text-xs sm:text-sm leading-tight">
-                            {feature.title}
-                          </p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">
-                            {feature.description}
-                          </p>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                            Number of Tasks
+                          </label>
+                          <Select
+                            value={preferences.taskCount.toString()}
+                            onValueChange={(value) =>
+                              setPreferences((prev) => ({
+                                ...prev,
+                                taskCount: parseInt(value),
+                              }))
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="5">5 tasks</SelectItem>
+                              <SelectItem value="8">8 tasks</SelectItem>
+                              <SelectItem value="12">12 tasks</SelectItem>
+                              <SelectItem value="15">15 tasks</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Timeline Option */}
+                      <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center space-x-3">
+                          <Checkbox
+                            id="timelines"
+                            checked={preferences.includeTimelines}
+                            onCheckedChange={(checked) =>
+                              setPreferences((prev) => ({
+                                ...prev,
+                                includeTimelines: checked as boolean,
+                              }))
+                            }
+                          />
+                          <div>
+                            <label
+                              htmlFor="timelines"
+                              className="text-sm font-medium text-slate-900 dark:text-slate-100 cursor-pointer"
+                            >
+                              Include estimated timelines
+                            </label>
+                            <p className="text-xs text-slate-500">
+                              Add time estimates to each generated task
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              </div>
+              </TabsContent>
 
-              {/* Info Note */}
-              <div className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <div className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-600 rounded-full"></div>
+              {/* Generation Tab */}
+              <TabsContent value="generation" className="p-6">
+                <div className="max-w-2xl mx-auto space-y-8">
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 mx-auto bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                      <Brain className="h-8 w-8 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">
+                        Generating Your Tasks
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        AI is analyzing your project and creating intelligent
+                        tasks
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Progress</span>
+                      <span>{Math.round(generationProgress)}%</span>
+                    </div>
+                    <Progress value={generationProgress} className="h-2" />
+                  </div>
+
+                  {/* Generation Steps */}
+                  <div className="space-y-4">
+                    {generationSteps.map((step, index) => (
+                      <div
+                        key={step.id}
+                        className={`flex items-center gap-4 p-4 rounded-lg border transition-all ${
+                          index <= currentStep
+                            ? "border-purple-200 bg-purple-50 dark:bg-purple-900/20"
+                            : "border-slate-200 bg-slate-50 dark:bg-slate-800"
+                        }`}
+                      >
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            index < currentStep
+                              ? "bg-green-500 text-white"
+                              : index === currentStep
+                                ? "bg-purple-500 text-white"
+                                : "bg-slate-300 text-slate-600"
+                          }`}
+                        >
+                          {index < currentStep ? (
+                            <CheckCircle className="h-4 w-4" />
+                          ) : index === currentStep ? (
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <span className="text-sm font-medium">
+                              {index + 1}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium">{step.title}</h4>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                            {step.description}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="text-xs sm:text-sm">
-                  <p className="text-blue-900 dark:text-blue-100 leading-relaxed">
-                    AI will analyze your project context to create relevant tasks.
-                    You can edit, modify, or add more tasks after generation.
-                  </p>
+              </TabsContent>
+
+              {/* Preview Tab */}
+              <TabsContent value="preview" className="p-6">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold">Generated Tasks</h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        Review and customize your AI-generated tasks
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setSelectedTasks(
+                            new Set(generatedTasks.map((t) => t.id))
+                          )
+                        }
+                      >
+                        Select All
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedTasks(new Set())}
+                      >
+                        Deselect All
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {generatedTasks.map((task) => (
+                      <div
+                        key={task.id}
+                        className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-all cursor-pointer hover:shadow-md ${
+                          selectedTasks.has(task.id)
+                            ? "ring-2 ring-purple-500 bg-purple-50 dark:bg-purple-900/10"
+                            : ""
+                        }`}
+                        onClick={() => toggleTaskSelection(task.id)}
+                      >
+                        <div className="p-4">
+                          <div className="flex items-start gap-4">
+                            <Checkbox
+                              checked={selectedTasks.has(task.id)}
+                              onCheckedChange={() =>
+                                toggleTaskSelection(task.id)
+                              }
+                              onClick={(e) => e.stopPropagation()}
+                            />
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-2">
+                                <h4 className="font-medium text-slate-900 dark:text-slate-100">
+                                  {task.title}
+                                </h4>
+                                <Badge
+                                  className={`text-xs ${getPriorityColor(task.priority)}`}
+                                >
+                                  {task.priority}
+                                </Badge>
+                              </div>
+
+                              {task.description && (
+                                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                                  {task.description}
+                                </p>
+                              )}
+
+                              <div className="flex items-center gap-4 text-xs text-slate-500">
+                                {/* {task.estimatedHours && (
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    <span>{task.estimatedHours}h</span>
+                                  </div>
+                                )} */}
+                                {task.dueDate && (
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    <span>
+                                      {new Date(
+                                        task.dueDate
+                                      ).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingTask(
+                                  editingTask === task.id ? null : task.id
+                                );
+                              }}
+                            >
+                              <Edit3 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
+              </TabsContent>
+            </div>
+          </Tabs>
         </div>
 
         {/* Footer */}
-        <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-0 sm:items-center sm:justify-between px-4 sm:px-6 py-3 sm:py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
-          <Button
-            variant="ghost"
-            onClick={handleClose}
-            disabled={isGenerating}
-            className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 h-9 sm:h-10"
-          >
-            {isCompleted ? "Close" : "Cancel"}
-          </Button>
-          
-          {isCompleted ? (
+        <div className="flex items-center justify-between px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-3">
             <Button
-              onClick={handleViewTasks}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-sm min-w-[120px] sm:min-w-[140px] h-9 sm:h-10"
-            >
-              <ListTodo className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="text-xs sm:text-sm font-medium">View Tasks</span>
-              <ArrowRight className="ml-1 h-3 w-3" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handleGenerateAITasks}
+              variant="ghost"
+              onClick={() => onOpenChange(false)}
               disabled={isGenerating}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-sm min-w-[120px] sm:min-w-[140px] h-9 sm:h-10"
             >
-              {isGenerating ? (
-                <>
-                  <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent mr-2" />
-                  <span className="text-xs sm:text-sm">Generating...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="text-xs sm:text-sm font-medium">Generate Tasks</span>
-                  <ArrowRight className="ml-1 h-3 w-3" />
-                </>
-              )}
+              Cancel
             </Button>
-          )}
+
+            {currentTab !== "insights" && currentTab !== "preview" && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (currentTab === "preferences") {
+                    setCurrentTab("insights");
+                  } else if (currentTab === "generation") {
+                    setCurrentTab("preferences");
+                  }
+                }}
+                disabled={isGenerating}
+              >
+                <ArrowRight className="mr-2 h-4 w-4 rotate-180" />
+                Previous
+              </Button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3">
+            {currentTab === "insights" && (
+              <Button onClick={() => setCurrentTab("preferences")}>
+                Next: Set Preferences
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            )}
+
+            {currentTab === "preferences" && (
+              <Button onClick={handleGenerateAITasks} disabled={isGenerating}>
+                {isGenerating ? (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate Tasks
+                  </>
+                )}
+              </Button>
+            )}
+
+            {currentTab === "preview" && generatedTasks.length > 0 && (
+              <Button
+                onClick={handleApplyTasks}
+                disabled={selectedTasks.size === 0}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+              >
+                Apply {selectedTasks.size} Task
+                {selectedTasks.size !== 1 ? "s" : ""}
+                <CheckCircle className="ml-2 h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
