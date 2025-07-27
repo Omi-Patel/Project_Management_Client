@@ -238,7 +238,7 @@ export function TaskFormDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
@@ -269,6 +269,7 @@ export function TaskFormDialog({
                       placeholder="Enter task description"
                       {...field}
                       value={field.value || ""}
+                      className="min-h-[120px] max-h-[120px] resize-none overflow-y-auto"
                     />
                   </FormControl>
                   <FormMessage />

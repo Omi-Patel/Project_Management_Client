@@ -1,6 +1,7 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
 import TaskList from "@/components/Project_Task/task-list";
 import TaskBoard from "@/components/TaskBoard";
+import TaskGantt from "@/components/Project_Task/task-gantt-responsive";
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
@@ -37,6 +38,7 @@ import {
   Table,
   User,
   X,
+  GanttChart,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -476,7 +478,7 @@ function RouteComponent() {
                     Tasks {data && `(${data.length})`}
                   </h2>
                 </div>
-                <TabsList className="grid w-auto grid-cols-2">
+                <TabsList className="grid w-auto grid-cols-3">
                   <TabsTrigger
                     value="taskList"
                     className="flex items-center gap-2"
@@ -490,6 +492,13 @@ function RouteComponent() {
                   >
                     <BarChart2 className="h-4 w-4" />
                     Board
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="taskGantt"
+                    className="flex items-center gap-2"
+                  >
+                    <GanttChart className="h-4 w-4" />
+                    Gantt
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -514,6 +523,9 @@ function RouteComponent() {
                 </TabsContent>
                 <TabsContent value="taskBoard" className="mt-0">
                   <TaskBoard taskIds={data?.map((task) => task.id) || []} />
+                </TabsContent>
+                <TabsContent value="taskGantt" className="mt-0">
+                  <TaskGantt tasks={data || []} />
                 </TabsContent>
               </div>
             </Tabs>

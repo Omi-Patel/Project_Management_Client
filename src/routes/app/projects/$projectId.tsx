@@ -39,9 +39,15 @@ import {
   Target,
   Calendar,
   Sparkles,
+  GanttChart,
 } from "lucide-react";
 import TaskBoard from "@/components/TaskBoard";
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import TaskGantt from "@/components/Project_Task/task-gantt-responsive";
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -322,15 +328,18 @@ function RouteComponent() {
               <h2 className="text-lg font-semibold">Project Tasks</h2>
             </div>
             <div className="flex flex-wrap sm:items-center gap-3 justify-end">
-              <Button 
+              <Button
                 variant="outline"
-                onClick={() => setIsAIDialogOpen(true)} 
+                onClick={() => setIsAIDialogOpen(true)}
                 className="gap-2 bg-gradient-to-r from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100 dark:from-purple-950/50 dark:to-blue-950/50 dark:hover:from-purple-900/50 dark:hover:to-blue-900/50 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200"
               >
                 <Sparkles className="h-4 w-4" />
                 Generate AI Tasks
               </Button>
-              <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
+              <Button
+                onClick={() => setIsAddDialogOpen(true)}
+                className="gap-2"
+              >
                 <PlusCircle className="h-4 w-4" />
                 Add Task
               </Button>
@@ -372,11 +381,15 @@ function RouteComponent() {
                     <TabsList>
                       <TabsTrigger value="taskList" className="gap-2">
                         <Table className="h-4 w-4" />
-                        List View
+                        <span className="hidden sm:inline">List View</span>
                       </TabsTrigger>
                       <TabsTrigger value="taskBoard" className="gap-2">
                         <BarChart2 className="h-4 w-4" />
-                        Board View
+                        <span className="hidden sm:inline">Board View</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="taskGantt" className="gap-2">
+                        <GanttChart className="h-4 w-4" />
+                        <span className="hidden sm:inline">Gantt Chart</span>
                       </TabsTrigger>
                     </TabsList>
                   </div>
@@ -391,6 +404,10 @@ function RouteComponent() {
 
                   <TabsContent value="taskBoard" className="space-y-4">
                     <TaskBoard taskIds={data?.map((task) => task.id) ?? []} />
+                  </TabsContent>
+
+                  <TabsContent value="taskGantt" className="space-y-4">
+                    <TaskGantt tasks={data ?? []} projectId={projectId} />
                   </TabsContent>
                 </Tabs>
 
