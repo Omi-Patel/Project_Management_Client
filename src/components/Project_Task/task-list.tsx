@@ -37,7 +37,6 @@ export function TaskList({ tasks, projectId, workspaceId }: TaskListProps) {
   const [taskAssignees, setTaskAssignees] = useState<Record<string, User[]>>(
     {}
   );
-  const [workspaces, setWorkspaces] = useState<Record<string, Workspace>>({});
 
   // Dialog states
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -82,7 +81,7 @@ export function TaskList({ tasks, projectId, workspaceId }: TaskListProps) {
   });
 
   // Fetch workspaces for all tasks
-  const { data: workspaceMap = {}, isLoading: isWorkspacesLoading } = useQuery({
+  const { data: workspaceMap = {} } = useQuery({
     queryKey: ["workspaces", tasks],
     queryFn: async () => {
       // Collect all unique workspace IDs from tasks
@@ -100,7 +99,7 @@ export function TaskList({ tasks, projectId, workspaceId }: TaskListProps) {
       if (!userId) return {};
 
       const workspacesData = await getWorkspacesForUser(userId);
-      
+
       // Create a map of workspace IDs to workspace objects
       // Only include workspaces that are actually used by tasks
       const workspaceMap: Record<string, Workspace> = {};
@@ -109,7 +108,7 @@ export function TaskList({ tasks, projectId, workspaceId }: TaskListProps) {
           workspaceMap[workspace.id] = workspace;
         }
       });
-      
+
       return workspaceMap;
     },
     enabled: tasks.length > 0, // Only fetch if there are tasks
@@ -120,29 +119,21 @@ export function TaskList({ tasks, projectId, workspaceId }: TaskListProps) {
   useEffect(() => {
     if (!isAssigneesLoading) {
       const newAssigneesMap: Record<string, User[]> = {};
-  
+
       tasks.forEach((task) => {
         newAssigneesMap[task.id] =
           task.assigneeIds?.map((id) => assigneeMap[id]).filter(Boolean) || [];
       });
-  
+
       // Only update state if the map has changed
       const isDifferent =
         JSON.stringify(taskAssignees) !== JSON.stringify(newAssigneesMap);
-  
+
       if (isDifferent) {
         setTaskAssignees(newAssigneesMap);
       }
     }
   }, [tasks, assigneeMap, isAssigneesLoading]);
-
-  // Map the fetched workspaces
-  useEffect(() => {
-    if (!isWorkspacesLoading) {
-      setWorkspaces(workspaceMap);
-    }
-  }, [workspaceMap, isWorkspacesLoading]);
-  
 
   // Handle task click to show details
   const handleTaskClick = async (task: TaskResponse) => {
@@ -233,7 +224,7 @@ export function TaskList({ tasks, projectId, workspaceId }: TaskListProps) {
         <TaskTable
           tasks={dedupedTasks}
           taskAssignees={taskAssignees}
-          workspaces={workspaces}
+          workspaces={workspaceMap}
           onTaskClick={handleTaskClick}
           onEditClick={handleEditClick}
           onDeleteClick={handleDeleteClick}

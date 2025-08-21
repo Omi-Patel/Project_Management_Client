@@ -48,7 +48,7 @@ export function ProjectCard({
       <div
         className="absolute top-0 left-0 right-0 h-1"
         style={{ backgroundColor: project.color || "#3B82F6" }}
-      ></div>
+      />
 
       {/* Status Badge */}
       <div className="absolute top-4 left-4 z-10">

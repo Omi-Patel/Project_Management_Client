@@ -168,6 +168,115 @@ export async function createProject(
   }
 }
 
+export async function generateAITasksForProject(
+  request: {
+    projectId: string;
+    complexity?: "simple" | "balanced" | "detailed";
+    focusArea?: "development" | "design" | "testing" | "planning" | "all";
+    taskCount?: number;
+    templateStyle?: "agile" | "waterfall" | "kanban" | "custom";
+    includeTimelines?: boolean;
+    autoAssign?: boolean;
+    includeSubtasks?: boolean;
+    includeDependencies?: boolean;
+    riskAssessment?: boolean;
+    creativityLevel?: number;
+    detailLevel?: number;
+    customInstructions?: string;
+    projectContext?: {
+      name: string;
+      description?: string | null;
+      startDate?: string | null;
+      endDate?: string | null;
+      teamSize?: number;
+      technologies?: string[];
+      industryType?: string;
+    };
+  }
+): Promise<{
+  success: boolean;
+  message: string;
+  generatedTasks: any[];
+  analysis?: {
+    projectComplexity: string;
+    estimatedDuration: string;
+    recommendedTeamSize: number;
+    riskFactors: string[];
+    keyMilestones: string[];
+    optimizationSuggestions: string[];
+  };
+  metadata?: {
+    generationTime: number;
+    aiModel: string;
+    confidenceScore: number;
+    preferencesUsed: {
+      complexity: string;
+      focusArea: string;
+      taskCount: number;
+      creativityLevel: number;
+      detailLevel: number;
+    };
+  };
+}> {
+  try {
+    // Set defaults for any missing values
+    const requestPayload = {
+      projectId: request.projectId,
+      complexity: request.complexity || "balanced",
+      focusArea: request.focusArea || "all",
+      taskCount: request.taskCount || 8,
+      templateStyle: request.templateStyle || "agile",
+      includeTimelines: request.includeTimelines ?? true,
+      autoAssign: request.autoAssign ?? false,
+      includeSubtasks: request.includeSubtasks ?? false,
+      includeDependencies: request.includeDependencies ?? false,
+      riskAssessment: request.riskAssessment ?? false,
+      creativityLevel: request.creativityLevel ?? 50,
+      detailLevel: request.detailLevel ?? 70,
+      customInstructions: request.customInstructions || "",
+      projectContext: request.projectContext,
+    };
+
+    const response = await axios.post(
+      `${API_BASE_URL}/projects/generate-ai-tasks`,
+      requestPayload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+}
+
+// Backward compatibility helper for simple AI task generation
+export async function generateAITasksForProjectSimple(
+  projectId: string
+): Promise<{
+  success: boolean;
+  message: string;
+  generatedTasks: any[];
+}> {
+  return generateAITasksForProject({
+    projectId,
+    complexity: "balanced",
+    focusArea: "all",
+    taskCount: 8,
+    templateStyle: "agile",
+    includeTimelines: true,
+    autoAssign: false,
+    includeSubtasks: false,
+    includeDependencies: false,
+    riskAssessment: false,
+    creativityLevel: 50,
+    detailLevel: 70,
+  });
+}
+
 export async function getAllProjects(userId: string): Promise<ProjectSchema[]> {
   try {
     const url = userId

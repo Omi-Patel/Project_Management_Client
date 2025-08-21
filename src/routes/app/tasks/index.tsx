@@ -3,6 +3,7 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
 import TaskList from "@/components/Project_Task/task-list";
 import TaskBoard from "@/components/TaskBoard";
+import TaskGantt from "@/components/Project_Task/task-gantt-responsive";
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
@@ -24,7 +25,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getAllTasks, getAllUsers, getTasksByUserId, getAllProjects } from "@/lib/actions";
+import {
+  getAllTasks,
+  getAllUsers,
+  getTasksByUserId,
+  getAllProjects,
+} from "@/lib/actions";
 import { getWorkspacesForUser } from "@/lib/workspace-actions";
 import { STORAGE_KEYS } from "@/lib/auth";
 import { exportTasksToExcel } from "@/lib/export-report";
@@ -42,6 +48,7 @@ import {
   X,
   Building2,
   FolderOpen,
+  GanttChart,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -73,8 +80,12 @@ function RouteComponent() {
   const [assignees, setAssignees] = useState<{ id: string; name: string }[]>(
     []
   );
-  const [workspaces, setWorkspaces] = useState<{ id: string; name: string }[]>([]);
-  const [projects, setProjects] = useState<{ id: string; name: string; workspaceId: string | null }[]>([]);
+  const [workspaces, setWorkspaces] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [projects, setProjects] = useState<
+    { id: string; name: string; workspaceId: string | null }[]
+  >([]);
 
   const [isExporting, setIsExporting] = useState(false);
 
@@ -145,24 +156,29 @@ function RouteComponent() {
   });
 
   // Filter tasks based on workspace and project selections
-  const filteredData = data ? data.filter(task => {
-    // Filter by workspace
-    if (selectedWorkspaces.length > 0) {
-      const taskWorkspaceId = task.project?.workspaceId;
-      if (!taskWorkspaceId || !selectedWorkspaces.includes(taskWorkspaceId)) {
-        return false;
-      }
-    }
+  const filteredData = data
+    ? data.filter((task) => {
+        // Filter by workspace
+        if (selectedWorkspaces.length > 0) {
+          const taskWorkspaceId = task.project?.workspaceId;
+          if (
+            !taskWorkspaceId ||
+            !selectedWorkspaces.includes(taskWorkspaceId)
+          ) {
+            return false;
+          }
+        }
 
-    // Filter by project
-    if (selectedProjects.length > 0) {
-      if (!selectedProjects.includes(task.project?.id || '')) {
-        return false;
-      }
-    }
+        // Filter by project
+        if (selectedProjects.length > 0) {
+          if (!selectedProjects.includes(task.project?.id || "")) {
+            return false;
+          }
+        }
 
-    return true;
-  }) : [];
+        return true;
+      })
+    : [];
 
   const handleSearch = (newSearch: string) => {
     setSearch(newSearch);
@@ -201,17 +217,21 @@ function RouteComponent() {
 
         // Fetch workspaces
         const workspacesData = await getWorkspacesForUser(userId);
-        setWorkspaces(workspacesData.map(ws => ({ id: ws.id, name: ws.name })));
+        setWorkspaces(
+          workspacesData.map((ws) => ({ id: ws.id, name: ws.name }))
+        );
 
         // Fetch all projects
         const projectsData = await getAllProjects(userId);
-        setProjects(projectsData
-          .filter(p => p.id) // Filter out projects without ID
-          .map(p => ({ 
-            id: p.id!, 
-            name: p.name, 
-            workspaceId: p.workspaceId || null 
-          })));
+        setProjects(
+          projectsData
+            .filter((p) => p.id) // Filter out projects without ID
+            .map((p) => ({
+              id: p.id!,
+              name: p.name,
+              workspaceId: p.workspaceId || null,
+            }))
+        );
 
         // Fetch assignees
         const users = await getAllUsers({ page: 1, size: 100 });
@@ -263,7 +283,12 @@ function RouteComponent() {
           </div>
           <Button
             onClick={handleExportReport}
-            disabled={isExporting || isLoading || !filteredData || filteredData.length === 0}
+            disabled={
+              isExporting ||
+              isLoading ||
+              !filteredData ||
+              filteredData.length === 0
+            }
             className="flex items-center gap-2 shadow-sm"
             size="sm"
           >
@@ -491,8 +516,6 @@ function RouteComponent() {
                 </div>
               </PopoverContent>
             </Popover>
-
-
           </div>
 
           {/* Active Filters Display */}
@@ -535,7 +558,8 @@ function RouteComponent() {
               ))}
               {selectedWorkspaces.map((workspaceId) => (
                 <Badge key={workspaceId} variant="secondary" className="gap-1">
-                  {workspaces.find((w) => w.id === workspaceId)?.name || workspaceId}
+                  {workspaces.find((w) => w.id === workspaceId)?.name ||
+                    workspaceId}
                   <X
                     className="h-3 w-3 cursor-pointer hover:text-destructive"
                     onClick={() =>
@@ -559,7 +583,6 @@ function RouteComponent() {
                   />
                 </Badge>
               ))}
-
             </div>
           )}
         </div>
@@ -590,20 +613,27 @@ function RouteComponent() {
                     Tasks {filteredData && `(${filteredData.length})`}
                   </h2>
                 </div>
-                <TabsList className="grid w-auto grid-cols-2">
+                <TabsList className="grid w-auto grid-cols-3">
                   <TabsTrigger
                     value="taskList"
                     className="flex items-center gap-2"
                   >
                     <Table className="h-4 w-4" />
-                    List
+                    <span className="hidden sm:inline">List</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="taskBoard"
                     className="flex items-center gap-2"
                   >
                     <BarChart2 className="h-4 w-4" />
-                    Board
+                    <span className="hidden sm:inline">Board</span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="taskGantt"
+                    className="flex items-center gap-2"
+                  >
+                    <GanttChart className="h-4 w-4" />
+                    <span className="hidden sm:inline">Gantt</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -629,6 +659,9 @@ function RouteComponent() {
                 <TabsContent value="taskBoard" className="mt-0">
                   <TaskBoard taskIds={taskIds} />
                 </TabsContent>
+                <TabsContent value="taskGantt" className="mt-0">
+                  <TaskGantt tasks={filteredData || []} />
+                </TabsContent>
               </div>
             </Tabs>
           </div>
@@ -638,7 +671,8 @@ function RouteComponent() {
         {filteredData && filteredData.length > 0 && (
           <div className="flex items-center justify-between bg-muted/20 rounded-lg border p-4">
             <p className="text-sm text-muted-foreground">
-              Showing {Math.min(size, filteredData.length)} of {filteredData.length} tasks
+              Showing {Math.min(size, filteredData.length)} of{" "}
+              {filteredData.length} tasks
             </p>
             <div className="flex items-center gap-2">
               <Button
