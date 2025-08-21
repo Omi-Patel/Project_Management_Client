@@ -38,7 +38,6 @@ import {
   CheckCircle2,
   Target,
   Calendar,
-  Sparkles,
   GanttChart,
 } from "lucide-react";
 import TaskBoard from "@/components/TaskBoard";
@@ -328,14 +327,14 @@ function RouteComponent() {
               <h2 className="text-lg font-semibold">Project Tasks</h2>
             </div>
             <div className="flex flex-wrap sm:items-center gap-3 justify-end">
-              <Button
+              {/* <Button
                 variant="outline"
                 onClick={() => setIsAIDialogOpen(true)}
                 className="gap-2 bg-gradient-to-r from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100 dark:from-purple-950/50 dark:to-blue-950/50 dark:hover:from-purple-900/50 dark:hover:to-blue-900/50 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200"
               >
                 <Sparkles className="h-4 w-4" />
                 Generate AI Tasks
-              </Button>
+              </Button> */}
               <Button
                 onClick={() => setIsAddDialogOpen(true)}
                 className="gap-2"
